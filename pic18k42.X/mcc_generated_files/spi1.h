@@ -1,21 +1,24 @@
 /**
-  Generated Main Source File
+  SPI1 Generated Driver API Header File
 
-  Company:
+  @Company
     Microchip Technology Inc.
 
-  File Name:
-    main.c
+  @File Name
+    spi1.h
 
-  Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+  @Summary
+    This is the generated header file for the SPI1 driver using PIC10 / PIC12 / PIC16 / PIC18 MCUs
 
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This header file provides APIs for driver for SPI1.
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
         Device            :  PIC18F47K42
-        Driver Version    :  2.00
+        Driver Version    :  1.0.0
+    The generated drivers are tested against the following:
+        Compiler          :  XC8 2.31 and above or later
+        MPLAB             :  MPLAB X 5.45
 */
 
 /*
@@ -41,35 +44,30 @@
     SOFTWARE.
 */
 
-#include "mcc_generated_files/mcc.h"
-#include "test/test.h"
+#ifndef SPI1_MASTER_H
+#define SPI1_MASTER_H
 
-/*
-                         Main application
- */
-void main(void)
-{
-    // Initialize the device
-    SYSTEM_Initialize();
-
-    // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts
-    // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global Interrupts
-    // Use the following macros to:
-
-    // Enable the Global Interrupts
-    INTERRUPT_GlobalInterruptEnable();
-
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-    
-    // Test code
-    TEST_Function();
-
-    while (1)
-    {
-        // Add your application code
-    }
-}
 /**
- End of File
+  Section: Included Files
 */
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+/* SPI interfaces */
+typedef enum { 
+    SPI1_DEFAULT
+} spi1_modes_t;
+
+void SPI1_Initialize(void);
+bool SPI1_Open(spi1_modes_t spi1UniqueConfiguration);
+void SPI1_Close(void);
+uint8_t SPI1_ExchangeByte(uint8_t data);
+void SPI1_ExchangeBlock(void *block, size_t blockSize);
+void SPI1_WriteBlock(void *block, size_t blockSize);
+void SPI1_ReadBlock(void *block, size_t blockSize);
+void SPI1_WriteByte(uint8_t byte);
+uint8_t SPI1_ReadByte(void);
+
+#endif //SPI1_H

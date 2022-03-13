@@ -49,10 +49,16 @@
 
 void SYSTEM_Initialize(void)
 {
+    INTERRUPT_Initialize();
     PMD_Initialize();
     I2C1_Initialize();
     PIN_MANAGER_Initialize();
     OSCILLATOR_Initialize();
+    CLC1_Initialize();
+    TMR2_Initialize();
+    PWM5_Initialize();
+    TMR1_Initialize();
+    SPI1_Initialize();
 }
 
 void OSCILLATOR_Initialize(void)

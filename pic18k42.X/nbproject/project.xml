@@ -12,7 +12,13 @@
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
-            <sourceRootList/>
+            <sourceRootList>
+                <sourceRootElem>graphics</sourceRootElem>
+                <sourceRootElem>leds</sourceRootElem>
+                <sourceRootElem>sound</sourceRootElem>
+                <sourceRootElem>test</sourceRootElem>
+                <sourceRootElem>wifi</sourceRootElem>
+            </sourceRootList>
             <confList>
                 <confElem>
                     <name>default</name>

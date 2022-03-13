@@ -4,6 +4,26 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+        <logicalFolder name="canvas" displayName="canvas" projectFiles="true">
+          <itemPath>graphics/canvas/bitmaps.h</itemPath>
+          <itemPath>graphics/canvas/fonts.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+          <itemPath>graphics/drivers/gfx.h</itemPath>
+          <itemPath>graphics/drivers/sh1106.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="gui" displayName="gui" projectFiles="true">
+          <itemPath>graphics/gui/buttons.h</itemPath>
+          <itemPath>graphics/gui/menu.h</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <logicalFolder name="leds" displayName="leds" projectFiles="true">
+        <itemPath>leds/led_math.h</itemPath>
+        <itemPath>leds/led_profiles.h</itemPath>
+        <itemPath>leds/log_brightness_lookup.h</itemPath>
+        <itemPath>leds/spi_led.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
@@ -14,6 +34,20 @@
         <itemPath>mcc_generated_files/i2c1_master.h</itemPath>
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
         <itemPath>mcc_generated_files/device_config.h</itemPath>
+        <itemPath>mcc_generated_files/tmr1.h</itemPath>
+        <itemPath>mcc_generated_files/interrupt_manager.h</itemPath>
+        <itemPath>mcc_generated_files/clc1.h</itemPath>
+        <itemPath>mcc_generated_files/tmr2.h</itemPath>
+        <itemPath>mcc_generated_files/spi1.h</itemPath>
+        <itemPath>mcc_generated_files/pwm5.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="sound" displayName="sound" projectFiles="true">
+        <itemPath>sound/mic_in.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="test" displayName="test" projectFiles="true">
+        <itemPath>test/test.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="wifi" displayName="wifi" projectFiles="true">
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -23,6 +57,25 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="graphics" displayName="graphics" projectFiles="true">
+        <logicalFolder name="canvas" displayName="canvas" projectFiles="true">
+          <itemPath>graphics/canvas/bitmaps.c</itemPath>
+          <itemPath>graphics/canvas/fonts.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="drivers" displayName="drivers" projectFiles="true">
+          <itemPath>graphics/drivers/gfx.c</itemPath>
+          <itemPath>graphics/drivers/sh1106.c</itemPath>
+        </logicalFolder>
+        <logicalFolder name="gui" displayName="gui" projectFiles="true">
+          <itemPath>graphics/gui/buttons.c</itemPath>
+          <itemPath>graphics/gui/menu.c</itemPath>
+        </logicalFolder>
+      </logicalFolder>
+      <logicalFolder name="leds" displayName="leds" projectFiles="true">
+        <itemPath>leds/led_math.c</itemPath>
+        <itemPath>leds/led_profiles.c</itemPath>
+        <itemPath>leds/spi_led.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
@@ -33,6 +86,21 @@
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/mcc.c</itemPath>
         <itemPath>mcc_generated_files/i2c1_master.c</itemPath>
+        <itemPath>mcc_generated_files/tmr1.c</itemPath>
+        <itemPath>mcc_generated_files/interrupt_manager.c</itemPath>
+        <itemPath>mcc_generated_files/clc1.c</itemPath>
+        <itemPath>mcc_generated_files/tmr2.c</itemPath>
+        <itemPath>mcc_generated_files/spi1.c</itemPath>
+        <itemPath>mcc_generated_files/pwm5.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="sound" displayName="sound" projectFiles="true">
+        <itemPath>sound/mic_in.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="test" displayName="test" projectFiles="true">
+        <itemPath>test/test.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="wifi" displayName="wifi" projectFiles="true">
+        <itemPath>wifi/esp01.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
     </logicalFolder>
@@ -43,6 +111,13 @@
       <itemPath>pic18k42.mc3</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>graphics</Elem>
+    <Elem>leds</Elem>
+    <Elem>sound</Elem>
+    <Elem>test</Elem>
+    <Elem>wifi</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
@@ -51,7 +126,7 @@
         <targetDevice>PIC18F47K42</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>nEdbgTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>2.32</languageToolchainVersion>
         <platform>3</platform>

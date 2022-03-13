@@ -1,21 +1,26 @@
 /**
-  Generated Main Source File
+  Generated Interrupt Manager Header File
 
-  Company:
+  @Company:
     Microchip Technology Inc.
 
-  File Name:
-    main.c
+  @File Name:
+    interrupt_manager.h
 
-  Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+  @Summary:
+    This is the Interrupt Manager file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
 
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description:
+    This header file provides implementations for global interrupt handling.
+    For individual peripheral handlers please see the peripheral driver for
+    all modules selected in the GUI.
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
         Device            :  PIC18F47K42
-        Driver Version    :  2.00
+        Driver Version    :  2.03
+    The generated drivers are tested against the following:
+        Compiler          :  XC8 2.31 and above or later
+        MPLAB 	          :  MPLAB X 5.45
 */
 
 /*
@@ -41,35 +46,47 @@
     SOFTWARE.
 */
 
-#include "mcc_generated_files/mcc.h"
-#include "test/test.h"
+#ifndef INTERRUPT_MANAGER_H
+#define INTERRUPT_MANAGER_H
 
-/*
-                         Main application
- */
-void main(void)
-{
-    // Initialize the device
-    SYSTEM_Initialize();
 
-    // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts
-    // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global Interrupts
-    // Use the following macros to:
-
-    // Enable the Global Interrupts
+/**
+ * @Param
+    none
+ * @Returns
+    none
+ * @Description
+    This macro will enable global interrupts.
+ * @Example
     INTERRUPT_GlobalInterruptEnable();
+ */
+#define INTERRUPT_GlobalInterruptEnable() (INTCON0bits.GIE = 1)
 
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-    
-    // Test code
-    TEST_Function();
+/**
+ * @Param
+    none
+ * @Returns
+    none
+ * @Description
+    This macro will disable global interrupts.
+ * @Example
+    INTERRUPT_GlobalInterruptDisable();
+ */
+#define INTERRUPT_GlobalInterruptDisable() (INTCON0bits.GIE = 0)
 
-    while (1)
-    {
-        // Add your application code
-    }
-}
+/**
+ * @Param
+    none
+ * @Returns
+    none
+ * @Description
+    Initializes PIC18 peripheral interrupt priorities; enables/disables priority vectors
+ * @Example
+    INTERRUPT_Initialize();
+ */
+void INTERRUPT_Initialize (void);
+
+#endif  // INTERRUPT_MANAGER_H
 /**
  End of File
 */

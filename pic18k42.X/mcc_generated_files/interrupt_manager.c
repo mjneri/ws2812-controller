@@ -1,21 +1,26 @@
 /**
-  Generated Main Source File
+  Generated Interrupt Manager Source File
 
-  Company:
+  @Company:
     Microchip Technology Inc.
 
-  File Name:
-    main.c
+  @File Name:
+    interrupt_manager.c
 
-  Summary:
-    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+  @Summary:
+    This is the Interrupt Manager file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
 
-  Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description:
+    This header file provides implementations for global interrupt handling.
+    For individual peripheral handlers please see the peripheral driver for
+    all modules selected in the GUI.
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
         Device            :  PIC18F47K42
-        Driver Version    :  2.00
+        Driver Version    :  2.04
+    The generated drivers are tested against the following:
+        Compiler          :  XC8 2.31 and above or later
+        MPLAB 	          :  MPLAB X 5.45
 */
 
 /*
@@ -41,33 +46,25 @@
     SOFTWARE.
 */
 
-#include "mcc_generated_files/mcc.h"
-#include "test/test.h"
+#include "interrupt_manager.h"
+#include "mcc.h"
 
-/*
-                         Main application
- */
-void main(void)
+void  INTERRUPT_Initialize (void)
 {
-    // Initialize the device
-    SYSTEM_Initialize();
+    // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
+    INTCON0bits.IPEN = 0;
+}
 
-    // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts
-    // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global Interrupts
-    // Use the following macros to:
-
-    // Enable the Global Interrupts
-    INTERRUPT_GlobalInterruptEnable();
-
-    // Disable the Global Interrupts
-    //INTERRUPT_GlobalInterruptDisable();
-    
-    // Test code
-    TEST_Function();
-
-    while (1)
+void __interrupt() INTERRUPT_InterruptManager (void)
+{
+    // interrupt handler
+    if(PIE4bits.TMR1IE == 1 && PIR4bits.TMR1IF == 1)
     {
-        // Add your application code
+        TMR1_ISR();
+    }
+    else
+    {
+        //Unhandled Interrupt
     }
 }
 /**
