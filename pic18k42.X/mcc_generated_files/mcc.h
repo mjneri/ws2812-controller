@@ -47,11 +47,13 @@
 #ifndef MCC_H
 #define	MCC_H
 #include <xc.h>
-#include "device_config.h"
-#include "pin_manager.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <conio.h>
+#include <string.h>                 // For memset()
+
+#include "device_config.h"
+#include "pin_manager.h"
 #include "interrupt_manager.h"
 #include "i2c1_master.h"
 #include "tmr1.h"
