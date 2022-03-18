@@ -36,13 +36,13 @@ static void RGB_SendData(rgb_led_t rgbData);
 // *****************************************************************************
 // *****************************************************************************
 
-void RGB_Init(rgb_led_t *buf, uint16_t size)
+void RGB_Init(rgb_led_t *buf, uint16_t ledcount)
 {
     // Initialize the array
-    memset(buf, 0, size*sizeof(rgb_led_t));
+    memset(buf, 0, ledcount*sizeof(rgb_led_t));
     
     // Clear each LED in the array
-    RGB_Update(buf, size);
+    RGB_Update(buf, ledcount);
     
     // wait until the LEDs reset
     __delay_ms(1);
@@ -50,10 +50,10 @@ void RGB_Init(rgb_led_t *buf, uint16_t size)
     return;
 }
 
-void RGB_Clear(rgb_led_t *buf, uint16_t size)
+void RGB_Clear(rgb_led_t *buf, uint16_t ledcount)
 {
     // This function is basically the same as RGB_Init()
-    RGB_Init(buf, size);
+    RGB_Init(buf, ledcount);
     return;
 }
 
@@ -64,21 +64,21 @@ void RGB_SetColor(rgb_led_t *led, uint24_t val)
     return;
 }
 
-void RGB_ALLSetColor(rgb_led_t *buf, uint16_t size, uint24_t val)
+void RGB_ALLSetColor(rgb_led_t *buf, uint16_t ledcount, uint24_t val)
 {
     // Set the color values of all LEDs
     uint16_t i = 0;
-    for(i = 0; i < size; i++)
+    for(i = 0; i < ledcount; i++)
     {
         buf[i].val = val;
     }
 }
 
-void RGB_Update(rgb_led_t *buf, const uint16_t size)
+void RGB_Update(rgb_led_t *buf, const uint16_t ledcount)
 {
     // Update each LED
     uint16_t i = 0;
-    for(i = 0; i < size; i++)
+    for(i = 0; i < ledcount; i++)
     {
         RGB_SendData(buf[i]);
     }

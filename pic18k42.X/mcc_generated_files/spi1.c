@@ -58,7 +58,7 @@ typedef struct {
 
 //con0 == SPIxCON0, con1 == SPIxCON1, con2 == SPIxCON2, baud == SPIxBAUD, operation == Master/Slave
 static const spi1_configuration_t spi1_configuration[] = {   
-    { 0x2, 0x20, 0x0, 0x0, 0 }
+    { 0x3, 0x40, 0x2, 0x0, 0 }
 };
 
 void SPI1_Initialize(void)
@@ -82,8 +82,8 @@ bool SPI1_Open(spi1_modes_t spi1UniqueConfiguration)
     {
         SPI1CON0 = spi1_configuration[spi1UniqueConfiguration].con0;
         SPI1CON1 = spi1_configuration[spi1UniqueConfiguration].con1;
-        SPI1CON2 = spi1_configuration[spi1UniqueConfiguration].con2 | (_SPI1CON2_SPI1RXR_MASK | _SPI1CON2_SPI1TXR_MASK);
-        SPI1CLK  = 0x00;
+        SPI1CON2 = spi1_configuration[spi1UniqueConfiguration].con2 | (_SPI1CON2_SPI1TXR_MASK);
+        SPI1CLK  = 0x05;
         SPI1BAUD = spi1_configuration[spi1UniqueConfiguration].baud;        
         TRISCbits.TRISC0 = spi1_configuration[spi1UniqueConfiguration].operation;
         SPI1CON0bits.EN = 1;
@@ -139,6 +139,7 @@ void SPI1_ReadBlock(void *block, size_t blockSize)
 void SPI1_WriteByte(uint8_t byte)
 {
     SPI1TXB = byte;
+    while(!SPI1STATUSbits.TXBE);
 }
 
 uint8_t SPI1_ReadByte(void)

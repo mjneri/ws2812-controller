@@ -22,6 +22,7 @@ static void TEST_PIXELS(void);
 
 // Other local function prototypes
 void displayMenu(uint8_t selectedOption);
+static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size);
 
 // Main Test function definition
 void TEST_Function(void)
@@ -30,7 +31,10 @@ void TEST_Function(void)
     TMR1_SetInterruptHandler(HeartbeatCallback);
     
     // Test the OLED functions
-    TEST_OLED();
+    //TEST_OLED();
+    
+    // Test SPI LED functions
+    TEST_PIXELS();
     
     return;
 }
@@ -99,6 +103,20 @@ static void TEST_OLED(void)
 
 static void TEST_PIXELS(void)
 {
+    rgb_led_t pixelObj[LEDSTRIPSIZE];
+    
+    // Open SPI port
+    SPI1_Open(SPI1_DEFAULT);
+    
+    RGB_Init(pixelObj, sizeof(pixelObj));
+    pixels_StartupSequence(pixelObj, LEDSTRIPSIZE);
+    RGB_Clear(pixelObj, sizeof(pixelObj));
+    __delay_ms(500);
+    
+    RGB_ALLSetColor(pixelObj, LEDSTRIPSIZE, RGB_TO_VAL(25, 26, 27));
+    RGB_Update(pixelObj, LEDSTRIPSIZE);
+    
+    while(1);
     return;
 }
 
@@ -110,3 +128,116 @@ void displayMenu(uint8_t selectedOption)
     OLED_DrawString(16, 5, "Adjust LED Count", font5x7, (selectedOption == 1));
     OLED_DrawString(24, 5, "About", font5x7, (selectedOption == 2));
 }
+
+static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size)
+{
+    // Start-up sequence for the LEDs
+    int16_t i = 0;
+    rgb_led_t temp;
+    
+    // Initialize the temp var
+    temp.val = 0;
+    
+    // Walking white light
+    // NOTE: "white" is not being shifted between array members. Rather, 
+    // each LED is turned white via PIXEL_SetColor() then turned off by clearing
+    // the LED's color values before the next iteration of the for loop.
+    // Hope this makes sense.
+    for(i = 0; i < size; i++)
+    {
+        // Turn the LED white
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 25, 25));
+        RGB_Update(pixelObj, size);
+        
+        // Clear the LED color values
+        pixelObj[i].val = 0;
+        __delay_ms(50);
+    }
+    
+    // Reverse the direction!
+    for(i = size - 1; i >= 0; i--)
+    {
+        // Turn the LED white
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 25, 25));
+        RGB_Update(pixelObj, size);
+        
+        // Clear the LED color values
+        pixelObj[i].val = 0;
+        __delay_ms(50);
+    }
+    
+    // Turn each LED Red
+    for(i = 0; i < size; i++)
+    {
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 1, 1));
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Turn off each LED one by one
+    for(i = 0; i < size; i++)
+    {
+        // Clear the LED color values
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0, 0, 0));
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Turn each LED blue starting from the center of the stick
+    __delay_ms(200);
+    for(i = size/2 - 1; i >= 0; i--)
+    {
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(1, 1, 25));                 // LEDs 4, 3, 2, 1, 0
+        RGB_SetColor(&pixelObj[size-1-i], RGB_TO_VAL(1, 1, 25));    // LEDs 5, 6, 7, 8, 9
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Turn each LED off using the same pattern as above
+    __delay_ms(200);
+    for(i = size/2 - 1; i >= 0; i--)
+    {
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0,0,0));                 // LEDs 4, 3, 2, 1, 0
+        RGB_SetColor(&pixelObj[size-1-i], RGB_TO_VAL(0,0,0));    // LEDs 5, 6, 7, 8, 9
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Turn each LED Pink starting from the last LED
+    __delay_ms(200);
+    for(i = size - 1; i >= 0; i--)
+    {
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(23, 0, 14));
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Turn each LED off
+    __delay_ms(200);
+    for(i = 0; i < size; i++)
+    {
+        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0, 0, 0));
+        RGB_Update(pixelObj, size);
+        __delay_ms(50);
+    }
+    
+    // Breathing Green LEDs
+    __delay_ms(200);
+    for(i = 0; i < 64; i++)
+    {
+        RGB_ALLSetColor(pixelObj, size, RGB_TO_VAL(0, i, 0));
+        RGB_Update(pixelObj, size);
+        __delay_ms(5);
+    }
+    
+    for(i = 64; i >= 0; i--)
+    {
+        RGB_ALLSetColor(pixelObj, size, RGB_TO_VAL(0, i, 0));
+        RGB_Update(pixelObj, size);
+        __delay_ms(5);
+    }
+}
+
+/**
+ End of File
+*/

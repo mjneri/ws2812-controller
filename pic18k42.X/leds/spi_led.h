@@ -32,7 +32,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define LEDCOUNT 10
+#define LEDSTRIPSIZE 10
 
 // *****************************************************************************
 // *****************************************************************************
@@ -40,7 +40,7 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define RGB_TO_VAL(r, g, b) {( (g)| (r<<8) | (b<<16) )}
+#define RGB_TO_VAL(r, g, b) ( (uint24_t) (((uint32_t)(b) << 16) | ((uint32_t)(r) << 8) | ((uint32_t)(g))) )
 
 // *****************************************************************************
 // *****************************************************************************
@@ -78,11 +78,11 @@ typedef union
 
 // RGB_Init(void)
 //      + Initializes the LED array
-void RGB_Init(rgb_led_t *buf, uint16_t size);
+void RGB_Init(rgb_led_t *buf, uint16_t ledcount);
 
 // RGB_Clear(void)
 //      + Turns off all LEDs in the array
-void RGB_Clear(rgb_led_t *buf, uint16_t size);
+void RGB_Clear(rgb_led_t *buf, uint16_t ledcount);
 
 // RGB_SetColor();
 //      + Sets the RGB brightness values of an individual LED
@@ -91,11 +91,11 @@ void RGB_SetColor(rgb_led_t *led, uint24_t val);
 
 // RGB_ALLSetColor();
 //      + Sets the RGB brightness values of all LEDs in the array
-void RGB_ALLSetColor(rgb_led_t *buf, uint16_t size, uint24_t val);
+void RGB_ALLSetColor(rgb_led_t *buf, uint16_t ledcount, uint24_t val);
 
 // RGB_Update()
 //      + Updates the actual LEDs based on the structure array
-void RGB_Update(rgb_led_t *buf, const uint16_t size);
+void RGB_Update(rgb_led_t *buf, const uint16_t ledcount);
 
 #endif /*_SPI_LED_H_*/
 
