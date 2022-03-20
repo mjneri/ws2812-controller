@@ -1,6 +1,8 @@
 
 
 // Header files
+#include <pic18.h>
+
 #include "test.h"
 
 // Globals for testing
@@ -23,6 +25,7 @@ static void TEST_PIXELS(void);
 // Other local function prototypes
 void displayMenu(uint8_t selectedOption);
 static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size);
+static void lowmemLED(void);
 
 // Main Test function definition
 void TEST_Function(void)
@@ -102,19 +105,14 @@ static void TEST_OLED(void)
 }
 
 static void TEST_PIXELS(void)
-{
-    rgb_led_t pixelObj[LEDSTRIPSIZE];
-    
+{   
     // Open SPI port
     SPI1_Open(SPI1_DEFAULT);
     
-    RGB_Init(pixelObj, sizeof(pixelObj));
-    pixels_StartupSequence(pixelObj, LEDSTRIPSIZE);
-    RGB_Clear(pixelObj, sizeof(pixelObj));
-    __delay_ms(500);
+    // 2022-03-20: Minimal memory footprint test code
+    RGB_Clear(LEDSTRIPSIZE);
     
-    RGB_ALLSetColor(pixelObj, LEDSTRIPSIZE, RGB_TO_VAL(25, 26, 27));
-    RGB_Update(pixelObj, LEDSTRIPSIZE);
+    lowmemLED();
     
     while(1);
     return;
@@ -236,6 +234,23 @@ static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size)
         RGB_Update(pixelObj, size);
         __delay_ms(5);
     }
+}
+
+static void lowmemLED(void)
+{
+    uint16_t i = 0;
+    
+    // Turn all LEDs Blue
+    for(i=LEDSTRIPSIZE; i-- > 0;)
+    {
+        RGB_SetColor(i, RGB_TO_VAL(0,0,25));
+        
+        // Check the LED's datasheet for the minimum time for RES
+        __delay_us(310);
+    }
+    
+    // Turn LED's off one-by one
+    for(i=LEDSTRIPSIZE;)
 }
 
 /**

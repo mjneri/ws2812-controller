@@ -50,17 +50,29 @@ void RGB_Init(rgb_led_t *buf, uint16_t ledcount)
     return;
 }
 
-void RGB_Clear(rgb_led_t *buf, uint16_t ledcount)
+void RGB_Clear(uint16_t ledcount)
 {
-    // This function is basically the same as RGB_Init()
-    RGB_Init(buf, ledcount);
+    rgb_led_t temp;
+    
+    for(uint16_t i = 0; i < ledcount; i++)
+    {
+        temp.val = 0;
+        RGB_SendData(temp);
+    }
+    __delay_ms(1);
     return;
 }
 
-void RGB_SetColor(rgb_led_t *led, uint24_t val)
+void RGB_SetColor(uint16_t ledIndex, uint24_t val)
 {
-    // Set the color values of a specific LED
-    led->val = val;
+    rgb_led_t temp;
+    temp.val = 0;
+    
+    for(uint16_t i = 0; i < ledIndex+1; i++)
+    {
+        temp.val = (i==ledIndex)? val : 0;
+        RGB_SendData(temp);
+    }
     return;
 }
 

@@ -82,12 +82,12 @@ void RGB_Init(rgb_led_t *buf, uint16_t ledcount);
 
 // RGB_Clear(void)
 //      + Turns off all LEDs in the array
-void RGB_Clear(rgb_led_t *buf, uint16_t ledcount);
+void RGB_Clear(uint16_t ledcount);
 
 // RGB_SetColor();
 //      + Sets the RGB brightness values of an individual LED
 //      + Pass by reference so the function can modify the variable itself
-void RGB_SetColor(rgb_led_t *led, uint24_t val);
+void RGB_SetColor(uint16_t ledIndex, uint24_t val);
 
 // RGB_ALLSetColor();
 //      + Sets the RGB brightness values of all LEDs in the array
