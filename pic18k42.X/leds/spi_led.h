@@ -76,10 +76,6 @@ typedef union
  *          {green<23:16>, red<15:8>, blue<7:0>}
  */
 
-// RGB_Init(void)
-//      + Initializes the LED array
-void RGB_Init(rgb_led_t *buf, uint16_t ledcount);
-
 // RGB_Clear(void)
 //      + Turns off all LEDs in the array
 void RGB_Clear(uint16_t ledcount);
@@ -87,15 +83,11 @@ void RGB_Clear(uint16_t ledcount);
 // RGB_SetColor();
 //      + Sets the RGB brightness values of an individual LED
 //      + Pass by reference so the function can modify the variable itself
-void RGB_SetColor(uint16_t ledIndex, uint24_t val);
+void RGB_SetColor(uint24_t val);
 
 // RGB_ALLSetColor();
 //      + Sets the RGB brightness values of all LEDs in the array
-void RGB_ALLSetColor(rgb_led_t *buf, uint16_t ledcount, uint24_t val);
-
-// RGB_Update()
-//      + Updates the actual LEDs based on the structure array
-void RGB_Update(rgb_led_t *buf, const uint16_t ledcount);
+void RGB_ALLSetColor(uint16_t ledcount, uint24_t val);
 
 #endif /*_SPI_LED_H_*/
 

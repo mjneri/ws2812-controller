@@ -5,6 +5,8 @@
 
 #include "test.h"
 
+#define LEDLATCH() __delay_ms(1)        // wait for LED to latch
+
 // Globals for testing
 volatile uint8_t selected = 0;
 volatile bool switchSelected = false;
@@ -24,8 +26,9 @@ static void TEST_PIXELS(void);
 
 // Other local function prototypes
 void displayMenu(uint8_t selectedOption);
-static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size);
+static void pixels_StartupSequence(void);
 static void lowmemLED(void);
+static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance );
 
 // Main Test function definition
 void TEST_Function(void)
@@ -112,6 +115,8 @@ static void TEST_PIXELS(void)
     // 2022-03-20: Minimal memory footprint test code
     RGB_Clear(LEDSTRIPSIZE);
     
+    pixels_StartupSequence();
+    __delay_ms(250);
     lowmemLED();
     
     while(1);
@@ -127,95 +132,159 @@ void displayMenu(uint8_t selectedOption)
     OLED_DrawString(24, 5, "About", font5x7, (selectedOption == 2));
 }
 
-static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size)
+static void pixels_StartupSequence(void)
 {
     // Start-up sequence for the LEDs
+    uint16_t pIndex = 0;
     int16_t i = 0;
-    rgb_led_t temp;
-    
-    // Initialize the temp var
-    temp.val = 0;
     
     // Walking white light
-    // NOTE: "white" is not being shifted between array members. Rather, 
-    // each LED is turned white via PIXEL_SetColor() then turned off by clearing
-    // the LED's color values before the next iteration of the for loop.
-    // Hope this makes sense.
-    for(i = 0; i < size; i++)
+    for(i = 0; i < LEDSTRIPSIZE; i++)
     {
-        // Turn the LED white
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 25, 25));
-        RGB_Update(pixelObj, size);
-        
-        // Clear the LED color values
-        pixelObj[i].val = 0;
+       pIndex = 0;
+       while(pIndex++ < i)
+       {
+           RGB_SetColor(RGB_TO_VAL(0,0,0));
+       }
+       
+       RGB_SetColor(RGB_TO_VAL(25,25,25));
+           
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Reverse the direction!
-    for(i = size - 1; i >= 0; i--)
+    __delay_ms(100);
+    for(i = LEDSTRIPSIZE-1; i >= 0; i--)
     {
-        // Turn the LED white
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 25, 25));
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex++ < i )
+        {
+           RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+
+        RGB_SetColor(RGB_TO_VAL(25,25,25));
         
-        // Clear the LED color values
-        pixelObj[i].val = 0;
+        while(pIndex++ < LEDSTRIPSIZE)
+        {
+           RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn each LED Red
-    for(i = 0; i < size; i++)
+    __delay_ms(200);
+    for(i = 0; i < LEDSTRIPSIZE; i++)
     {
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(25, 1, 1));
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex++ <= i )
+        {
+           RGB_SetColor(RGB_TO_VAL(25,0,0));
+        }
+        while(pIndex++ <= LEDSTRIPSIZE )
+        {
+           RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn off each LED one by one
-    for(i = 0; i < size; i++)
+    for(i = 0; i < LEDSTRIPSIZE; i++)
     {
-        // Clear the LED color values
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0, 0, 0));
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex++ <= i )
+        {
+           RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+        while(pIndex++ <= LEDSTRIPSIZE )
+        {
+           RGB_SetColor(RGB_TO_VAL(25,0,0));
+        }
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn each LED blue starting from the center of the stick
+    // Assumes that there is an even number of LEDs present
     __delay_ms(200);
-    for(i = size/2 - 1; i >= 0; i--)
+    for(i = LEDSTRIPSIZE/2-1; i >= 0; i--)
     {
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(1, 1, 25));                 // LEDs 4, 3, 2, 1, 0
-        RGB_SetColor(&pixelObj[size-1-i], RGB_TO_VAL(1, 1, 25));    // LEDs 5, 6, 7, 8, 9
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex < i)
+        {
+            RGB_SetColor(RGB_TO_VAL(0,0,0));
+            pIndex++;
+        }
+        while(pIndex <= (LEDSTRIPSIZE-i))
+        {
+            RGB_SetColor(RGB_TO_VAL(1,1,25));
+            pIndex++;
+        }
+        while(pIndex < LEDSTRIPSIZE)
+        {
+            RGB_SetColor(RGB_TO_VAL(0,0,0));
+            pIndex++;
+        }
+        
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn each LED off using the same pattern as above
     __delay_ms(200);
-    for(i = size/2 - 1; i >= 0; i--)
+    for(i = LEDSTRIPSIZE/2-1; i >= 0; i--)
     {
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0,0,0));                 // LEDs 4, 3, 2, 1, 0
-        RGB_SetColor(&pixelObj[size-1-i], RGB_TO_VAL(0,0,0));    // LEDs 5, 6, 7, 8, 9
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex < i)
+        {
+            RGB_SetColor(RGB_TO_VAL(1,1,25));
+            pIndex++;
+        }
+        while(pIndex < (LEDSTRIPSIZE-i))
+        {
+            RGB_SetColor(RGB_TO_VAL(0,0,0));
+            pIndex++;
+        }
+        while(pIndex < LEDSTRIPSIZE)
+        {
+            RGB_SetColor(RGB_TO_VAL(1,1,25));
+            pIndex++;
+        }
+        
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn each LED Pink starting from the last LED
     __delay_ms(200);
-    for(i = size - 1; i >= 0; i--)
+    for(i = LEDSTRIPSIZE; i >= 0; i--)
     {
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(23, 0, 14));
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex++ < i)
+        {
+            RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+        RGB_SetColor(RGB_TO_VAL(23, 0, 14));
+        LEDLATCH();
         __delay_ms(50);
     }
     
     // Turn each LED off
     __delay_ms(200);
-    for(i = 0; i < size; i++)
+    for(i = 0; i < LEDSTRIPSIZE; i++)
     {
-        RGB_SetColor(&pixelObj[i], RGB_TO_VAL(0, 0, 0));
-        RGB_Update(pixelObj, size);
+        pIndex = 0;
+        while(pIndex++ <= i)
+        {
+            RGB_SetColor(RGB_TO_VAL(0,0,0));
+        }
+        while(pIndex++ <= LEDSTRIPSIZE)
+        {
+            RGB_SetColor(RGB_TO_VAL(23, 0, 14));
+        }
+        LEDLATCH();
         __delay_ms(50);
     }
     
@@ -223,34 +292,119 @@ static void pixels_StartupSequence(rgb_led_t *pixelObj, uint16_t size)
     __delay_ms(200);
     for(i = 0; i < 64; i++)
     {
-        RGB_ALLSetColor(pixelObj, size, RGB_TO_VAL(0, i, 0));
-        RGB_Update(pixelObj, size);
+        RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0, i, 0));
         __delay_ms(5);
     }
     
     for(i = 64; i >= 0; i--)
     {
-        RGB_ALLSetColor(pixelObj, size, RGB_TO_VAL(0, i, 0));
-        RGB_Update(pixelObj, size);
+        RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0, i, 0));
         __delay_ms(5);
     }
 }
 
 static void lowmemLED(void)
 {
-    uint16_t i = 0;
+    uint16_t i, p = 0;
     
     // Turn all LEDs Blue
-    for(i=LEDSTRIPSIZE; i-- > 0;)
-    {
-        RGB_SetColor(i, RGB_TO_VAL(0,0,25));
-        
-        // Check the LED's datasheet for the minimum time for RES
-        __delay_us(310);
-    }
+    RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0,25,25));
+    __delay_ms(1000);
     
     // Turn LED's off one-by one
-    for(i=LEDSTRIPSIZE;)
+    while(1)
+    {
+        for(i=0; i < LEDSTRIPSIZE; i++)
+        {
+            p = 0;
+
+            while(p++ <= i)
+            {
+                RGB_SetColor(RGB_TO_VAL(0,0,0));
+            }
+
+            while(p++ <= LEDSTRIPSIZE)
+            {
+                RGB_SetColor(RGB_TO_VAL(0,25,25));
+            }
+
+            __delay_ms(50);
+        }
+
+        // Turn on LEDs one by one
+        for(i=0; i < LEDSTRIPSIZE; i++)
+        {
+            p = 0;
+
+            while(p++ <= i)
+            {
+                RGB_SetColor(RGB_TO_VAL(0,25,25));
+            }
+            while(p++ <= LEDSTRIPSIZE)
+            {
+                RGB_SetColor(RGB_TO_VAL(0,0,0));
+            }
+
+            __delay_ms(50);
+        }
+    }
+
+    __delay_ms(100);
+    
+}
+
+// Function below was taken from
+// https://github.com/bigjosh/SimpleNeoPixelDemo/blob/master/SimpleNeopixelDemo/SimpleNeopixelDemo.ino
+static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance )
+{
+  
+  // Hue is a number between 0 and 3*256 than defines a mix of r->g->b where
+  // hue of 0 = Full red
+  // hue of 128 = 1/2 red and 1/2 green
+  // hue of 256 = Full Green
+  // hue of 384 = 1/2 green and 1/2 blue
+  // ...
+  
+  unsigned int firstPixelHue = 0;     // Color for the first pixel in the string
+  
+  for(unsigned int j=0; j<frames; j++) {                                  
+    
+    unsigned int currentPixelHue = firstPixelHue;
+        
+    for(unsigned int i=0; i< LEDSTRIPSIZE; i++) {
+      
+      if (currentPixelHue>=(3*256)) {                  // Normalize back down incase we incremented and overflowed
+        currentPixelHue -= (3*256);
+      }
+            
+      unsigned char phase = currentPixelHue >> 8;
+      unsigned char step = currentPixelHue & 0xff;
+                 
+      switch (phase) {
+        
+        case 0: 
+          RGB_SetColor(RGB_TO_VAL(~step,step,0));
+          break;
+          
+        case 1: 
+          RGB_SetColor( RGB_TO_VAL(0 , ~step , step) );
+          break;
+
+        case 2: 
+          RGB_SetColor(  RGB_TO_VAL(step ,0 , ~step) );
+          break;
+          
+      }
+      
+      currentPixelHue+=pixelAdvance;                                      
+      
+                          
+    } 
+    LEDLATCH();
+    
+    firstPixelHue += frameAdvance;
+           
+  }
 }
 
 /**
