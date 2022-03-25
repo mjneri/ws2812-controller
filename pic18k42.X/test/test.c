@@ -29,6 +29,10 @@ void displayMenu(uint8_t selectedOption);
 static void pixels_StartupSequence(void);
 static void lowmemLED(void);
 static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance );
+static void profiletestSolid(void);
+static uint24_t race_color(uint8_t x);
+static void profitestRacing(uint8_t szlight, uint8_t szspace);
+static void profitestCometsTail(uint8_t tailLen);
 
 // Main Test function definition
 void TEST_Function(void)
@@ -115,11 +119,17 @@ static void TEST_PIXELS(void)
     // 2022-03-20: Minimal memory footprint test code
     RGB_Clear(LEDSTRIPSIZE);
     
-    pixels_StartupSequence();
-    __delay_ms(250);
-    lowmemLED();
+    //pixels_StartupSequence();
+    //__delay_ms(250);
+    //lowmemLED();
+    profiletestSolid();
+//    profitestRacing(1, 9);
+    //profitestCometsTail(10);
     
-    while(1);
+    while(1)
+    {
+        //rainbowCycle(1000, 20, 5);
+    }
     return;
 }
 
@@ -150,7 +160,7 @@ static void pixels_StartupSequence(void)
        RGB_SetColor(RGB_TO_VAL(25,25,25));
            
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Reverse the direction!
@@ -170,7 +180,7 @@ static void pixels_StartupSequence(void)
            RGB_SetColor(RGB_TO_VAL(0,0,0));
         }
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn each LED Red
@@ -187,7 +197,7 @@ static void pixels_StartupSequence(void)
            RGB_SetColor(RGB_TO_VAL(0,0,0));
         }
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn off each LED one by one
@@ -203,7 +213,7 @@ static void pixels_StartupSequence(void)
            RGB_SetColor(RGB_TO_VAL(25,0,0));
         }
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn each LED blue starting from the center of the stick
@@ -229,7 +239,7 @@ static void pixels_StartupSequence(void)
         }
         
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn each LED off using the same pattern as above
@@ -254,12 +264,12 @@ static void pixels_StartupSequence(void)
         }
         
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn each LED Pink starting from the last LED
     __delay_ms(200);
-    for(i = LEDSTRIPSIZE; i >= 0; i--)
+    for(i = LEDSTRIPSIZE-1; i >= 0; i--)
     {
         pIndex = 0;
         while(pIndex++ < i)
@@ -268,7 +278,7 @@ static void pixels_StartupSequence(void)
         }
         RGB_SetColor(RGB_TO_VAL(23, 0, 14));
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Turn each LED off
@@ -285,7 +295,7 @@ static void pixels_StartupSequence(void)
             RGB_SetColor(RGB_TO_VAL(23, 0, 14));
         }
         LEDLATCH();
-        __delay_ms(50);
+        __delay_ms(10);
     }
     
     // Breathing Green LEDs
@@ -328,7 +338,7 @@ static void lowmemLED(void)
                 RGB_SetColor(RGB_TO_VAL(0,25,25));
             }
 
-            __delay_ms(50);
+            __delay_ms(10);
         }
 
         // Turn on LEDs one by one
@@ -345,7 +355,7 @@ static void lowmemLED(void)
                 RGB_SetColor(RGB_TO_VAL(0,0,0));
             }
 
-            __delay_ms(50);
+            __delay_ms(10);
         }
     }
 
@@ -355,6 +365,8 @@ static void lowmemLED(void)
 
 // Function below was taken from
 // https://github.com/bigjosh/SimpleNeoPixelDemo/blob/master/SimpleNeopixelDemo/SimpleNeopixelDemo.ino
+// which was based on
+// https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino
 static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance )
 {
   
@@ -378,20 +390,21 @@ static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsig
       }
             
       unsigned char phase = currentPixelHue >> 8;
-      unsigned char step = currentPixelHue & 0xff;
+      unsigned char step = currentPixelHue & 0x1f;
+      unsigned char nstep = (~step) & 0x1f;
                  
       switch (phase) {
         
         case 0: 
-          RGB_SetColor(RGB_TO_VAL(~step,step,0));
+          RGB_SetColor(RGB_TO_VAL(nstep,step,0));
           break;
           
         case 1: 
-          RGB_SetColor( RGB_TO_VAL(0 , ~step , step) );
+          RGB_SetColor( RGB_TO_VAL(0 , nstep , step) );
           break;
 
         case 2: 
-          RGB_SetColor(  RGB_TO_VAL(step ,0 , ~step) );
+          RGB_SetColor(  RGB_TO_VAL(step ,0 , nstep) );
           break;
           
       }
@@ -405,6 +418,125 @@ static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsig
     firstPixelHue += frameAdvance;
            
   }
+}
+
+static void profiletestSolid(void)
+{
+    uint16_t i = 0;
+    
+    // Cycle between 7 colors
+    while(1)
+    {
+        switch(i)
+        {
+            case 1:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0,0,25));
+                break;
+            case 2:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0,25,0));
+                break;
+            case 3:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0,25,25));
+                break;
+            case 4:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(25,0,0));
+                break;
+            case 5:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(25,0,25));
+                break;
+            case 6:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(25,25,0));
+                break;
+            case 7:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(25,25,25));
+                break;
+            default:
+                RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(0,0,0));
+                break;
+        }
+        
+        i = ++i % 8;
+        i = (i==0)? 1 : i;
+        LEDLATCH();
+        __delay_ms(1000);
+    }
+}
+
+// Test macros for profitestRacing()
+static uint24_t race_color(uint8_t x)
+{
+    // switch case with range
+    switch(x)
+    {
+        case 0x00 ... 0x1f: return 0x000019;
+        case 0x20 ... 0x3f: return 0x001900;
+        case 0x40 ... 0x5f: return 0x001919;
+        case 0x60 ... 0x7f: return 0x190000;
+        case 0x80 ... 0x9f: return 0x190019;
+        case 0xa0 ... 0xbf: return 0x191900;
+        case 0xc0 ... 0xe0: return 0x191919;
+        default: return 0x1f0320;
+    }
+}
+
+static void profitestRacing(uint8_t szlight, uint8_t szspace)
+{
+    uint16_t i, p = 0;
+    uint16_t ledOffset = 0;
+    uint16_t combinedSegLen = szlight + szspace;
+    
+    while(1)
+    {
+        for(i=0, p=0+ledOffset; i < LEDSTRIPSIZE; i++, p=(p+1)%combinedSegLen)
+        {
+            // quick code - needs to be shortened/optimized later?
+            if(p < szlight)
+            {
+                RGB_SetColor(0x191900);
+            }
+            else
+            {
+                RGB_SetColor(0);
+            }
+        }
+        LEDLATCH();
+        __delay_ms(20);
+        ledOffset = (++ledOffset) % combinedSegLen;
+    }
+}
+
+static void profitestCometsTail(uint8_t tailLen)
+{
+    int16_t i, p, q = 0;
+    
+    while(1)
+    {
+        for(i = 0; i < LEDSTRIPSIZE+tailLen+1; i++)
+        {
+            q = tailLen;
+            for(p = 0; p < i; p++)
+            {
+                if((p >= (i-tailLen)) && (p < i) && (q > 0))
+                {
+                    RGB_SetColor(RGB_TO_VAL(0x7f>>q, 0x7f>>q, 0x7f>>q));
+                    q--;
+                }
+//                else if((p < (i-tailLen)) && (p >= (i-(tailLen<<1))))
+//                {
+//                    RGB_SetColor(RGB_TO_VAL(1,1,1));
+//                }
+                else
+                {
+                    RGB_SetColor(RGB_TO_VAL(0,0,0));
+                }
+            }
+            // Comet's head only
+            RGB_SetColor(RGB_TO_VAL(0x7f, 0x7f, 0x7f));
+            
+            LEDLATCH();
+            __delay_ms(15);
+        }
+    }
 }
 
 /**
