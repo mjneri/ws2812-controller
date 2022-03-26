@@ -33,6 +33,7 @@ static void profiletestSolid(void);
 static uint24_t race_color(uint8_t x);
 static void profitestRacing(uint8_t szlight, uint8_t szspace);
 static void profitestCometsTail(uint8_t tailLen);
+static void profitestPulsingSingleColor(void);
 
 // Main Test function definition
 void TEST_Function(void)
@@ -123,12 +124,13 @@ static void TEST_PIXELS(void)
     //__delay_ms(250);
     //lowmemLED();
     //profiletestSolid();
-    //profitestRacing(3, 9);
-    profitestCometsTail(6);
+    profitestRacing(3, 15);
+    //profitestCometsTail(6);
+    //profitestPulsingSingleColor();
     
     while(1)
     {
-        //rainbowCycle(1000, 20, 5);
+        //rainbowCycle(255, 1, 1);
     }
     return;
 }
@@ -414,6 +416,7 @@ static void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsig
                           
     } 
     LEDLATCH();
+    __delay_ms(10);
     
     firstPixelHue += frameAdvance;
            
@@ -503,8 +506,8 @@ static void profitestRacing(uint8_t szlight, uint8_t szspace)
         __delay_ms(50);
         
         // Uncomment the other to reverse direction
-        //ledOffset = (++ledOffset) % combinedSegLen;
-        ledOffset = (ledOffset == 0)? combinedSegLen-1 : (--ledOffset) % combinedSegLen;
+        //ledOffset = (ledOffset+1) % combinedSegLen;
+        ledOffset = (ledOffset == 0)? combinedSegLen-1 : (ledOffset-1) % combinedSegLen;
     }
 }
 
@@ -512,23 +515,23 @@ static void profitestCometsTail(uint8_t tailLen)
 {
     int16_t i, p, q = 0;
     
-    // Determines where the comet's head is located
+    // Determines where the comet's head and tail are located
     int16_t cometHeadLoc = 0;
+    int16_t cometTailLoc = 0;
     
     while(1)
     {
-        for(i = 0; i < LEDSTRIPSIZE+tailLen; i++)
+        for(i = 0; i < LEDSTRIPSIZE+tailLen+1; i++)
         {
-            cometHeadLoc = i;
             q = tailLen;
             for(p = 0; p < i; p++)
             {
-                if(p == (LEDSTRIPSIZE-1))
+                if(p == cometHeadLoc)
                 {
                     // Comet's head stays at the end of the strip before bouncing back
                     RGB_SetColor(RGB_TO_VAL(0x7f, 0x7f, 0x7f));
                 }
-                else if((p >= (i-tailLen)) && (p < i) && (q > 0))
+                else if((p >= cometTailLoc) && (p < cometHeadLoc) && (q > 0))
                 {
                     RGB_SetColor(RGB_TO_VAL(0x7f>>q, 0x7f>>q, 0x7f>>q));
                     q--;
@@ -539,26 +542,26 @@ static void profitestCometsTail(uint8_t tailLen)
                 }
             }
             
-            // Comet's head only
-            RGB_SetColor(RGB_TO_VAL(0x7f, 0x7f, 0x7f));
-            
+            cometHeadLoc = (cometHeadLoc < LEDSTRIPSIZE-1)? i : LEDSTRIPSIZE-1;
+            cometTailLoc = (cometHeadLoc < tailLen)? 0 : i - tailLen;
             LEDLATCH();
-            __delay_ms(15);
+            __delay_ms(25);
         }
         
          __delay_ms(50);
         cometHeadLoc = LEDSTRIPSIZE - 1;
-        for(i = LEDSTRIPSIZE+tailLen+1; i >=0; i--)
+        cometTailLoc = LEDSTRIPSIZE - 1;
+        for(i = LEDSTRIPSIZE+tailLen; i > 0; i--)
         {
             q = 0;
-            for(p = 0; p < i+tailLen+1; p++)
+            for(p = 0; p < i+1; p++)
             {
                 if(p == (cometHeadLoc))
                 {
                     // Comet's head stays at the end of the strip before bouncing back
                     RGB_SetColor(RGB_TO_VAL(0x7f, 0x7f, 0x7f));
                 }
-                else if((p <= (i+tailLen)) && (p > cometHeadLoc) && (q <= tailLen) && (i > tailLen))
+                else if((p <= cometTailLoc) && (p > cometHeadLoc) && (q <= tailLen))
                 {
                     RGB_SetColor(RGB_TO_VAL(0x7f>>q, 0x7f>>q, 0x7f>>q));
                     q++;
@@ -569,15 +572,36 @@ static void profitestCometsTail(uint8_t tailLen)
                 }
             }
             
-            // Comet's head only
-            RGB_SetColor(RGB_TO_VAL(0, 0, 0));
-            
-            cometHeadLoc = (cometHeadLoc == 0)? 0 : cometHeadLoc--;
+            cometHeadLoc = (cometHeadLoc == 0)? 0 : cometHeadLoc-1;
+            cometTailLoc = ((LEDSTRIPSIZE-1-cometHeadLoc) < tailLen)? LEDSTRIPSIZE : \
+                            (cometTailLoc == 0)? 0 : cometTailLoc - 1;
             LEDLATCH();
-            __delay_ms(15);
+            __delay_ms(25);
         }
         __delay_ms(50);
     }
+}
+
+static void profitestPulsingSingleColor(void)
+{
+    int16_t i = 0;
+    
+    while(1)
+    {
+        for(i = 0; i < 64; i++)
+        {
+            RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(i,0,0));
+            __delay_ms(10);
+        }
+
+        for(i = 64; i >= 0; i--)
+        {
+            RGB_ALLSetColor(LEDSTRIPSIZE, RGB_TO_VAL(i,0,0));
+            __delay_ms(10);
+        }
+        __delay_ms(100);
+    }
+    
 }
 
 /**
