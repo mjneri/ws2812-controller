@@ -185,6 +185,18 @@
 #define RC4_SetAnalogMode()         do { ANSELCbits.ANSELC4 = 1; } while(0)
 #define RC4_SetDigitalMode()        do { ANSELCbits.ANSELC4 = 0; } while(0)
 
+// get/set RC6 procedures
+#define RC6_SetHigh()            do { LATCbits.LATC6 = 1; } while(0)
+#define RC6_SetLow()             do { LATCbits.LATC6 = 0; } while(0)
+#define RC6_Toggle()             do { LATCbits.LATC6 = ~LATCbits.LATC6; } while(0)
+#define RC6_GetValue()              PORTCbits.RC6
+#define RC6_SetDigitalInput()    do { TRISCbits.TRISC6 = 1; } while(0)
+#define RC6_SetDigitalOutput()   do { TRISCbits.TRISC6 = 0; } while(0)
+#define RC6_SetPullup()             do { WPUCbits.WPUC6 = 1; } while(0)
+#define RC6_ResetPullup()           do { WPUCbits.WPUC6 = 0; } while(0)
+#define RC6_SetAnalogMode()         do { ANSELCbits.ANSELC6 = 1; } while(0)
+#define RC6_SetDigitalMode()        do { ANSELCbits.ANSELC6 = 0; } while(0)
+
 // get/set RC7 procedures
 #define RC7_SetHigh()            do { LATCbits.LATC7 = 1; } while(0)
 #define RC7_SetLow()             do { LATCbits.LATC7 = 0; } while(0)

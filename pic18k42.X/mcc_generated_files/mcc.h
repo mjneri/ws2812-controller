@@ -56,6 +56,7 @@
 #include "pin_manager.h"
 #include "interrupt_manager.h"
 #include "i2c1_master.h"
+#include "tmr4.h"
 #include "tmr1.h"
 #include "tmr2.h"
 #include "clc1.h"

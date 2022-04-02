@@ -40,6 +40,7 @@
         <itemPath>mcc_generated_files/tmr2.h</itemPath>
         <itemPath>mcc_generated_files/spi1.h</itemPath>
         <itemPath>mcc_generated_files/pwm5.h</itemPath>
+        <itemPath>mcc_generated_files/tmr4.h</itemPath>
       </logicalFolder>
       <logicalFolder name="sound" displayName="sound" projectFiles="true">
         <itemPath>sound/mic_in.h</itemPath>
@@ -92,6 +93,7 @@
         <itemPath>mcc_generated_files/tmr2.c</itemPath>
         <itemPath>mcc_generated_files/spi1.c</itemPath>
         <itemPath>mcc_generated_files/pwm5.c</itemPath>
+        <itemPath>mcc_generated_files/tmr4.c</itemPath>
       </logicalFolder>
       <logicalFolder name="sound" displayName="sound" projectFiles="true">
         <itemPath>sound/mic_in.c</itemPath>
