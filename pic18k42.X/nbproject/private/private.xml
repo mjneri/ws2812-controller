@@ -4,11 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/main.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/tmr4.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/gfx.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/tmr4.c</file>
         </group>
     </open-files>
 </project-private>
