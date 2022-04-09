@@ -42,6 +42,8 @@
 
 #define RGB_TO_VAL(r, g, b) ( (uint24_t) (((uint32_t)(b) << 16) | ((uint32_t)(r) << 8) | ((uint32_t)(g))) )
 
+#define LEDLATCH() __delay_ms(1)        // wait for LED to latch
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data type definitions
