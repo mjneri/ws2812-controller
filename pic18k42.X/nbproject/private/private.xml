@@ -5,11 +5,16 @@
         <group>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/main.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/tmr4.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/led_profiles.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/led_profiles.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/menu.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/gfx.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/gfx.h</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/tmr4.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/menu.h</file>
         </group>
     </open-files>
 </project-private>
