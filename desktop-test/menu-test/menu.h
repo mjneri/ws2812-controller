@@ -9,41 +9,46 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+// Main reference for OOP:
+// https://github.com/QuantumLeaps/OOP-in-C
+
+// Forward declaration
+struct menu_object_intf;
+
 // Menu object definition
-// Maximum of 8 options per menu. Uses linked lists
+// Maximum of 8 options per menu. Uses OOP
 typedef struct menu_object_t
 {
+    // Attributes
     char *self;
-    void (*selfHandler)(void);
-    struct menu_object_t *selfObj;
-
-    char *option1;
-    struct menu_object_t *option1Obj;
-
-    char *option2;
-    struct menu_object_t *option2Obj;
-
-    char *option3;
-    struct menu_object_t *option3Obj;
-
-    char *option4;
-    struct menu_object_t *option4Obj;
-
-    char *option5;
-    struct menu_object_t *option5Obj;
-
-    char *option6;
-    struct menu_object_t *option6Obj;
-
-    char *option7;
-    struct menu_object_t *option7Obj;
-
-    char *option8;
-    struct menu_object_t *option8Obj;
-
+    struct menu_object_t *optionObj[8];
     struct menu_object_t *prevOption;
+
+    // Class Methods
+    struct menu_object_intf const *intf;
+
 } menu_object_t;
 
+typedef struct menu_object_intf
+{
+    void (*selfHandler)(void);
+    void (*displayOptions)(void);
+
+} menu_object_intf;
+
 void test(void);
+void menuDisplay(void);
+
+// Class constructor
+void menuCtor(menu_object_t * const me, char *self, 
+                menu_object_t *optionObj[], menu_object_t *prevOption,
+                menu_object_intf const *intf);
+
+// General class methods
+void _printMenuOptions(void);
+
+// Handlers
+void mainMenuHandler(void);
+void aboutHandler(void);
 
 #endif /*_MENU_H_*/
