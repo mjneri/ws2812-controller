@@ -24,36 +24,35 @@ Menu *prevMenu = NULL;
 Menu *nextMenu = NULL;
 
 // Globals
-Menu *myMenu = NULL;
-Menu *yourMenu = NULL;
+Menu *homeMenu = NULL;
+Menu *ledMenu = NULL;
+Menu *brightMenu = NULL;
+Menu *sizeMenu = NULL;
+Menu *aboutMenu = NULL;
+
 bool quit = false;
 
 // Function prototypes
-void foo1(void);
-void foo2(void);
-void foo3(void);
-
-void chon1(void);
-void chon2(void);
+void Menu_LED_Profile(void);
+void Menu_Brightness_Adjustment(void);
+void Menu_LED_Array_Size(void);
+void Menu_About(void);
 
 // Main function
 int main(void)
 {
-    // Initialize the first menu
-    myMenu = Menu_ctor("myMenu");
+    // Initialize home menu
+    homeMenu = Menu_ctor("Home Menu");
+    homeMenu->addOption(homeMenu, "1. Select LED Profile", Menu_LED_Profile);
+    homeMenu->addOption(homeMenu, "2. Brightness Adjustment", Menu_Brightness_Adjustment);
+    homeMenu->addOption(homeMenu, "3. Adjust LED Array Size", Menu_LED_Array_Size);
+    homeMenu->addOption(homeMenu, "4. About", Menu_About);
 
-    myMenu->addOption(myMenu, "Foo1", foo1);
-    myMenu->addOption(myMenu, "Foo2", foo2);
-    myMenu->addOption(myMenu, "Foo3 next menu", foo3);
+    // Initialize submenus;
 
-    // Initialize the second menu
-    yourMenu = Menu_ctor("yourMenu");
-    yourMenu->addOption(yourMenu, "Chon1 back", chon1);
-    yourMenu->addOption(yourMenu, "Chon2 quit", chon2);
 
     // Select the current menu
-    currentMenu = myMenu;
-    nextMenu = yourMenu;
+    currentMenu = homeMenu;
 
     // Test out the menu
     int userInput;
@@ -65,44 +64,34 @@ int main(void)
         currentMenu->runOption(currentMenu, userInput);
     }
 
-    Menu_dtor(myMenu);
-    Menu_dtor(yourMenu);
+    Menu_dtor(homeMenu);
     return 0;
 }
 
 // Function defines
-void foo1(void)
+void Menu_LED_Profile(void)
 {
-    printf("You picked the wrong house foo!\r\n");
+    printf("Select LED profile here.\n");
 }
 
-void foo2(void)
+void Menu_Brightness_Adjustment(void)
 {
-    printf("Ayo, it's me Carl! chill! chill!\r\n");
+    printf("Adjust brightness...\n");
 }
 
-void foo3(void)
+void Menu_LED_Array_Size(void)
 {
-    // Shift menu
-    prevMenu = currentMenu;
-    currentMenu = nextMenu;
-    printf("Going to menu: %s\n", currentMenu->menuTitle);
+    printf("LED array size...\n");
 }
 
-void chon1(void)
+void Menu_About(void)
 {
-    // Go back
-    nextMenu = currentMenu;
-    currentMenu = prevMenu;
-    printf("Returned to menu: %s\n", currentMenu->menuTitle);
+    printf("This is an about...\n");
+    // Figure out how to keep this menu rendered until the user presses enter...
+    // For now, let's quit.
+    quit = 1;
 }
 
-void chon2(void)
-{
-    // quit
-    printf("Quitting...\n");
-    quit = true;
-}
 
 
 /******************************************

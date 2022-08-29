@@ -46,7 +46,7 @@ static void Menu_renderMenu(Menu *self)
     printf("Available options: %d\r\n", self->numOfOptions);
     for(int i = 0; i < self->numOfOptions; i++)
     {
-        printf("%d. %s\r\n", i+1, self->menuTbl[i].optionString);
+        printf("%s\r\n", self->menuTbl[i].optionString);
     }
     
     return;
