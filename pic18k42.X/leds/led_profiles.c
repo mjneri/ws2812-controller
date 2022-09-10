@@ -112,7 +112,7 @@ void cometsTail(uint8_t tailLen)
 void theaterChase(uint8_t szLight, uint8_t szSpace)
 {
     uint16_t i, p = 0;
-    uint16_t combinedSegLen = szlight + szspace;
+    uint16_t combinedSegLen = szLight + szSpace;
     uint16_t ledOffset = combinedSegLen;
     
     while(1)
@@ -120,7 +120,7 @@ void theaterChase(uint8_t szLight, uint8_t szSpace)
         for(i=0, p=0+ledOffset; i < LEDSTRIPSIZE; i++, p=(p+1)%combinedSegLen)
         {
             // quick code - needs to be shortened/optimized later?
-            if(p < szlight)
+            if(p < szLight)
             {
                 RGB_SetColor(RGB_TO_VAL(0x19,0,0));
             }

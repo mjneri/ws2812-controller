@@ -1,0 +1,782 @@
+Version 4.0 HI-TECH Software Intermediate Code
+"23 graphics/drivers/sh1106.c
+[; ;graphics/drivers/sh1106.c: 23: static const SH1106_CMD OLED_InitCommands[] =
+[c E597 129 164 165 166 167 174 175 211 218 219 213 217 168 0 16 64 176 192 200 160 141 1 2 128 64 224 238 .. ]
+[n E597 . SETCONTRAST DISPLAYALLON_RESUME DISPLAYALLON NORMALDISPLAY INVERTDISPLAY DISPLAYOFF DISPLAYON SETDISPLAYOFFSET SETCOMPINS SETVCOMDETECT SETDISPLAYCLOCKDIV SETPRECHARGE SETMULTIPLEX SETCOLUMNADDRLOW SETCOLUMNADDRHIGH SETSTARTLINE PAGEADDR COMSCANINC COMSCANDEC SEGREMAP CHARGEPUMP EXTERNALVCC SWITCHCAPVCC MESSAGETYPE_COMMAND MESSAGETYPE_DATA RMWSTART RMWEND  ]
+"74
+[; ;graphics/drivers/sh1106.c: 74:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[c E527 1 2 3 4 5 .. ]
+[n E527 . I2C1_STOP I2C1_RESTART_READ I2C1_RESTART_WRITE I2C1_CONTINUE I2C1_RESET_LINK  ]
+[v F560 `(E527 ~T0 @X0 0 tf1`*v ]
+"164 graphics/drivers/../../mcc_generated_files/i2c1_master.h
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 164: void I2C1_SetDataCompleteCallback(i2c1_callback_t cb, void *ptr);
+[v _I2C1_SetDataCompleteCallback `(v ~T0 @X0 0 ef2`*F560`*v ]
+[v F660 `(E527 ~T0 @X0 0 tf1`*v ]
+[v F574 `(E527 ~T0 @X0 0 tf1`*v ]
+"184
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 184: void I2C1_SetAddressNackCallback(i2c1_callback_t cb, void *ptr);
+[v _I2C1_SetAddressNackCallback `(v ~T0 @X0 0 ef2`*F574`*v ]
+[v F662 `(E527 ~T0 @X0 0 tf1`*v ]
+[v F581 `(E527 ~T0 @X0 0 tf1`*v ]
+"194
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 194: void I2C1_SetDataNackCallback(i2c1_callback_t cb, void *ptr);
+[v _I2C1_SetDataNackCallback `(v ~T0 @X0 0 ef2`*F581`*v ]
+[v F664 `(E527 ~T0 @X0 0 tf1`*v ]
+[v F588 `(E527 ~T0 @X0 0 tf1`*v ]
+"204
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 204: void I2C1_SetTimeoutCallback(i2c1_callback_t cb, void *ptr);
+[v _I2C1_SetTimeoutCallback `(v ~T0 @X0 0 ef2`*F588`*v ]
+[v F666 `(E527 ~T0 @X0 0 tf1`*v ]
+"120 graphics/drivers/sh1106.h
+[; ;graphics/drivers/sh1106.h: 120: void OLED_Send(uint8_t *buffer, size_t bufSize);
+[v _OLED_Send `(v ~T0 @X0 0 ef2`*uc`ui ]
+"86 graphics/drivers/sh1106.c
+[; ;graphics/drivers/sh1106.c: 86:     I2C1_Open(0x3C);
+[c E522 0 1 2 .. ]
+[n E522 . I2C1_NOERR I2C1_BUSY I2C1_FAIL  ]
+"101 graphics/drivers/../../mcc_generated_files/i2c1_master.h
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 101: i2c1_error_t I2C1_Open(i2c1_address_t address);
+[v _I2C1_Open `(E522 ~T0 @X0 0 ef1`uc ]
+"152
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 152: void I2C1_SetBuffer(void *buffer, size_t bufferSize);
+[v _I2C1_SetBuffer `(v ~T0 @X0 0 ef2`*v`ui ]
+[v F671 `(E527 ~T0 @X0 0 tf1`*v ]
+"128
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 128: i2c1_error_t I2C1_MasterWrite(void);
+[v _I2C1_MasterWrite `(E522 ~T0 @X0 0 ef ]
+"111
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 111: i2c1_error_t I2C1_Close(void);
+[v _I2C1_Close `(E522 ~T0 @X0 0 ef ]
+"133
+[; ;graphics/drivers/../../mcc_generated_files/i2c1_master.h: 133: i2c1_error_t I2C1_MasterRead(void);
+[v _I2C1_MasterRead `(E522 ~T0 @X0 0 ef ]
+"68 graphics/drivers/sh1106.c
+[; ;graphics/drivers/sh1106.c: 68: static i2c1_operations_t WriteCompleteHandler(void *data);
+[v _WriteCompleteHandler `(E527 ~T0 @X0 0 sf1`*v ]
+[v F687 `(E527 ~T0 @X0 0 tf1`*v ]
+"23 graphics/drivers/../canvas/bitmaps.h
+[; ;graphics/drivers/../canvas/bitmaps.h: 23: extern const uint8_t Owl[];
+[v _Owl `Cuc ~T0 @X0 -> 0 `x e ]
+"54 C:\Program Files\Microchip\xc8\v2.32\pic\include\c99\string.h
+[; ;C:\Program Files\Microchip\xc8\v2.32\pic\include\c99\string.h: 54: size_t strlen (const char *);
+[v _strlen `(ui ~T0 @X0 0 ef1`*Cuc ]
+[v F734 `(E527 ~T0 @X0 0 tf1`*v ]
+[v F738 `(E527 ~T0 @X0 0 tf1`*v ]
+"23 graphics/drivers/sh1106.c
+[; ;graphics/drivers/sh1106.c: 23: static const SH1106_CMD OLED_InitCommands[] =
+[v _OLED_InitCommands `CE597 ~T0 @X0 -> 27 `i s ]
+[i _OLED_InitCommands
+:U ..
+-> -> 0 `i `E597
+. `E597 5
+. `E597 10
+-> -> 128 `i `E597
+. `E597 12
+-> -> 63 `i `E597
+. `E597 7
+-> -> 0 `i `E597
+-> | -> . `E597 15 `i -> 0 `i `E597
+. `E597 20
+-> -> 16 `i `E597
+-> | -> . `E597 19 `i -> 1 `i `E597
+. `E597 18
+. `E597 8
+-> -> 18 `i `E597
+. `E597 0
+-> -> 159 `i `E597
+. `E597 11
+-> -> 34 `i `E597
+. `E597 9
+-> -> 64 `i `E597
+. `E597 1
+. `E597 3
+. `E597 6
+-> | -> . `E597 13 `i -> 0 `i `E597
+-> | -> . `E597 14 `i -> 0 `i `E597
+-> | -> . `E597 15 `i -> 0 `i `E597
+..
+]
+"58
+[; ;graphics/drivers/sh1106.c: 58: static size_t gBufSize = 0;
+[v _gBufSize `ui ~T0 @X0 1 s ]
+[i _gBufSize
+-> -> 0 `i `ui
+]
+"62
+[; ;graphics/drivers/sh1106.c: 62: const uint8_t OLED_BlankDisplay[132] = {0};
+[v _OLED_BlankDisplay `Cuc ~T0 @X0 -> 132 `i e ]
+[i _OLED_BlankDisplay
+:U ..
+-> -> 0 `i `uc
+..
+]
+"71
+[; ;graphics/drivers/sh1106.c: 71: void OLED_Initialize(void)
+[v _OLED_Initialize `(v ~T0 @X0 1 ef ]
+"72
+[; ;graphics/drivers/sh1106.c: 72: {
+{
+[e :U _OLED_Initialize ]
+[f ]
+"74
+[; ;graphics/drivers/sh1106.c: 74:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataCompleteCallback (2 , -> -> -> 0 `i `*v `*F660 -> -> 0 `i `*v ]
+"75
+[; ;graphics/drivers/sh1106.c: 75:     I2C1_SetAddressNackCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetAddressNackCallback (2 , -> -> -> 0 `i `*v `*F662 -> -> 0 `i `*v ]
+"76
+[; ;graphics/drivers/sh1106.c: 76:     I2C1_SetDataNackCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataNackCallback (2 , -> -> -> 0 `i `*v `*F664 -> -> 0 `i `*v ]
+"77
+[; ;graphics/drivers/sh1106.c: 77:     I2C1_SetTimeoutCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetTimeoutCallback (2 , -> -> -> 0 `i `*v `*F666 -> -> 0 `i `*v ]
+"79
+[; ;graphics/drivers/sh1106.c: 79:     OLED_Send(OLED_InitCommands, sizeof(OLED_InitCommands));
+[e ( _OLED_Send (2 , -> &U _OLED_InitCommands `*uc -> # _OLED_InitCommands `ui ]
+"80
+[; ;graphics/drivers/sh1106.c: 80:     return;
+[e $UE 4  ]
+"81
+[; ;graphics/drivers/sh1106.c: 81: }
+[e :UE 4 ]
+}
+"83
+[; ;graphics/drivers/sh1106.c: 83: void OLED_Send(uint8_t *buffer, size_t bufSize)
+[v _OLED_Send `(v ~T0 @X0 1 ef2`*uc`ui ]
+"84
+[; ;graphics/drivers/sh1106.c: 84: {
+{
+[e :U _OLED_Send ]
+"83
+[; ;graphics/drivers/sh1106.c: 83: void OLED_Send(uint8_t *buffer, size_t bufSize)
+[v _buffer `*uc ~T0 @X0 1 r1 ]
+[v _bufSize `ui ~T0 @X0 1 r2 ]
+"84
+[; ;graphics/drivers/sh1106.c: 84: {
+[f ]
+"86
+[; ;graphics/drivers/sh1106.c: 86:     I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"88
+[; ;graphics/drivers/sh1106.c: 88:     I2C1_SetBuffer(buffer, bufSize);
+[e ( _I2C1_SetBuffer (2 , -> _buffer `*v _bufSize ]
+"89
+[; ;graphics/drivers/sh1106.c: 89:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataCompleteCallback (2 , -> -> -> 0 `i `*v `*F671 -> -> 0 `i `*v ]
+"90
+[; ;graphics/drivers/sh1106.c: 90:     I2C1_MasterWrite();
+[e ( _I2C1_MasterWrite ..  ]
+"91
+[; ;graphics/drivers/sh1106.c: 91:     while(I2C1_BUSY == I2C1_Close());
+[e $U 6  ]
+[e :U 7 ]
+[e :U 6 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 7  ]
+[e :U 8 ]
+"92
+[; ;graphics/drivers/sh1106.c: 92: }
+[e :UE 5 ]
+}
+"94
+[; ;graphics/drivers/sh1106.c: 94: void OLED_Recv(uint8_t *buffer, size_t bufSize)
+[v _OLED_Recv `(v ~T0 @X0 1 ef2`*uc`ui ]
+"95
+[; ;graphics/drivers/sh1106.c: 95: {
+{
+[e :U _OLED_Recv ]
+"94
+[; ;graphics/drivers/sh1106.c: 94: void OLED_Recv(uint8_t *buffer, size_t bufSize)
+[v _buffer `*uc ~T0 @X0 1 r1 ]
+[v _bufSize `ui ~T0 @X0 1 r2 ]
+"95
+[; ;graphics/drivers/sh1106.c: 95: {
+[f ]
+"97
+[; ;graphics/drivers/sh1106.c: 97:     I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"100
+[; ;graphics/drivers/sh1106.c: 100:     I2C1_SetBuffer(buffer, bufSize);
+[e ( _I2C1_SetBuffer (2 , -> _buffer `*v _bufSize ]
+"102
+[; ;graphics/drivers/sh1106.c: 102:     I2C1_MasterRead();
+[e ( _I2C1_MasterRead ..  ]
+"103
+[; ;graphics/drivers/sh1106.c: 103:     while(I2C1_BUSY == I2C1_Close());
+[e $U 10  ]
+[e :U 11 ]
+[e :U 10 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 11  ]
+[e :U 12 ]
+"104
+[; ;graphics/drivers/sh1106.c: 104:     return;
+[e $UE 9  ]
+"105
+[; ;graphics/drivers/sh1106.c: 105: }
+[e :UE 9 ]
+}
+"107
+[; ;graphics/drivers/sh1106.c: 107: void OLED_ClearDisplay(void)
+[v _OLED_ClearDisplay `(v ~T0 @X0 1 ef ]
+"108
+[; ;graphics/drivers/sh1106.c: 108: {
+{
+[e :U _OLED_ClearDisplay ]
+[f ]
+[v F677 `uc ~T0 @X0 -> 7 `i s ]
+[i F677
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"120
+[; ;graphics/drivers/sh1106.c: 120: 
+[v F678 `uc ~T0 @X0 -> 7 `i a ]
+"110
+[; ;graphics/drivers/sh1106.c: 110:     for(uint8_t i = 0; i < 8; i++)
+{
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 0 `i `uc ]
+[e $ < -> _i `i -> 8 `i 14  ]
+[e $U 15  ]
+[e :U 14 ]
+"111
+[; ;graphics/drivers/sh1106.c: 111:     {
+{
+"113
+[; ;graphics/drivers/sh1106.c: 113:         I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"116
+[; ;graphics/drivers/sh1106.c: 116:         I2C1_SetBuffer((uint8_t []) {0x80, (PAGEADDR | i), 0x80, (SETCOLUMNADDRLOW | 0), 0x80, (SETCOLUMNADDRHIGH | 0), 0x40}, 7);
+[e ( _I2C1_SetBuffer (2 , -> &U ; ; = F678 F677 ; = *U + &U F678 * -> -> -> 0 `i `ui `ux -> -> # *U &U F678 `ui `ux -> -> 128 `i `uc ; = *U + &U F678 * -> -> -> 1 `i `ui `ux -> -> # *U &U F678 `ui `ux -> | -> . `E597 16 `i -> _i `i `uc ; = *U + &U F678 * -> -> -> 2 `i `ui `ux -> -> # *U &U F678 `ui `ux -> -> 128 `i `uc ; = *U + &U F678 * -> -> -> 3 `i `ui `ux -> -> # *U &U F678 `ui `ux -> | -> . `E597 13 `i -> 0 `i `uc ; = *U + &U F678 * -> -> -> 4 `i `ui `ux -> -> # *U &U F678 `ui `ux -> -> 128 `i `uc ; = *U + &U F678 * -> -> -> 5 `i `ui `ux -> -> # *U &U F678 `ui `ux -> | -> . `E597 14 `i -> 0 `i `uc = *U + &U F678 * -> -> -> 6 `i `ui `ux -> -> # *U &U F678 `ui `ux -> -> 64 `i `uc F678 `*v -> -> 7 `i `ui ]
+"122
+[; ;graphics/drivers/sh1106.c: 122:         I2C1_SetDataCompleteCallback(WriteCompleteHandler, OLED_BlankDisplay);
+[e ( _I2C1_SetDataCompleteCallback (2 , &U _WriteCompleteHandler -> &U _OLED_BlankDisplay `*v ]
+"123
+[; ;graphics/drivers/sh1106.c: 123:         gBufSize = sizeof(OLED_BlankDisplay);
+[e = _gBufSize -> # _OLED_BlankDisplay `ui ]
+"125
+[; ;graphics/drivers/sh1106.c: 125:         I2C1_MasterWrite();
+[e ( _I2C1_MasterWrite ..  ]
+"126
+[; ;graphics/drivers/sh1106.c: 126:         while(I2C1_BUSY == I2C1_Close());
+[e $U 17  ]
+[e :U 18 ]
+[e :U 17 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 18  ]
+[e :U 19 ]
+"127
+[; ;graphics/drivers/sh1106.c: 127:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e $ < -> _i `i -> 8 `i 14  ]
+[e :U 15 ]
+}
+"128
+[; ;graphics/drivers/sh1106.c: 128: }
+[e :UE 13 ]
+}
+"130
+[; ;graphics/drivers/sh1106.c: 130: void OLED_SetCursor(uint8_t row, uint8_t col)
+[v _OLED_SetCursor `(v ~T0 @X0 1 ef2`uc`uc ]
+"131
+[; ;graphics/drivers/sh1106.c: 131: {
+{
+[e :U _OLED_SetCursor ]
+"130
+[; ;graphics/drivers/sh1106.c: 130: void OLED_SetCursor(uint8_t row, uint8_t col)
+[v _row `uc ~T0 @X0 1 r1 ]
+[v _col `uc ~T0 @X0 1 r2 ]
+"131
+[; ;graphics/drivers/sh1106.c: 131: {
+[f ]
+[v F685 `uc ~T0 @X0 -> 4 `i s ]
+[i F685
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"140
+[; ;graphics/drivers/sh1106.c: 140: 
+[v F686 `uc ~T0 @X0 -> 4 `i a ]
+"133
+[; ;graphics/drivers/sh1106.c: 133:     I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"136
+[; ;graphics/drivers/sh1106.c: 136:     I2C1_SetBuffer((uint8_t[])
+[e ( _I2C1_SetBuffer (2 , -> &U ; ; = F686 F685 ; = *U + &U F686 * -> -> -> 0 `i `ui `ux -> -> # *U &U F686 `ui `ux -> -> 0 `i `uc ; = *U + &U F686 * -> -> -> 1 `i `ui `ux -> -> # *U &U F686 `ui `ux -> | -> . `E597 16 `i >> -> _row `i -> 3 `i `uc ; = *U + &U F686 * -> -> -> 2 `i `ui `ux -> -> # *U &U F686 `ui `ux -> | -> . `E597 13 `i & + -> _col `i -> 2 `i -> 15 `i `uc = *U + &U F686 * -> -> -> 3 `i `ui `ux -> -> # *U &U F686 `ui `ux -> | -> . `E597 14 `i >> + -> _col `i -> 2 `i -> 4 `i `uc F686 `*v -> -> 4 `i `ui ]
+"142
+[; ;graphics/drivers/sh1106.c: 142:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataCompleteCallback (2 , -> -> -> 0 `i `*v `*F687 -> -> 0 `i `*v ]
+"143
+[; ;graphics/drivers/sh1106.c: 143:     I2C1_MasterWrite();
+[e ( _I2C1_MasterWrite ..  ]
+"144
+[; ;graphics/drivers/sh1106.c: 144:     while(I2C1_BUSY == I2C1_Close());
+[e $U 21  ]
+[e :U 22 ]
+[e :U 21 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 22  ]
+[e :U 23 ]
+"145
+[; ;graphics/drivers/sh1106.c: 145: }
+[e :UE 20 ]
+}
+"147
+[; ;graphics/drivers/sh1106.c: 147: void OLED_DrawBitmap(void)
+[v _OLED_DrawBitmap `(v ~T0 @X0 1 ef ]
+"148
+[; ;graphics/drivers/sh1106.c: 148: {
+{
+[e :U _OLED_DrawBitmap ]
+[f ]
+[v F690 `uc ~T0 @X0 -> -> 1 `i `ux s ]
+[i F690
+:U ..
+-> -> 64 `i `uc
+..
+]
+"158
+[; ;graphics/drivers/sh1106.c: 158:         I2C1_SetBuffer((uint8_t []){0x40}, 1);
+[v F691 `uc ~T0 @X0 -> -> 1 `i `ux a ]
+"149
+[; ;graphics/drivers/sh1106.c: 149:     for(uint8_t i = 0; i < 8; i++)
+{
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 0 `i `uc ]
+[e $ < -> _i `i -> 8 `i 25  ]
+[e $U 26  ]
+[e :U 25 ]
+"150
+[; ;graphics/drivers/sh1106.c: 150:     {
+{
+"152
+[; ;graphics/drivers/sh1106.c: 152:         OLED_SetCursor((i << 3), 0);
+[e ( _OLED_SetCursor (2 , -> << -> _i `i -> 3 `i `uc -> -> 0 `i `uc ]
+"155
+[; ;graphics/drivers/sh1106.c: 155:         I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"158
+[; ;graphics/drivers/sh1106.c: 158:         I2C1_SetBuffer((uint8_t []){0x40}, 1);
+[e ( _I2C1_SetBuffer (2 , -> &U ; = F691 F690 F691 `*v -> -> 1 `i `ui ]
+"159
+[; ;graphics/drivers/sh1106.c: 159:         I2C1_SetDataCompleteCallback(WriteCompleteHandler, &Owl[128*i]);
+[e ( _I2C1_SetDataCompleteCallback (2 , &U _WriteCompleteHandler -> &U *U + &U _Owl * -> -> * -> 128 `i -> _i `i `ui `ux -> -> # *U &U _Owl `ui `ux `*v ]
+"160
+[; ;graphics/drivers/sh1106.c: 160:         I2C1_MasterWrite();
+[e ( _I2C1_MasterWrite ..  ]
+"161
+[; ;graphics/drivers/sh1106.c: 161:         while(I2C1_BUSY == I2C1_Close());
+[e $U 28  ]
+[e :U 29 ]
+[e :U 28 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 29  ]
+[e :U 30 ]
+"162
+[; ;graphics/drivers/sh1106.c: 162:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e $ < -> _i `i -> 8 `i 25  ]
+[e :U 26 ]
+}
+"163
+[; ;graphics/drivers/sh1106.c: 163: }
+[e :UE 24 ]
+}
+"165
+[; ;graphics/drivers/sh1106.c: 165: void OLED_DrawFont(uint8_t row, uint8_t col, char c, uint8_t *font, _Bool invertBG)
+[v _OLED_DrawFont `(v ~T0 @X0 1 ef5`uc`uc`uc`*uc`a ]
+"166
+[; ;graphics/drivers/sh1106.c: 166: {
+{
+[e :U _OLED_DrawFont ]
+"165
+[; ;graphics/drivers/sh1106.c: 165: void OLED_DrawFont(uint8_t row, uint8_t col, char c, uint8_t *font, _Bool invertBG)
+[v _row `uc ~T0 @X0 1 r1 ]
+[v _col `uc ~T0 @X0 1 r2 ]
+[v _c `uc ~T0 @X0 1 r3 ]
+[v _font `*uc ~T0 @X0 1 r4 ]
+[v _invertBG `a ~T0 @X0 1 r5 ]
+"166
+[; ;graphics/drivers/sh1106.c: 166: {
+[f ]
+[v F701 `uc ~T0 @X0 -> 2 `i s ]
+[i F701
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"242
+[; ;graphics/drivers/sh1106.c: 242:             OLED_Send((uint8_t []){0x40, ~(font[chIndex + i])}, 2);
+[v F702 `uc ~T0 @X0 -> 2 `i a ]
+[v F703 `uc ~T0 @X0 -> 2 `i s ]
+[i F703
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"246
+[; ;graphics/drivers/sh1106.c: 246:             OLED_Send((uint8_t []){0x40, font[chIndex + i]}, 2);
+[v F704 `uc ~T0 @X0 -> 2 `i a ]
+[v F705 `uc ~T0 @X0 -> 2 `i s ]
+[i F705
+:U ..
+-> -> 64 `i `uc
+-> -> 255 `i `uc
+..
+]
+"253
+[; ;graphics/drivers/sh1106.c: 253:         OLED_Send((uint8_t[]){0x40, 0xFF}, 2);
+[v F706 `uc ~T0 @X0 -> 2 `i a ]
+[v F707 `uc ~T0 @X0 -> 2 `i s ]
+[i F707
+:U ..
+-> -> 64 `i `uc
+-> -> 0 `i `uc
+..
+]
+"257
+[; ;graphics/drivers/sh1106.c: 257:         OLED_Send((uint8_t[]){0x40, 0x00}, 2);
+[v F708 `uc ~T0 @X0 -> 2 `i a ]
+"168
+[; ;graphics/drivers/sh1106.c: 168:     uint16_t chIndex = 0;
+[v _chIndex `us ~T0 @X0 1 a ]
+[e = _chIndex -> -> 0 `i `us ]
+"177
+[; ;graphics/drivers/sh1106.c: 177:     uint8_t fontWidth = font[1];
+[v _fontWidth `uc ~T0 @X0 1 a ]
+[e = _fontWidth *U + _font * -> -> 1 `i `x -> -> # *U _font `i `x ]
+"178
+[; ;graphics/drivers/sh1106.c: 178:     uint8_t fontHeight = font[2];
+[v _fontHeight `uc ~T0 @X0 1 a ]
+[e = _fontHeight *U + _font * -> -> 2 `i `x -> -> # *U _font `i `x ]
+"179
+[; ;graphics/drivers/sh1106.c: 179:     uint8_t firstChar = font[3];
+[v _firstChar `uc ~T0 @X0 1 a ]
+[e = _firstChar *U + _font * -> -> 3 `i `x -> -> # *U _font `i `x ]
+"182
+[; ;graphics/drivers/sh1106.c: 182:     uint8_t fontBytes = (fontWidth*(((fontHeight - 1) >> 3) + 1));
+[v _fontBytes `uc ~T0 @X0 1 a ]
+[e = _fontBytes -> * -> _fontWidth `i + >> - -> _fontHeight `i -> 1 `i -> 3 `i -> 1 `i `uc ]
+"190
+[; ;graphics/drivers/sh1106.c: 190:     switch(c)
+[e $U 33  ]
+"191
+[; ;graphics/drivers/sh1106.c: 191:     {
+{
+"192
+[; ;graphics/drivers/sh1106.c: 192:         case 0x0A:
+[e :U 34 ]
+"193
+[; ;graphics/drivers/sh1106.c: 193:         case 0x0D:
+[e :U 35 ]
+"194
+[; ;graphics/drivers/sh1106.c: 194:             chIndex = 4;
+[e = _chIndex -> -> 4 `i `us ]
+"195
+[; ;graphics/drivers/sh1106.c: 195:             break;
+[e $U 32  ]
+"197
+[; ;graphics/drivers/sh1106.c: 197:         default:
+[e :U 36 ]
+"198
+[; ;graphics/drivers/sh1106.c: 198:         {
+{
+"199
+[; ;graphics/drivers/sh1106.c: 199:             chIndex = 4 + (c - firstChar)*fontBytes;
+[e = _chIndex -> + -> 4 `i * - -> _c `i -> _firstChar `i -> _fontBytes `i `us ]
+"200
+[; ;graphics/drivers/sh1106.c: 200:             break;
+[e $U 32  ]
+"201
+[; ;graphics/drivers/sh1106.c: 201:         }
+}
+"202
+[; ;graphics/drivers/sh1106.c: 202:     }
+}
+[e $U 32  ]
+[e :U 33 ]
+[e [\ -> _c `i , $ -> 10 `i 34
+ , $ -> 13 `i 35
+ 36 ]
+[e :U 32 ]
+"238
+[; ;graphics/drivers/sh1106.c: 238:     for(uint8_t i = 0; i < fontWidth; i++)
+{
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 0 `i `uc ]
+[e $U 40  ]
+[e :U 37 ]
+"239
+[; ;graphics/drivers/sh1106.c: 239:     {
+{
+"240
+[; ;graphics/drivers/sh1106.c: 240:         if(invertBG)
+[e $ ! != -> _invertBG `i -> 0 `i 41  ]
+"241
+[; ;graphics/drivers/sh1106.c: 241:         {
+{
+"242
+[; ;graphics/drivers/sh1106.c: 242:             OLED_Send((uint8_t []){0x40, ~(font[chIndex + i])}, 2);
+[e ( _OLED_Send (2 , &U ; ; = F702 F701 ; = *U + &U F702 * -> -> -> 0 `i `ui `ux -> -> # *U &U F702 `ui `ux -> -> 64 `i `uc = *U + &U F702 * -> -> -> 1 `i `ui `ux -> -> # *U &U F702 `ui `ux -> ~ -> *U + _font * -> + -> _chIndex `ui -> _i `ui `ux -> -> # *U _font `ui `ux `i `uc F702 -> -> 2 `i `ui ]
+"243
+[; ;graphics/drivers/sh1106.c: 243:         }
+}
+[e $U 42  ]
+"244
+[; ;graphics/drivers/sh1106.c: 244:         else
+[e :U 41 ]
+"245
+[; ;graphics/drivers/sh1106.c: 245:         {
+{
+"246
+[; ;graphics/drivers/sh1106.c: 246:             OLED_Send((uint8_t []){0x40, font[chIndex + i]}, 2);
+[e ( _OLED_Send (2 , &U ; ; = F704 F703 ; = *U + &U F704 * -> -> -> 0 `i `ui `ux -> -> # *U &U F704 `ui `ux -> -> 64 `i `uc = *U + &U F704 * -> -> -> 1 `i `ui `ux -> -> # *U &U F704 `ui `ux *U + _font * -> + -> _chIndex `ui -> _i `ui `ux -> -> # *U _font `ui `ux F704 -> -> 2 `i `ui ]
+"247
+[; ;graphics/drivers/sh1106.c: 247:         }
+}
+[e :U 42 ]
+"248
+[; ;graphics/drivers/sh1106.c: 248:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e :U 40 ]
+[e $ < -> _i `i -> _fontWidth `i 37  ]
+[e :U 38 ]
+}
+"251
+[; ;graphics/drivers/sh1106.c: 251:     if(invertBG)
+[e $ ! != -> _invertBG `i -> 0 `i 43  ]
+"252
+[; ;graphics/drivers/sh1106.c: 252:     {
+{
+"253
+[; ;graphics/drivers/sh1106.c: 253:         OLED_Send((uint8_t[]){0x40, 0xFF}, 2);
+[e ( _OLED_Send (2 , &U ; = F706 F705 F706 -> -> 2 `i `ui ]
+"254
+[; ;graphics/drivers/sh1106.c: 254:     }
+}
+[e $U 44  ]
+"255
+[; ;graphics/drivers/sh1106.c: 255:     else
+[e :U 43 ]
+"256
+[; ;graphics/drivers/sh1106.c: 256:     {
+{
+"257
+[; ;graphics/drivers/sh1106.c: 257:         OLED_Send((uint8_t[]){0x40, 0x00}, 2);
+[e ( _OLED_Send (2 , &U ; = F708 F707 F708 -> -> 2 `i `ui ]
+"258
+[; ;graphics/drivers/sh1106.c: 258:     }
+}
+[e :U 44 ]
+"259
+[; ;graphics/drivers/sh1106.c: 259: }
+[e :UE 31 ]
+}
+"261
+[; ;graphics/drivers/sh1106.c: 261: void OLED_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, _Bool invertBG)
+[v _OLED_DrawString `(v ~T0 @X0 1 ef5`uc`uc`*uc`*uc`a ]
+"262
+[; ;graphics/drivers/sh1106.c: 262: {
+{
+[e :U _OLED_DrawString ]
+"261
+[; ;graphics/drivers/sh1106.c: 261: void OLED_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, _Bool invertBG)
+[v _row `uc ~T0 @X0 1 r1 ]
+[v _col `uc ~T0 @X0 1 r2 ]
+[v _str `*uc ~T0 @X0 1 r3 ]
+[v _font `*uc ~T0 @X0 1 r4 ]
+[v _invertBG `a ~T0 @X0 1 r5 ]
+"262
+[; ;graphics/drivers/sh1106.c: 262: {
+[f ]
+"268
+[; ;graphics/drivers/sh1106.c: 268:     OLED_SetCursor(row, col);
+[e ( _OLED_SetCursor (2 , _row _col ]
+"270
+[; ;graphics/drivers/sh1106.c: 270:     for(uint8_t i = 0; i < strlen(str); i++)
+{
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 0 `i `uc ]
+[e $U 49  ]
+[e :U 46 ]
+"271
+[; ;graphics/drivers/sh1106.c: 271:     {
+{
+"272
+[; ;graphics/drivers/sh1106.c: 272:         OLED_DrawFont(row, col, str[i], font, invertBG);
+[e ( _OLED_DrawFont (4 , , , , _row _col *U + _str * -> _i `ux -> -> # *U _str `ui `ux _font _invertBG ]
+"273
+[; ;graphics/drivers/sh1106.c: 273:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e :U 49 ]
+[e $ < -> _i `ui ( _strlen (1 -> _str `*Cuc 46  ]
+[e :U 47 ]
+}
+"274
+[; ;graphics/drivers/sh1106.c: 274: }
+[e :UE 45 ]
+}
+"276
+[; ;graphics/drivers/sh1106.c: 276: void OLED_SetPixel(uint8_t row, uint8_t col, uint8_t pixStatus)
+[v _OLED_SetPixel `(v ~T0 @X0 1 ef3`uc`uc`uc ]
+"277
+[; ;graphics/drivers/sh1106.c: 277: {
+{
+[e :U _OLED_SetPixel ]
+"276
+[; ;graphics/drivers/sh1106.c: 276: void OLED_SetPixel(uint8_t row, uint8_t col, uint8_t pixStatus)
+[v _row `uc ~T0 @X0 1 r1 ]
+[v _col `uc ~T0 @X0 1 r2 ]
+[v _pixStatus `uc ~T0 @X0 1 r3 ]
+"277
+[; ;graphics/drivers/sh1106.c: 277: {
+[f ]
+[v F726 `uc ~T0 @X0 -> 9 `i s ]
+[i F726
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"289
+[; ;graphics/drivers/sh1106.c: 289: 
+[v F727 `uc ~T0 @X0 -> 9 `i a ]
+[v F728 `uc ~T0 @X0 -> 2 `i s ]
+[i F728
+:U ..
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+"309
+[; ;graphics/drivers/sh1106.c: 309:     OLED_Send((uint8_t[]){0x40, readByte[1]}, 2);
+[v F729 `uc ~T0 @X0 -> 2 `i a ]
+[v F730 `uc ~T0 @X0 -> 2 `i s ]
+[i F730
+:U ..
+-> -> 0 `i `uc
+-> . `E597 26 `uc
+..
+]
+"312
+[; ;graphics/drivers/sh1106.c: 312:     OLED_Send((uint8_t[]){0x00, RMWEND}, 2);
+[v F731 `uc ~T0 @X0 -> 2 `i a ]
+[v F732 `uc ~T0 @X0 -> 2 `i s ]
+[i F732
+:U ..
+"279
+[; ;graphics/drivers/sh1106.c: 279:     uint8_t readByte[2] = {0, 0};
+-> -> 0 `i `uc
+-> -> 0 `i `uc
+..
+]
+[v _readByte `uc ~T0 @X0 -> 2 `i a ]
+[e = _readByte F732 ]
+"282
+[; ;graphics/drivers/sh1106.c: 282:     I2C1_Open(0x3C);
+[e ( _I2C1_Open (1 -> -> 60 `i `uc ]
+"285
+[; ;graphics/drivers/sh1106.c: 285:     I2C1_SetBuffer((uint8_t[])
+[e ( _I2C1_SetBuffer (2 , -> &U ; ; = F727 F726 ; = *U + &U F727 * -> -> -> 0 `i `ui `ux -> -> # *U &U F727 `ui `ux -> -> 128 `i `uc ; = *U + &U F727 * -> -> -> 1 `i `ui `ux -> -> # *U &U F727 `ui `ux -> | -> . `E597 16 `i >> -> _row `i -> 3 `i `uc ; = *U + &U F727 * -> -> -> 2 `i `ui `ux -> -> # *U &U F727 `ui `ux -> -> 128 `i `uc ; = *U + &U F727 * -> -> -> 3 `i `ui `ux -> -> # *U &U F727 `ui `ux -> | -> . `E597 13 `i & + -> _col `i -> 2 `i -> 15 `i `uc ; = *U + &U F727 * -> -> -> 4 `i `ui `ux -> -> # *U &U F727 `ui `ux -> -> 128 `i `uc ; = *U + &U F727 * -> -> -> 5 `i `ui `ux -> -> # *U &U F727 `ui `ux -> | -> . `E597 14 `i >> + -> _col `i -> 2 `i -> 4 `i `uc ; = *U + &U F727 * -> -> -> 6 `i `ui `ux -> -> # *U &U F727 `ui `ux -> -> 128 `i `uc ; = *U + &U F727 * -> -> -> 7 `i `ui `ux -> -> # *U &U F727 `ui `ux -> . `E597 25 `uc = *U + &U F727 * -> -> -> 8 `i `ui `ux -> -> # *U &U F727 `ui `ux -> -> 192 `i `uc F727 `*v -> -> 9 `i `ui ]
+"291
+[; ;graphics/drivers/sh1106.c: 291:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataCompleteCallback (2 , -> -> -> 0 `i `*v `*F734 -> -> 0 `i `*v ]
+"292
+[; ;graphics/drivers/sh1106.c: 292:     I2C1_MasterWrite();
+[e ( _I2C1_MasterWrite ..  ]
+"293
+[; ;graphics/drivers/sh1106.c: 293:     while(I2C1_BUSY == I2C1_Close());
+[e $U 51  ]
+[e :U 52 ]
+[e :U 51 ]
+[e $ == -> . `E522 1 `ui -> ( _I2C1_Close ..  `ui 52  ]
+[e :U 53 ]
+"296
+[; ;graphics/drivers/sh1106.c: 296:     OLED_Recv(readByte, 2);
+[e ( _OLED_Recv (2 , &U _readByte -> -> 2 `i `ui ]
+"299
+[; ;graphics/drivers/sh1106.c: 299:     if(pixStatus)
+[e $ ! != -> _pixStatus `i -> 0 `i 54  ]
+"300
+[; ;graphics/drivers/sh1106.c: 300:     {
+{
+"301
+[; ;graphics/drivers/sh1106.c: 301:         readByte[1] = readByte[1] | (1 << (row & 0x7));
+[e = *U + &U _readByte * -> -> -> 1 `i `ui `ux -> -> # *U &U _readByte `ui `ux -> | -> *U + &U _readByte * -> -> -> 1 `i `ui `ux -> -> # *U &U _readByte `ui `ux `i << -> 1 `i & -> _row `i -> 7 `i `uc ]
+"302
+[; ;graphics/drivers/sh1106.c: 302:     }
+}
+[e $U 55  ]
+"303
+[; ;graphics/drivers/sh1106.c: 303:     else
+[e :U 54 ]
+"304
+[; ;graphics/drivers/sh1106.c: 304:     {
+{
+"305
+[; ;graphics/drivers/sh1106.c: 305:         readByte[1] = readByte[1] & ~(1 << (row & 0x7));
+[e = *U + &U _readByte * -> -> -> 1 `i `ui `ux -> -> # *U &U _readByte `ui `ux -> & -> *U + &U _readByte * -> -> -> 1 `i `ui `ux -> -> # *U &U _readByte `ui `ux `i ~ << -> 1 `i & -> _row `i -> 7 `i `uc ]
+"306
+[; ;graphics/drivers/sh1106.c: 306:     }
+}
+[e :U 55 ]
+"309
+[; ;graphics/drivers/sh1106.c: 309:     OLED_Send((uint8_t[]){0x40, readByte[1]}, 2);
+[e ( _OLED_Send (2 , &U ; ; = F729 F728 ; = *U + &U F729 * -> -> -> 0 `i `ui `ux -> -> # *U &U F729 `ui `ux -> -> 64 `i `uc = *U + &U F729 * -> -> -> 1 `i `ui `ux -> -> # *U &U F729 `ui `ux *U + &U _readByte * -> -> -> 1 `i `ui `ux -> -> # *U &U _readByte `ui `ux F729 -> -> 2 `i `ui ]
+"312
+[; ;graphics/drivers/sh1106.c: 312:     OLED_Send((uint8_t[]){0x00, RMWEND}, 2);
+[e ( _OLED_Send (2 , &U ; = F731 F730 F731 -> -> 2 `i `ui ]
+"314
+[; ;graphics/drivers/sh1106.c: 314:     return;
+[e $UE 50  ]
+"315
+[; ;graphics/drivers/sh1106.c: 315: }
+[e :UE 50 ]
+}
+"318
+[; ;graphics/drivers/sh1106.c: 318: static i2c1_operations_t WriteCompleteHandler(void *data)
+[v _WriteCompleteHandler `(E527 ~T0 @X0 1 sf1`*v ]
+"319
+[; ;graphics/drivers/sh1106.c: 319: {
+{
+[e :U _WriteCompleteHandler ]
+"318
+[; ;graphics/drivers/sh1106.c: 318: static i2c1_operations_t WriteCompleteHandler(void *data)
+[v _data `*v ~T0 @X0 1 r1 ]
+"319
+[; ;graphics/drivers/sh1106.c: 319: {
+[f ]
+"321
+[; ;graphics/drivers/sh1106.c: 321:     I2C1_SetBuffer(data, gBufSize);
+[e ( _I2C1_SetBuffer (2 , _data _gBufSize ]
+"324
+[; ;graphics/drivers/sh1106.c: 324:     I2C1_SetDataCompleteCallback(((void*)0), ((void*)0));
+[e ( _I2C1_SetDataCompleteCallback (2 , -> -> -> 0 `i `*v `*F738 -> -> 0 `i `*v ]
+"327
+[; ;graphics/drivers/sh1106.c: 327:     return I2C1_CONTINUE;
+[e ) . `E527 3 ]
+[e $UE 56  ]
+"328
+[; ;graphics/drivers/sh1106.c: 328: }
+[e :UE 56 ]
+}

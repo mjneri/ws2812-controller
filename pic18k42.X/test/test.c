@@ -21,6 +21,7 @@ void HeartbeatCallback(void)
 
 void DebounceCallback(void)
 {
+    // NOTE: Make sure SW0 is connected to TM4_ers input (RC6)
     if(!SW0_GetValue())
     {
         isSwitchPressed = true;
@@ -53,13 +54,13 @@ void TEST_Function(void)
     //TMR1_SetInterruptHandler(HeartbeatCallback);
     
     // Register TMR4 Callback
-    TMR4_SetInterruptHandler(DebounceCallback);
+    //TMR4_SetInterruptHandler(DebounceCallback);
     
     // Test the OLED functions
-    TEST_OLED();
+    //TEST_OLED();
     
     // Test SPI LED functions
-    //TEST_PIXELS();
+    TEST_PIXELS();
     
     return;
 }
