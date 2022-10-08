@@ -1,17 +1,17 @@
 /**
-  TMR4 Generated Driver File
+  TMR6 Generated Driver File
 
   @Company
     Microchip Technology Inc.
 
   @File Name
-    tmr4.c
+    tmr6.c
 
   @Summary
-    This is the generated driver implementation file for the TMR4 driver using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+    This is the generated driver implementation file for the TMR6 driver using PIC10 / PIC12 / PIC16 / PIC18 MCUs
 
   @Description
-    This source file provides APIs for TMR4.
+    This source file provides APIs for TMR6.
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
         Device            :  PIC18F47K42
@@ -49,147 +49,147 @@
 */
 
 #include <xc.h>
-#include "tmr4.h"
+#include "tmr6.h"
 
 /**
   Section: Global Variables Definitions
 */
 
-void (*TMR4_InterruptHandler)(void);
+void (*TMR6_InterruptHandler)(void);
 
 /**
-  Section: TMR4 APIs
+  Section: TMR6 APIs
 */
 
-void TMR4_Initialize(void)
+void TMR6_Initialize(void)
 {
-    // Set TMR4 to the options selected in the User Interface
+    // Set TMR6 to the options selected in the User Interface
 
-    // T4CS LFINTOSC; 
-    T4CLKCON = 0x04;
+    // T6CS LFINTOSC; 
+    T6CLKCON = 0x04;
 
-    // T4PSYNC Not Synchronized; T4MODE Starts on rising/falling edge on TMR4_ers; T4CKPOL Rising Edge; T4CKSYNC Synchronized; 
-    T4HLT = 0x33;
+    // T6PSYNC Not Synchronized; T6MODE Starts on rising/falling edge on TMR6_ers; T6CKPOL Rising Edge; T6CKSYNC Synchronized; 
+    T6HLT = 0x33;
 
-    // T4RSEL T4CKIPPS pin; 
-    T4RST = 0x00;
+    // T6RSEL T6CKIPPS pin; 
+    T6RST = 0x00;
 
-    // PR4 3; 
-    T4PR = 0x03;
+    // PR6 3; 
+    T6PR = 0x03;
 
-    // TMR4 0; 
-    T4TMR = 0x00;
+    // TMR6 0; 
+    T6TMR = 0x00;
 
     // Clearing IF flag before enabling the interrupt.
-    PIR7bits.TMR4IF = 0;
+    PIR9bits.TMR6IF = 0;
 
-    // Enabling TMR4 interrupt.
-    PIE7bits.TMR4IE = 1;
+    // Enabling TMR6 interrupt.
+    PIE9bits.TMR6IE = 1;
 
     // Set Default Interrupt Handler
-    TMR4_SetInterruptHandler(TMR4_DefaultInterruptHandler);
+    TMR6_SetInterruptHandler(TMR6_DefaultInterruptHandler);
 
-    // T4CKPS 1:8; T4OUTPS 1:1; TMR4ON on; 
-    T4CON = 0xB0;
+    // T6CKPS 1:8; T6OUTPS 1:1; TMR6ON on; 
+    T6CON = 0xB0;
 }
 
-void TMR4_ModeSet(TMR4_HLT_MODE mode)
+void TMR6_ModeSet(TMR6_HLT_MODE mode)
 {
    // Configure different types HLT mode
-    T4HLTbits.MODE = mode;
+    T6HLTbits.MODE = mode;
 }
 
-void TMR4_ExtResetSourceSet(TMR4_HLT_EXT_RESET_SOURCE reset)
+void TMR6_ExtResetSourceSet(TMR6_HLT_EXT_RESET_SOURCE reset)
 {
     //Configure different types of HLT external reset source
-    T4RSTbits.RSEL = reset;
+    T6RSTbits.RSEL = reset;
 }
 
-void TMR4_Start(void)
+void TMR6_Start(void)
 {
     // Start the Timer by writing to TMRxON bit
-    T4CONbits.TMR4ON = 1;
+    T6CONbits.TMR6ON = 1;
 }
 
-void TMR4_StartTimer(void)
+void TMR6_StartTimer(void)
 {
-    TMR4_Start();
+    TMR6_Start();
 }
 
-void TMR4_Stop(void)
+void TMR6_Stop(void)
 {
     // Stop the Timer by writing to TMRxON bit
-    T4CONbits.TMR4ON = 0;
+    T6CONbits.TMR6ON = 0;
 }
 
-void TMR4_StopTimer(void)
+void TMR6_StopTimer(void)
 {
-    TMR4_Stop();
+    TMR6_Stop();
 }
 
-uint8_t TMR4_Counter8BitGet(void)
+uint8_t TMR6_Counter8BitGet(void)
 {
     uint8_t readVal;
 
-    readVal = TMR4;
+    readVal = TMR6;
 
     return readVal;
 }
 
-uint8_t TMR4_ReadTimer(void)
+uint8_t TMR6_ReadTimer(void)
 {
-    return TMR4_Counter8BitGet();
+    return TMR6_Counter8BitGet();
 }
 
-void TMR4_Counter8BitSet(uint8_t timerVal)
+void TMR6_Counter8BitSet(uint8_t timerVal)
 {
-    // Write to the Timer4 register
-    TMR4 = timerVal;
+    // Write to the Timer6 register
+    TMR6 = timerVal;
 }
 
-void TMR4_WriteTimer(uint8_t timerVal)
+void TMR6_WriteTimer(uint8_t timerVal)
 {
-    TMR4_Counter8BitSet(timerVal);
+    TMR6_Counter8BitSet(timerVal);
 }
 
-void TMR4_Period8BitSet(uint8_t periodVal)
+void TMR6_Period8BitSet(uint8_t periodVal)
 {
-   PR4 = periodVal;
+   PR6 = periodVal;
 }
 
-void TMR4_LoadPeriodRegister(uint8_t periodVal)
+void TMR6_LoadPeriodRegister(uint8_t periodVal)
 {
-   TMR4_Period8BitSet(periodVal);
+   TMR6_Period8BitSet(periodVal);
 }
 
-void TMR4_ISR(void)
+void TMR6_ISR(void)
 {
 
-    // clear the TMR4 interrupt flag
-    PIR7bits.TMR4IF = 0;
+    // clear the TMR6 interrupt flag
+    PIR9bits.TMR6IF = 0;
 
     // ticker function call;
     // ticker is 1 -> Callback function gets called everytime this ISR executes
-    TMR4_CallBack();
+    TMR6_CallBack();
 }
 
-void TMR4_CallBack(void)
+void TMR6_CallBack(void)
 {
     // Add your custom callback code here
-    // this code executes every TMR4_INTERRUPT_TICKER_FACTOR periods of TMR4
-    if(TMR4_InterruptHandler)
+    // this code executes every TMR6_INTERRUPT_TICKER_FACTOR periods of TMR6
+    if(TMR6_InterruptHandler)
     {
-        TMR4_InterruptHandler();
+        TMR6_InterruptHandler();
     }
 }
 
-void TMR4_SetInterruptHandler(void (* InterruptHandler)(void)){
-    TMR4_InterruptHandler = InterruptHandler;
+void TMR6_SetInterruptHandler(void (* InterruptHandler)(void)){
+    TMR6_InterruptHandler = InterruptHandler;
 }
 
-void TMR4_DefaultInterruptHandler(void){
-    // add your TMR4 interrupt custom code
-    // or set custom function using TMR4_SetInterruptHandler()
+void TMR6_DefaultInterruptHandler(void){
+    // add your TMR6 interrupt custom code
+    // or set custom function using TMR6_SetInterruptHandler()
 }
 
 /**

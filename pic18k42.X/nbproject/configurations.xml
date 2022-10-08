@@ -41,6 +41,9 @@
         <itemPath>mcc_generated_files/spi1.h</itemPath>
         <itemPath>mcc_generated_files/pwm5.h</itemPath>
         <itemPath>mcc_generated_files/tmr4.h</itemPath>
+        <itemPath>mcc_generated_files/clc2.h</itemPath>
+        <itemPath>mcc_generated_files/clc3.h</itemPath>
+        <itemPath>mcc_generated_files/tmr6.h</itemPath>
       </logicalFolder>
       <logicalFolder name="sound" displayName="sound" projectFiles="true">
         <itemPath>sound/mic_in.h</itemPath>
@@ -94,6 +97,9 @@
         <itemPath>mcc_generated_files/spi1.c</itemPath>
         <itemPath>mcc_generated_files/pwm5.c</itemPath>
         <itemPath>mcc_generated_files/tmr4.c</itemPath>
+        <itemPath>mcc_generated_files/clc3.c</itemPath>
+        <itemPath>mcc_generated_files/clc2.c</itemPath>
+        <itemPath>mcc_generated_files/tmr6.c</itemPath>
       </logicalFolder>
       <logicalFolder name="sound" displayName="sound" projectFiles="true">
         <itemPath>sound/mic_in.c</itemPath>
@@ -274,6 +280,8 @@
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="memories.rww" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/debug/default/pic18k42_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"
@@ -339,6 +347,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-1ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/debug/default/pic18k42_ptg"/>
         <property key="programoptions.eraseb4program" value="true"/>
         <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preservedataflash.ranges"

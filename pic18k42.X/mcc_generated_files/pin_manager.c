@@ -58,28 +58,28 @@ void PIN_MANAGER_Initialize(void)
     LATx registers
     */
     LATE = 0x00;
-    LATD = 0x00;
+    LATD = 0x02;
     LATA = 0x00;
     LATB = 0x00;
-    LATC = 0x00;
+    LATC = 0x20;
 
     /**
     TRISx registers
     */
     TRISE = 0x06;
-    TRISA = 0xFF;
-    TRISB = 0xFF;
-    TRISC = 0x62;
-    TRISD = 0xFF;
+    TRISA = 0x7F;
+    TRISB = 0xFE;
+    TRISC = 0x42;
+    TRISD = 0xFD;
 
     /**
     ANSELx registers
     */
-    ANSELD = 0xFF;
+    ANSELD = 0xFE;
     ANSELC = 0xA0;
     ANSELB = 0xFF;
     ANSELE = 0x02;
-    ANSELA = 0xF1;
+    ANSELA = 0xF9;
 
     /**
     WPUx registers
@@ -135,13 +135,18 @@ void PIN_MANAGER_Initialize(void)
     
 	
     RC0PPS = 0x1E;   //RC0->SPI1:SCK1;    
-    SPI1SCKPPS = 0x10;   //RC0->SPI1:SCK1;    
-    I2C1SDAPPS = 0x14;   //RC4->I2C1:SDA1;    
     RC3PPS = 0x21;   //RC3->I2C1:SCL1;    
     RC4PPS = 0x22;   //RC4->I2C1:SDA1;    
     RC2PPS = 0x1F;   //RC2->SPI1:SDO1;    
-    RC7PPS = 0x01;   //RC7->CLC1:CLC1;    
     I2C1SCLPPS = 0x13;   //RC3->I2C1:SCL1;    
+    RA7PPS = 0x02;   //RA7->CLC2:CLC2;    
+    SPI1SCKPPS = 0x10;   //RC0->SPI1:SCK1;    
+    I2C1SDAPPS = 0x14;   //RC4->I2C1:SDA1;    
+    CLCIN0PPS = 0x01;   //RA1->CLC3:CLCIN0;    
+    RB0PPS = 0x03;   //RB0->CLC3:CLC3;    
+    T6INPPS = 0x18;   //RD0->TMR6:T6IN;    
+    CLCIN1PPS = 0x02;   //RA2->CLC3:CLCIN1;    
+    RC7PPS = 0x01;   //RC7->CLC1:CLC1;    
     SPI1SDIPPS = 0x11;   //RC1->SPI1:SDI1;    
     T4INPPS = 0x16;   //RC6->TMR4:T4IN;    
 }

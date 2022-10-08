@@ -48,6 +48,8 @@
 
 #include "interrupt_manager.h"
 #include "mcc.h"
+// user-added
+#include "../test/test.h"
 
 void  INTERRUPT_Initialize (void)
 {
@@ -58,7 +60,23 @@ void  INTERRUPT_Initialize (void)
 void __interrupt() INTERRUPT_InterruptManager (void)
 {
     // interrupt handler
-    if(PIE7bits.TMR4IE == 1 && PIR7bits.TMR4IF == 1)
+    if(PIE9bits.CLC3IE == 1 && PIR9bits.CLC3IF == 1)
+    {
+        CLC3_ISR();
+        // user added
+        CLC3_Callback();
+    }
+    else if(PIE7bits.CLC2IE == 1 && PIR7bits.CLC2IF == 1)
+    {
+        CLC2_ISR();
+        // user added
+        CLC2_Callback();
+    }
+    else if(PIE9bits.TMR6IE == 1 && PIR9bits.TMR6IF == 1)
+    {
+        TMR6_ISR();
+    }
+    else if(PIE7bits.TMR4IE == 1 && PIR7bits.TMR4IF == 1)
     {
         TMR4_ISR();
     }

@@ -13,6 +13,9 @@ volatile bool switchSelected = false;
 volatile bool isSwitchPressed = false;
 volatile bool isSwitchHeld = false;
 
+volatile uint16_t rotCntCCW = 0;
+volatile uint16_t rotCntCW = 0;
+
 // Callback for heartbeat LED
 void HeartbeatCallback(void)
 {
@@ -21,7 +24,8 @@ void HeartbeatCallback(void)
 
 void DebounceCallback(void)
 {
-    // NOTE: Make sure SW0 is connected to TM4_ers input (RC6)
+    // NOTE: Make sure SW0 (RE2) is connected to TM4_ers input (RC6)
+    // NOTE: Make sure this callback function is registered
     if(!SW0_GetValue())
     {
         isSwitchPressed = true;
@@ -32,9 +36,50 @@ void DebounceCallback(void)
     }
 }
 
+void CLC2_Callback(void)
+{
+    if(CLC2_OutputStatusGet())
+    {
+        rotCntCCW++;
+    }
+}
+
+void CLC3_Callback(void)
+{
+    if(CLC3_OutputStatusGet())
+    {
+        rotCntCW++;
+    }
+}
+
+void RotClkDebounce(void)
+{
+    if(!RC6_GetValue())
+    {
+        DEB_ROT_A_SetLow();
+    }
+    else
+    {
+        DEB_ROT_A_SetHigh();
+    }
+}
+
+void RotDTDebounce(void)
+{
+    if(!RD0_GetValue())
+    {
+        DEB_ROT_B_SetLow();
+    }
+    else
+    {
+        DEB_ROT_B_SetHigh();
+    }
+}
+
 // Local function prototypes
 static void TEST_OLED(void);
 static void TEST_PIXELS(void);
+static void TEST_ROTARYENCODER(void);
 
 // Other local function prototypes
 void displayMenu(uint8_t selectedOption);
@@ -60,12 +105,41 @@ void TEST_Function(void)
     //TEST_OLED();
     
     // Test SPI LED functions
-    TEST_PIXELS();
+    //TEST_PIXELS();
+    
+    
+    // Register callbacks for rotary encoder debouncing
+    // Note: TMR4 and TMR6 period is 1ms
+    TMR4_SetInterruptHandler(RotClkDebounce);
+    TMR6_SetInterruptHandler(RotDTDebounce);
+    
+    // Test the rotary encoder
+    TEST_ROTARYENCODER();
     
     return;
 }
 
 // Local function definitions
+static void TEST_ROTARYENCODER(void)
+{
+    OLED_Initialize();
+    OLED_ClearDisplay();
+    
+    OLED_DrawBitmap();
+    __delay_ms(1000);
+    OLED_ClearDisplay();
+    
+    // Quick software thing
+    uint32_t i = 0;
+    char teststring[64];
+    while(1)
+    {
+        // Insert code interpreting the decoded signals on CLC2OUT and CLC3OUT
+        sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
+        OLED_DrawString(0, 0, teststring, font5x7, 0);
+    }
+}
+
 static void TEST_OLED(void)
 {
     OLED_Initialize();

@@ -8,6 +8,8 @@
 #include "../mcc_generated_files/mcc.h"
 
 // Function prototype
+void CLC2_Callback(void);
+void CLC3_Callback(void);
 void TEST_Function(void);
 
 #endif /*_TEST_H_*/
