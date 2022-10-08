@@ -103,7 +103,7 @@ void main(void)
                 break;
             case 1:
                 OLED_DrawString(8, 0, "Theater Chase  ", font5x7, 0);
-                theaterChase(3, 4);
+                theaterChase(3, 6);
                 break;
             case 2:
                 OLED_DrawString(8, 0, "One Color Pulse", font5x7, 0);
