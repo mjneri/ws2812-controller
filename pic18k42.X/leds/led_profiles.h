@@ -65,7 +65,7 @@ void colorWave(void);
 void soundReactive(void);
 void multiColorPulse(void);
 void sparkles(void);
-void rainbowCycle(void);
+void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance);
 void alternatingColors(void);
 
 

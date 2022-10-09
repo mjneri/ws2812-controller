@@ -221,9 +221,61 @@ void sparkles(void)
     
 }
 
-void rainbowCycle(void)
+// Function below was taken from
+// https://github.com/bigjosh/SimpleNeoPixelDemo/blob/master/SimpleNeopixelDemo/SimpleNeopixelDemo.ino
+// which was based on
+// https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino
+void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance)
 {
+  // Hue is a number between 0 and 3*256 than defines a mix of r->g->b where
+  // hue of 0 = Full red
+  // hue of 128 = 1/2 red and 1/2 green
+  // hue of 256 = Full Green
+  // hue of 384 = 1/2 green and 1/2 blue
+  // ...
+  
+  unsigned int firstPixelHue = 0;     // Color for the first pixel in the string
+  
+  for(unsigned int j=0; j<frames; j++) {                                  
     
+    unsigned int currentPixelHue = firstPixelHue;
+        
+    for(unsigned int i=0; i< LEDSTRIPSIZE; i++) {
+      
+      if (currentPixelHue>=(3*256)) {                  // Normalize back down incase we incremented and overflowed
+        currentPixelHue -= (3*256);
+      }
+            
+      unsigned char phase = currentPixelHue >> 8;
+      unsigned char step = currentPixelHue & 0x1f;
+      unsigned char nstep = (~step) & 0x1f;
+                 
+      switch (phase) {
+        
+        case 0: 
+          RGB_SetColor(RGB_TO_VAL(nstep,step,0));
+          break;
+          
+        case 1: 
+          RGB_SetColor( RGB_TO_VAL(0 , nstep , step) );
+          break;
+
+        case 2: 
+          RGB_SetColor(  RGB_TO_VAL(step ,0 , nstep) );
+          break;
+          
+      }
+      
+      currentPixelHue+=pixelAdvance;                                      
+      
+                          
+    } 
+    LEDLATCH();
+    __delay_ms(10);
+    
+    firstPixelHue += frameAdvance;
+           
+  }
 }
 
 void alternatingColors(void)
