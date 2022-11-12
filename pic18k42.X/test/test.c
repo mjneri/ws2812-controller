@@ -90,6 +90,35 @@ static void TEST_ROTARYENCODER(void);
 void displayMenu(uint8_t selectedOption);
 static void profitestCometsTail(uint8_t tailLen);
 
+// TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
+typedef enum
+{
+    BTN_INIT,
+    BTN_WAIT_PRESS,
+    BTN_DEBOUNCE,
+    BTN_PRESSED,
+    BTN_HELD
+} button_state_t;
+
+#define DEBOUNCECOUNT 1
+
+static void Test_ButtonTasks(void);             // button state machine maintainer
+static bool get_button_pressed(void);           // interface func
+static bool get_button_held(void);              // interface func
+static uint32_t get_button_presscount(void);
+static void reset_button_presscount(void);
+
+static bool is_button_pressed = false;
+static bool is_button_held = false;
+static uint32_t button_press_count = 0;         // how many button presses?
+static uint8_t pressDebCount = 0;               // used for debouncing button presses
+static uint8_t unpressDebCount = 0;             // for debouncing button unpresses
+static button_state_t buttonState = BTN_INIT;
+
+static void TEST_BUTTON_SM(void);
+
+// ************************************************************
+
 // Main Test function definition
 void TEST_Function(void)
 {
@@ -116,11 +145,171 @@ void TEST_Function(void)
     
     
     // Register callbacks for millis() & run test code
-    millis_Initialize();
-    TEST_MILLIS();
+    //millis_Initialize();
+    //TEST_MILLIS();
+    
+    // Test the button debouncing state machine code
+    TEST_BUTTON_SM();
     
     return;
 }
+
+// TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
+static void TEST_BUTTON_SM(void)
+{
+    millis_Initialize();
+    buttonState = BTN_INIT;
+    
+    __delay_ms(100);
+    OLED_Initialize();
+    OLED_ClearDisplay();
+    
+    OLED_DrawBitmap();
+    __delay_ms(1000);
+    OLED_ClearDisplay();
+    
+    char teststring[64];
+    
+    while(1)
+    {
+        Test_ButtonTasks();
+        
+        sprintf(teststring, "%lu", get_button_presscount());
+        OLED_DrawString(0, 0, teststring, font5x7, 0);
+        
+        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
+        OLED_DrawString(8, 0, teststring, font5x7, 0);
+    }
+}
+
+static bool get_button_pressed(void)
+{
+    return is_button_pressed;
+}
+
+static bool get_button_held(void)
+{
+    return is_button_held;
+}
+
+static uint32_t get_button_presscount(void)
+{
+    return button_press_count;
+}
+
+static void reset_button_presscount(void)
+{
+    button_press_count = 0;
+}
+
+static void Test_ButtonTasks(void)
+{
+    // local variables with limited scope
+    uint64_t t0 = millis();
+    
+    switch(buttonState)
+    {
+        case BTN_INIT:
+        {
+            is_button_held = false;
+            is_button_pressed = false;
+            button_press_count = 0;
+            pressDebCount = 0;
+            unpressDebCount = 0;
+            
+            buttonState = BTN_WAIT_PRESS;
+            break;
+        }
+        
+        case BTN_WAIT_PRESS:
+        {
+            is_button_pressed = false;
+            is_button_held = false;
+            
+            if(!SW0_GetValue())
+            {
+                buttonState = BTN_DEBOUNCE;
+            }
+            else
+            {
+                buttonState = BTN_WAIT_PRESS;
+            }
+            break;
+        }
+        
+        case BTN_DEBOUNCE:
+        {
+            if(!SW0_GetValue())
+            {
+                unpressDebCount = 0;    // Reset this since button is pressed
+                if(pressDebCount > DEBOUNCECOUNT)
+                {
+                    pressDebCount = 0;  // Reset
+                    buttonState = BTN_PRESSED;
+                }
+                else
+                {
+                    pressDebCount++;
+                    buttonState = BTN_DEBOUNCE;
+                }
+            }
+            else
+            {
+                pressDebCount = 0;      // Reset this since button is not pressed
+                if(unpressDebCount > DEBOUNCECOUNT)
+                {
+                    unpressDebCount = 0;
+                    buttonState = BTN_WAIT_PRESS;
+                }
+                else
+                {
+                    unpressDebCount++;
+                    buttonState = BTN_DEBOUNCE;
+                }
+            }
+            break;
+        }
+        
+        case BTN_PRESSED:
+        {
+            is_button_pressed = true;
+            button_press_count++;
+            
+            if(!SW0_GetValue())
+            {
+                buttonState = BTN_HELD;
+            }
+            else
+            {
+                buttonState = BTN_DEBOUNCE;
+            }
+            break;
+        }
+        
+        case BTN_HELD:
+        {
+            is_button_held = true;
+            is_button_pressed = true;
+            
+            if(!SW0_GetValue())
+            {
+                buttonState = BTN_HELD;
+            }
+            else
+            {
+                buttonState = BTN_DEBOUNCE;
+            }
+            break;
+        }
+        
+        default:
+        {
+            break;
+        }
+    }
+}
+
+// ************************************************************
 
 static void TEST_MILLIS(void)
 {
