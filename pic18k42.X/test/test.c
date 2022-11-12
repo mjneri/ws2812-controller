@@ -77,18 +77,6 @@ void RotDTDebounce(void)
 }
 
 // TEST CODE FOR MILLIS() ********************************************
-volatile uint64_t _millis = 0;      // The counter that millis() updates
-void Millis_Callback(void)
-{
-    // NOTE: millis() interrupts every 1ms.
-    _millis++;
-}
-
-uint64_t millis(void)
-{
-    return _millis;
-}
-
 static void TEST_MILLIS(void);
 
 // ************************************************************
@@ -128,7 +116,7 @@ void TEST_Function(void)
     
     
     // Register callbacks for millis() & run test code
-    TMR5_SetInterruptHandler(Millis_Callback);
+    millis_Initialize();
     TEST_MILLIS();
     
     return;

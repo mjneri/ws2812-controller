@@ -46,6 +46,9 @@
         <itemPath>mcc_generated_files/tmr6.h</itemPath>
         <itemPath>mcc_generated_files/tmr5.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="modules" displayName="modules" projectFiles="true">
+        <itemPath>modules/millis.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="test" displayName="test" projectFiles="true">
         <itemPath>test/test.h</itemPath>
       </logicalFolder>
@@ -100,6 +103,9 @@
         <itemPath>mcc_generated_files/tmr6.c</itemPath>
         <itemPath>mcc_generated_files/tmr5.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="modules" displayName="modules" projectFiles="true">
+        <itemPath>modules/millis.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="test" displayName="test" projectFiles="true">
         <itemPath>test/test.c</itemPath>
       </logicalFolder>
@@ -121,6 +127,7 @@
     <Elem>sound</Elem>
     <Elem>test</Elem>
     <Elem>wifi</Elem>
+    <Elem>modules</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

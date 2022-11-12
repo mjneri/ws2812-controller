@@ -6,6 +6,7 @@
 #include "../graphics/drivers/sh1106.h"
 #include "../leds/spi_led.h"
 #include "../mcc_generated_files/mcc.h"
+#include "../modules/millis.h"
 
 // Function prototype
 void CLC2_Callback(void);

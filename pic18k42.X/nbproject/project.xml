@@ -18,6 +18,7 @@
                 <sourceRootElem>sound</sourceRootElem>
                 <sourceRootElem>test</sourceRootElem>
                 <sourceRootElem>wifi</sourceRootElem>
+                <sourceRootElem>modules</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
