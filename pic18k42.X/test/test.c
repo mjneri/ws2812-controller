@@ -76,6 +76,23 @@ void RotDTDebounce(void)
     }
 }
 
+// TEST CODE FOR MILLIS() ********************************************
+volatile uint64_t _millis = 0;      // The counter that millis() updates
+void Millis_Callback(void)
+{
+    // NOTE: millis() interrupts every 1ms.
+    _millis++;
+}
+
+uint64_t millis(void)
+{
+    return _millis;
+}
+
+static void TEST_MILLIS(void);
+
+// ************************************************************
+
 // Local function prototypes
 static void TEST_OLED(void);
 static void TEST_PIXELS(void);
@@ -88,14 +105,14 @@ static void profitestCometsTail(uint8_t tailLen);
 // Main Test function definition
 void TEST_Function(void)
 {
-    // Register the callback function
+    // Register the heartbeat callback function
     TMR1_SetInterruptHandler(HeartbeatCallback);
     
     // Register TMR4 Callback
     //TMR4_SetInterruptHandler(DebounceCallback);
     
     // Test the OLED functions
-    TEST_OLED();
+    //TEST_OLED();
     
     // Test SPI LED functions
     //TEST_PIXELS();
@@ -109,7 +126,34 @@ void TEST_Function(void)
     // Test the rotary encoder
     //TEST_ROTARYENCODER();
     
+    
+    // Register callbacks for millis() & run test code
+    TMR5_SetInterruptHandler(Millis_Callback);
+    TEST_MILLIS();
+    
     return;
+}
+
+static void TEST_MILLIS(void)
+{
+    OLED_Initialize();
+    OLED_ClearDisplay();
+    
+    OLED_DrawBitmap();
+    __delay_ms(1000);
+    OLED_ClearDisplay();
+    
+    char teststring[64];
+    
+    uint64_t init_millis = millis();
+    
+    uint32_t seconds_counter = 0;
+    
+    while(1)
+    {
+        sprintf(teststring, "%llu", millis() - init_millis);
+        OLED_DrawString(0, 0, teststring, font5x7, 0);
+    }
 }
 
 // Local function definitions

@@ -44,9 +44,7 @@
         <itemPath>mcc_generated_files/clc2.h</itemPath>
         <itemPath>mcc_generated_files/clc3.h</itemPath>
         <itemPath>mcc_generated_files/tmr6.h</itemPath>
-      </logicalFolder>
-      <logicalFolder name="sound" displayName="sound" projectFiles="true">
-        <itemPath>sound/mic_in.h</itemPath>
+        <itemPath>mcc_generated_files/tmr5.h</itemPath>
       </logicalFolder>
       <logicalFolder name="test" displayName="test" projectFiles="true">
         <itemPath>test/test.h</itemPath>
@@ -100,9 +98,7 @@
         <itemPath>mcc_generated_files/clc3.c</itemPath>
         <itemPath>mcc_generated_files/clc2.c</itemPath>
         <itemPath>mcc_generated_files/tmr6.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="sound" displayName="sound" projectFiles="true">
-        <itemPath>sound/mic_in.c</itemPath>
+        <itemPath>mcc_generated_files/tmr5.c</itemPath>
       </logicalFolder>
       <logicalFolder name="test" displayName="test" projectFiles="true">
         <itemPath>test/test.c</itemPath>
