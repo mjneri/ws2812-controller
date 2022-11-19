@@ -249,6 +249,26 @@
 #define DEB_ROT_B_SetAnalogMode()      do { ANSELDbits.ANSELD1 = 1; } while(0)
 #define DEB_ROT_B_SetDigitalMode()     do { ANSELDbits.ANSELD1 = 0; } while(0)
 
+// get/set DEBUG_GPIO_OUT aliases
+#define DEBUG_GPIO_OUT_TRIS                 TRISDbits.TRISD7
+#define DEBUG_GPIO_OUT_LAT                  LATDbits.LATD7
+#define DEBUG_GPIO_OUT_PORT                 PORTDbits.RD7
+#define DEBUG_GPIO_OUT_WPU                  WPUDbits.WPUD7
+#define DEBUG_GPIO_OUT_OD                   ODCONDbits.ODCD7
+#define DEBUG_GPIO_OUT_ANS                  ANSELDbits.ANSELD7
+#define DEBUG_GPIO_OUT_SetHigh()            do { LATDbits.LATD7 = 1; } while(0)
+#define DEBUG_GPIO_OUT_SetLow()             do { LATDbits.LATD7 = 0; } while(0)
+#define DEBUG_GPIO_OUT_Toggle()             do { LATDbits.LATD7 = ~LATDbits.LATD7; } while(0)
+#define DEBUG_GPIO_OUT_GetValue()           PORTDbits.RD7
+#define DEBUG_GPIO_OUT_SetDigitalInput()    do { TRISDbits.TRISD7 = 1; } while(0)
+#define DEBUG_GPIO_OUT_SetDigitalOutput()   do { TRISDbits.TRISD7 = 0; } while(0)
+#define DEBUG_GPIO_OUT_SetPullup()          do { WPUDbits.WPUD7 = 1; } while(0)
+#define DEBUG_GPIO_OUT_ResetPullup()        do { WPUDbits.WPUD7 = 0; } while(0)
+#define DEBUG_GPIO_OUT_SetPushPull()        do { ODCONDbits.ODCD7 = 0; } while(0)
+#define DEBUG_GPIO_OUT_SetOpenDrain()       do { ODCONDbits.ODCD7 = 1; } while(0)
+#define DEBUG_GPIO_OUT_SetAnalogMode()      do { ANSELDbits.ANSELD7 = 1; } while(0)
+#define DEBUG_GPIO_OUT_SetDigitalMode()     do { ANSELDbits.ANSELD7 = 0; } while(0)
+
 // get/set LED0 aliases
 #define LED0_TRIS                 TRISEbits.TRISE0
 #define LED0_LAT                  LATEbits.LATE0

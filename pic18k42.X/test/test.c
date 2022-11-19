@@ -101,6 +101,7 @@ typedef enum
 } button_state_t;
 
 #define DEBOUNCECOUNT 1
+//#define DEBOUNCE_DEBUG
 
 static void Test_ButtonTasks(void);             // button state machine maintainer
 static bool get_button_pressed(void);           // interface func
@@ -207,6 +208,10 @@ static void Test_ButtonTasks(void)
     // local variables with limited scope
     uint64_t t0 = millis();
     
+#ifdef DEBOUNCE_DEBUG
+    DEBUG_GPIO_OUT_Toggle();
+#endif
+    
     switch(buttonState)
     {
         case BTN_INIT:
@@ -225,6 +230,10 @@ static void Test_ButtonTasks(void)
         {
             is_button_pressed = false;
             is_button_held = false;
+            
+#ifdef DEBOUNCE_DEBUG
+            //DEBUG_GPIO_OUT_SetHigh();
+#endif
             
             if(!SW0_GetValue())
             {
@@ -274,6 +283,10 @@ static void Test_ButtonTasks(void)
         {
             is_button_pressed = true;
             button_press_count++;
+            
+#ifdef DEBOUNCE_DEBUG
+            //DEBUG_GPIO_OUT_SetLow();
+#endif
             
             if(!SW0_GetValue())
             {
