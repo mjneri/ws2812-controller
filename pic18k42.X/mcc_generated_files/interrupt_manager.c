@@ -17,7 +17,7 @@
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
         Device            :  PIC18F47K42
-        Driver Version    :  2.04
+        Driver Version    :  2.12
     The generated drivers are tested against the following:
         Compiler          :  XC8 2.31 and above or later
         MPLAB 	          :  MPLAB X 5.45
@@ -53,46 +53,36 @@
 
 void  INTERRUPT_Initialize (void)
 {
-    // Disable Interrupt Priority Vectors (16CXXX Compatibility Mode)
-    INTCON0bits.IPEN = 0;
+    INTCON0bits.IPEN = 1;
+
+    bool state = (unsigned char)GIE;
+    GIE = 0;
+    IVTLOCK = 0x55;
+    IVTLOCK = 0xAA;
+    IVTLOCKbits.IVTLOCKED = 0x00; // unlock IVT
+
+    IVTBASEU = 0;
+    IVTBASEH = 0;
+    IVTBASEL = 8;
+
+    IVTLOCK = 0x55;
+    IVTLOCK = 0xAA;
+    IVTLOCKbits.IVTLOCKED = 0x01; // lock IVT
+
+    GIE = state;
+    // Assign peripheral interrupt priority vectors
+    IPR9bits.CLC3IP = 1;
+    IPR7bits.CLC2IP = 1;
+    IPR9bits.TMR6IP = 0;
+    IPR8bits.TMR5IP = 1;
+    IPR7bits.TMR4IP = 0;
+    IPR4bits.TMR1IP = 0;
 }
 
-void __interrupt() INTERRUPT_InterruptManager (void)
+void __interrupt(irq(default),base(8)) Default_ISR()
 {
-    // interrupt handler
-    if(PIE9bits.CLC3IE == 1 && PIR9bits.CLC3IF == 1)
-    {
-        CLC3_ISR();
-        // user added
-        CLC3_Callback();
-    }
-    else if(PIE7bits.CLC2IE == 1 && PIR7bits.CLC2IF == 1)
-    {
-        CLC2_ISR();
-        // user added
-        CLC2_Callback();
-    }
-    else if(PIE9bits.TMR6IE == 1 && PIR9bits.TMR6IF == 1)
-    {
-        TMR6_ISR();
-    }
-    else if(PIE8bits.TMR5IE == 1 && PIR8bits.TMR5IF == 1)
-    {
-        TMR5_ISR();
-    }
-    else if(PIE7bits.TMR4IE == 1 && PIR7bits.TMR4IF == 1)
-    {
-        TMR4_ISR();
-    }
-    else if(PIE4bits.TMR1IE == 1 && PIR4bits.TMR1IF == 1)
-    {
-        TMR1_ISR();
-    }
-    else
-    {
-        //Unhandled Interrupt
-    }
 }
+
 /**
  End of File
 */

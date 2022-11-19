@@ -92,24 +92,6 @@ void CLC2_Initialize(void);
 
 /**
   @Summary
-    CLC2 Interrupt Service Routine
-
-  @Description
-    This is the CLC2 interrupt service routine called by the Interrupt Manager. Place your CLC2 interrupt code here.
-
-  @Preconditions
-    CLC2_Initialize() function should have been called before calling this function
-
-  @Returns
-    None
-
-  @Param
-    None
-
-*/
-void CLC2_ISR(void);
-/**
-  @Summary
     Returns output pin status of the CLC module.
 
   @Description

@@ -7,8 +7,9 @@
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/buttons.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/modules/millis.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.h</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.c</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/buttons.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/modules/millis.h</file>
         </group>

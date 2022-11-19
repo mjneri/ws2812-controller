@@ -809,23 +809,6 @@ void TMR4_Period8BitSet(uint8_t periodVal);
 */
 void TMR4_LoadPeriodRegister(uint8_t periodVal);
 
-/**
-  @Summary
-    Timer Interrupt Service Routine
-
-  @Description
-    Timer Interrupt Service Routine is called by the Interrupt Manager.
-
-  @Preconditions
-    Initialize  the TMR4 module with interrupt before calling this isr.
-
-  @Param
-    None
-
-  @Returns
-    None
-*/
-void TMR4_ISR(void);
 
 /**
   @Summary

@@ -50,6 +50,7 @@
 
 #include <xc.h>
 #include "tmr4.h"
+#include "interrupt_manager.h"
 
 /**
   Section: Global Variables Definitions
@@ -162,7 +163,7 @@ void TMR4_LoadPeriodRegister(uint8_t periodVal)
    TMR4_Period8BitSet(periodVal);
 }
 
-void TMR4_ISR(void)
+void __interrupt(irq(TMR4),base(8),low_priority) TMR4_ISR()
 {
 
     // clear the TMR4 interrupt flag

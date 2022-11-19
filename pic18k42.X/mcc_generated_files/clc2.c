@@ -50,6 +50,7 @@
 
 #include <xc.h>
 #include "clc2.h"
+#include "interrupt_manager.h"
 
 /**
   Section: CLC2 APIs
@@ -86,10 +87,13 @@ void CLC2_Initialize(void)
     PIE7bits.CLC2IE = 1;
 }
 
-void CLC2_ISR(void)
+void __interrupt(irq(CLC2),base(8)) CLC2_ISR()
 {
     // Clear the CLC interrupt flag
     PIR7bits.CLC2IF = 0;
+    
+    // User added (2022-11-19)
+    CLC2_Callback();
 }
 
 bool CLC2_OutputStatusGet(void)

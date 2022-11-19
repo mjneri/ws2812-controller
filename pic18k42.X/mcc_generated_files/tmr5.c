@@ -50,6 +50,7 @@
 
 #include <xc.h>
 #include "tmr5.h"
+#include "interrupt_manager.h"
 
 /**
   Section: Global Variables Definitions
@@ -161,7 +162,7 @@ uint8_t TMR5_CheckGateValueStatus(void)
     return (T5GCONbits.T5GVAL);
 }
 
-void TMR5_ISR(void)
+void __interrupt(irq(TMR5),base(8)) TMR5_ISR()
 {
 
     // Clear the TMR5 interrupt flag

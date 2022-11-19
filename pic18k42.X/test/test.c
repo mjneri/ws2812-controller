@@ -135,18 +135,10 @@ void TEST_Function(void)
     // Test SPI LED functions
     //TEST_PIXELS();
     
-    
-    // Register callbacks for rotary encoder debouncing
-    // Note: TMR4 and TMR6 period is 1ms
-    //TMR4_SetInterruptHandler(RotClkDebounce);
-    //TMR6_SetInterruptHandler(RotDTDebounce);
-    
     // Test the rotary encoder
     //TEST_ROTARYENCODER();
     
-    
     // Register callbacks for millis() & run test code
-    //millis_Initialize();
     //TEST_MILLIS();
     
     // Test the button debouncing state machine code
@@ -326,6 +318,8 @@ static void Test_ButtonTasks(void)
 
 static void TEST_MILLIS(void)
 {
+    millis_Initialize();
+    
     OLED_Initialize();
     OLED_ClearDisplay();
     
@@ -349,6 +343,11 @@ static void TEST_MILLIS(void)
 // Local function definitions
 static void TEST_ROTARYENCODER(void)
 {
+    // Register callbacks for rotary encoder debouncing
+    // Note: TMR4 and TMR6 period is 1ms
+    TMR4_SetInterruptHandler(RotClkDebounce);
+    TMR6_SetInterruptHandler(RotDTDebounce);
+    
     OLED_Initialize();
     OLED_ClearDisplay();
     

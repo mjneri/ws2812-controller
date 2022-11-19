@@ -50,6 +50,7 @@
 
 #include <xc.h>
 #include "clc3.h"
+#include "interrupt_manager.h"
 
 /**
   Section: CLC3 APIs
@@ -86,10 +87,13 @@ void CLC3_Initialize(void)
     PIE9bits.CLC3IE = 1;
 }
 
-void CLC3_ISR(void)
+void __interrupt(irq(CLC3),base(8)) CLC3_ISR()
 {
     // Clear the CLC interrupt flag
     PIR9bits.CLC3IF = 0;
+    
+    // User added (2022-11-19)
+    CLC3_Callback();
 }
 
 bool CLC3_OutputStatusGet(void)

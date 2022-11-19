@@ -92,24 +92,6 @@ void CLC3_Initialize(void);
 
 /**
   @Summary
-    CLC3 Interrupt Service Routine
-
-  @Description
-    This is the CLC3 interrupt service routine called by the Interrupt Manager. Place your CLC3 interrupt code here.
-
-  @Preconditions
-    CLC3_Initialize() function should have been called before calling this function
-
-  @Returns
-    None
-
-  @Param
-    None
-
-*/
-void CLC3_ISR(void);
-/**
-  @Summary
     Returns output pin status of the CLC module.
 
   @Description
