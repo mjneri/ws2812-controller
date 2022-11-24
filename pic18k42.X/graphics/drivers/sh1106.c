@@ -149,6 +149,9 @@ void OLED_DrawBitmap(void)
     for(uint8_t i = 0; i < SH1106_PAGES; i++)
     {
         // Set page and column addresses
+        // Note: Shift left by 3; e.g., when i==2, we want to be at page 2 (or row 16)
+        // OLED_SetCursor assumes we pass row values, so we convert the page to a row
+        // value by shifting left 3 bits (hope this makes sense)
         OLED_SetCursor((i << 3), 0);
         
         // Open the I2C Bus
