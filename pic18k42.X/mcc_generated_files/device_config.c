@@ -13,12 +13,12 @@
   @Description:
     This header file provides implementations for driver APIs for all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.8
         Device            :  PIC18F47K42
         Driver Version    :  2.00
     The generated drivers are tested against the following:
-        Compiler          :  XC8 2.31 and above or later
-        MPLAB             :  MPLAB X 5.45
+        Compiler          :  XC8 2.36 and above or later
+        MPLAB             :  MPLAB X 6.00
 */
 
 /*
@@ -87,8 +87,8 @@
 #pragma config WRTAPP = OFF    // Application Block write protection bit->Application Block not write protected
 
 // CONFIG4H
-#pragma config WRTB = OFF    // Configuration Register Write Protection bit->Configuration registers (300000-30000Bh) not write-protected
-#pragma config WRTC = OFF    // Boot Block Write Protection bit->Boot Block (000000-0007FFh) not write-protected
+#pragma config WRTB = OFF    // Boot Block Write Protection bit->Boot Block not write-protected
+#pragma config WRTC = OFF    // Configuration Register Write Protection bit->Configuration registers not write-protected
 #pragma config WRTD = OFF    // Data EEPROM Write Protection bit->Data EEPROM not write-protected
 #pragma config WRTSAF = OFF    // SAF Write protection bit->SAF not Write Protected
 #pragma config LVP = ON    // Low Voltage Programming Enable bit->Low voltage programming enabled. MCLR/VPP pin function is MCLR. MCLRE configuration bit is ignored

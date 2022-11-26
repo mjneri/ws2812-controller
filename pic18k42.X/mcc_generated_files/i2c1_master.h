@@ -13,12 +13,12 @@
   @Description
     This header file provides APIs for driver for I2C1.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.8
         Device            :  PIC18F47K42
         Driver Version    :  1.0.0
     The generated drivers are tested against the following:
-        Compiler          :  XC8 2.31 and above or later
-        MPLAB             :  MPLAB X 5.45
+        Compiler          :  XC8 2.36 and above or later
+        MPLAB             :  MPLAB X 6.00
 */
 
 /*
@@ -202,5 +202,23 @@ void I2C1_SetDataNackCallback(i2c1_callback_t cb, void *ptr);
  * \return Nothing
  */
 void I2C1_SetTimeoutCallback(i2c1_callback_t cb, void *ptr);
+
+/**
+ * \brief I2C1 Interrupt Handler
+ *        This is a pointer to the function that will be called upon I2C1 interrupt
+ * \param[in] None
+ *
+ * \return Nothing
+ */
+void (*I2C1_InterruptHandler)(void);
+
+/**
+ * \brief Set I2C1 Interrupt Handler
+ * This API sets the function to be called upon I2C1 interrupt
+ * \param[in] None
+ *
+ * \return Nothing
+ */
+void I2C1_SetInterruptHandler(void (* InterruptHandler)(void));
 
 #endif //I2C1_MASTER_H

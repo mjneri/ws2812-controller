@@ -13,12 +13,12 @@
   @Description
     This header file provides implementations for driver APIs for I2C1.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.7
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.8
         Device            :  PIC18F47K42
-        Driver Version    :  1.0.2
+        Driver Version    :  1.0.1
     The generated drivers are tested against the following:
-        Compiler          :  XC8 2.31 and above or later
-        MPLAB             :  MPLAB X 5.45
+        Compiler          :  XC8 2.36 and above or later
+        MPLAB             :  MPLAB X 6.00
 */
 
 /*
@@ -100,7 +100,7 @@ typedef struct
 } i2c1_status_t;
 
 static void I2C1_SetCallback(i2c1_callbackIndex_t idx, i2c1_callback_t cb, void *ptr);
-static void I2C1_Poller(void);
+static void I2C1_MasterIsr(void);
 static inline void I2C1_ClearInterruptFlags(void);
 static inline void I2C1_MasterFsm(void);
 
@@ -186,8 +186,8 @@ void I2C1_Initialize()
     I2C1CON0 = 0x04;
     //ACKCNT Acknowledge; ACKDT Acknowledge; ACKSTAT ACK received; ACKT 0; RXO 0; TXU 0; CSD Clock Stretching enabled; 
     I2C1CON1 = 0x80;
-    //ACNT disabled; GCEN disabled; FME disabled; ABD enabled; SDAHT 300 ns hold time; BFRET 8 I2C Clock pulses; 
-    I2C1CON2 = 0x18;
+    //ACNT disabled; GCEN disabled; FME enabled; ABD enabled; SDAHT 300 ns hold time; BFRET 8 I2C Clock pulses; 
+    I2C1CON2 = 0x20;
     //CLK MFINTOSC; 
     I2C1CLK = 0x03;
     //CNTIF 0; ACKTIF 0; WRIF 0; ADRIF 0; PCIF 0; RSCIF 0; SCIF 0; 
@@ -226,9 +226,11 @@ i2c1_error_t I2C1_Open(i2c1_address_t address)
         I2C1_Status.callbackPayload[I2C1_DATA_NACK] = NULL;
         I2C1_Status.callbackTable[I2C1_TIMEOUT]=I2C1_CallbackReturnReset;
         I2C1_Status.callbackPayload[I2C1_TIMEOUT] = NULL;
-        
+
+        I2C1_SetInterruptHandler(I2C1_MasterIsr);
         I2C1_MasterClearIrq();
         I2C1_MasterOpen();
+        I2C1_MasterEnableIrq();
         returnValue = I2C1_NOERR;
     }
     return returnValue;
@@ -268,7 +270,6 @@ i2c1_error_t I2C1_MasterOperation(bool read)
             I2C1_Status.state = I2C1_TX;
             I2C1_DO_SEND_ADR_WRITE();
         }
-        I2C1_Poller();
     }
     return returnValue;
 }
@@ -325,6 +326,11 @@ void I2C1_SetTimeoutCallback(i2c1_callback_t cb, void *ptr)
     I2C1_SetCallback(I2C1_TIMEOUT, cb, ptr);
 }
 
+void I2C1_SetInterruptHandler(void (* InterruptHandler)(void))
+{
+    I2C1_InterruptHandler = InterruptHandler;
+}
+
 static void I2C1_SetCallback(i2c1_callbackIndex_t idx, i2c1_callback_t cb, void *ptr)
 {
     if(cb)
@@ -339,13 +345,9 @@ static void I2C1_SetCallback(i2c1_callbackIndex_t idx, i2c1_callback_t cb, void 
     }
 }
 
-static void I2C1_Poller(void)
+static void I2C1_MasterIsr()
 {
-    while(I2C1_Status.busy)
-    {
-        I2C1_MasterWaitForEvent();
-        I2C1_MasterFsm();
-    }
+    I2C1_MasterFsm();
 }
 
 static inline void I2C1_MasterFsm(void)
@@ -467,7 +469,7 @@ static i2c1_fsm_states_t I2C1_DO_TX_EMPTY(void)
             return I2C1_SEND_RESTART_READ;
         case I2C1_CONTINUE:
             // Avoid the counter stop condition , Counter is incremented by 1
-            I2C1_MasterSetCounter((uint8_t) I2C1_Status.data_length + 1);
+            I2C1_MasterSetCounter((uint8_t) (I2C1_Status.data_length + 1));
             return I2C1_TX;
         default:
         case I2C1_STOP:
@@ -489,7 +491,7 @@ static i2c1_fsm_states_t I2C1_DO_RX_EMPTY(void)
             return I2C1_SEND_RESTART_READ;
         case I2C1_CONTINUE:
             // Avoid the counter stop condition , Counter is incremented by 1
-            I2C1_MasterSetCounter((uint8_t) (I2C1_Status.data_length + 1));
+            I2C1_MasterSetCounter((uint8_t) I2C1_Status.data_length + 1);
             return I2C1_RX;
         default:
         case I2C1_STOP:
@@ -627,7 +629,6 @@ i2c1_operations_t I2C1_CallbackRestartRead(void *funPtr)
 }
 
 
-
 /* I2C1 Register Level interfaces */
 static inline bool I2C1_MasterOpen(void)
 {
@@ -642,9 +643,9 @@ static inline bool I2C1_MasterOpen(void)
         //Count register 
         I2C1CNT = 0xFF;
         //Clock PadReg Configuration
-        RC3I2C   = 0x51;
+        RC3I2C  = 0x51;
         //Data PadReg Configuration
-        RC4I2C   = 0x51;
+        RC4I2C  = 0x51;
         //Enable I2C1
         I2C1CON0bits.EN = 1;
         return true;
@@ -775,7 +776,7 @@ static inline void I2C1_MasterClearNackFlag(void)
 static inline void I2C1_MasterEnableIrq(void)
 {
     PIE3bits.I2C1IE    = 1;
-    PIE3bits.I2C1EIE    = 1;
+    PIE3bits.I2C1EIE   = 1;
     PIE2bits.I2C1RXIE  = 1;
     PIE3bits.I2C1TXIE  = 1;
 
@@ -792,7 +793,7 @@ static inline bool I2C1_MasterIsIrqEnabled(void)
 static inline void I2C1_MasterDisableIrq(void)
 {
     PIE3bits.I2C1IE    = 0;
-    PIE3bits.I2C1EIE    = 0;
+    PIE3bits.I2C1EIE   = 0;
     PIE2bits.I2C1RXIE  = 0;
     PIE3bits.I2C1TXIE  = 0;
     I2C1PIEbits.SCIE = 0;
@@ -835,4 +836,9 @@ static inline void I2C1_MasterWaitForEvent(void)
             break;
         }
     }
+}
+
+void __interrupt(irq(I2C1TX,I2C1RX,I2C1E,I2C1),base(8),low_priority) I2C1_ISR()
+{
+    I2C1_InterruptHandler();
 }

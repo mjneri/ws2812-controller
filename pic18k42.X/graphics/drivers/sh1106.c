@@ -77,6 +77,9 @@ void OLED_Initialize(void)
     I2C1_SetTimeoutCallback(NULL, NULL);
     
     OLED_Send(OLED_InitCommands, sizeof(OLED_InitCommands));
+    
+    // A note: once this driver is non-blocking, add a while loop here
+    // so OLED_Initialize does not exit until the commands are sent.
     return;
 }
 
@@ -104,6 +107,7 @@ void OLED_Recv(uint8_t *buffer, size_t bufSize)
     return;                                 // Data can be accessed through the buffer.
 }
 
+// Note: Not needed anymore; Gfx_clear and Gfx_render can be used instead.
 void OLED_ClearDisplay(void)
 {   
     // Clear the display by writing 0's to the SH1106 RAM
@@ -144,6 +148,7 @@ void OLED_SetCursor(uint8_t row, uint8_t col)
     while(I2C1_BUSY == I2C1_Close());       // Wait until the I2C bus can be closed
 }
 
+// Note: Not needed anymore; Gfx_draw and Gfx_render can be used instead.
 void OLED_DrawBitmap(void)
 {
     for(uint8_t i = 0; i < SH1106_PAGES; i++)
@@ -165,6 +170,7 @@ void OLED_DrawBitmap(void)
     }
 }
 
+// Note: Not needed anymore; Gfx_text and Gfx_render can be used instead.
 void OLED_DrawFont(uint8_t row, uint8_t col, char c, uint8_t *font, bool invertBG)
 {
     // To move characters downward, each byte must be left shifted.
@@ -261,6 +267,7 @@ void OLED_DrawFont(uint8_t row, uint8_t col, char c, uint8_t *font, bool invertB
     }
 }
 
+// Note: Not needed anymore; Gfx_text and Gfx_render can be used instead.
 void OLED_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, bool invertBG)
 {
     // Assumption: row values are 0, 8, 16, 24, 32, 40, etc. to make sure each byte
@@ -276,6 +283,7 @@ void OLED_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, bool in
     }
 }
 
+// Note: Not needed anymore; Gfx_pixel and Gfx_render can be used instead.
 void OLED_SetPixel(uint8_t row, uint8_t col, uint8_t pixStatus)
 {
     // Set pixel function without using local frame buffer.
