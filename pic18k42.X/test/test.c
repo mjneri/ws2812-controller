@@ -98,7 +98,7 @@ typedef enum
     BTN_DEBOUNCE,
     BTN_PRESSED,
     BTN_HELD
-} button_state_t;
+} BUTTON_STATE;
 
 #define DEBOUNCECOUNT 1
 //#define DEBOUNCE_DEBUG
@@ -114,7 +114,7 @@ static bool is_button_held = false;
 static uint32_t button_press_count = 0;         // how many button presses?
 static uint8_t pressDebCount = 0;               // used for debouncing button presses
 static uint8_t unpressDebCount = 0;             // for debouncing button unpresses
-static button_state_t buttonState = BTN_INIT;
+static BUTTON_STATE buttonState = BTN_INIT;
 
 static void TEST_BUTTON_SM(void);
 
@@ -155,11 +155,11 @@ static void TEST_BUTTON_SM(void)
     
     __delay_ms(100);
     OLED_Initialize();
-    OLED_ClearDisplay();
+//    OLED_ClearDisplay();
     
-    OLED_DrawBitmap();
-    __delay_ms(1000);
-    OLED_ClearDisplay();
+//    OLED_DrawBitmap();
+//    __delay_ms(1000);
+//    OLED_ClearDisplay();
     
     char teststring[64];
     
@@ -167,11 +167,11 @@ static void TEST_BUTTON_SM(void)
     {
         Test_ButtonTasks();
         
-        sprintf(teststring, "%lu", get_button_presscount());
-        OLED_DrawString(0, 0, teststring, font5x7, 0);
-        
-        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
-        OLED_DrawString(8, 0, teststring, font5x7, 0);
+//        sprintf(teststring, "%lu", get_button_presscount());
+//        OLED_DrawString(0, 0, teststring, font5x7, 0);
+//        
+//        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
+//        OLED_DrawString(8, 0, teststring, font5x7, 0);
     }
 }
 
@@ -321,11 +321,11 @@ static void TEST_MILLIS(void)
     millis_Initialize();
     
     OLED_Initialize();
-    OLED_ClearDisplay();
-    
-    OLED_DrawBitmap();
-    __delay_ms(1000);
-    OLED_ClearDisplay();
+//    OLED_ClearDisplay();
+//    
+//    OLED_DrawBitmap();
+//    __delay_ms(1000);
+//    OLED_ClearDisplay();
     
     char teststring[64];
     
@@ -335,8 +335,8 @@ static void TEST_MILLIS(void)
     
     while(1)
     {
-        sprintf(teststring, "%llu", millis() - init_millis);
-        OLED_DrawString(0, 0, teststring, font5x7, 0);
+//        sprintf(teststring, "%llu", millis() - init_millis);
+//        OLED_DrawString(0, 0, teststring, font5x7, 0);
     }
 }
 
@@ -348,12 +348,12 @@ static void TEST_ROTARYENCODER(void)
     TMR4_SetInterruptHandler(RotClkDebounce);
     TMR6_SetInterruptHandler(RotDTDebounce);
     
-    OLED_Initialize();
-    OLED_ClearDisplay();
-    
-    OLED_DrawBitmap();
-    __delay_ms(1000);
-    OLED_ClearDisplay();
+//    OLED_Initialize();
+//    OLED_ClearDisplay();
+//    
+//    OLED_DrawBitmap();
+//    __delay_ms(1000);
+//    OLED_ClearDisplay();
     
     // Quick software thing
     uint32_t i = 0;
@@ -361,19 +361,19 @@ static void TEST_ROTARYENCODER(void)
     while(1)
     {
         // Insert code interpreting the decoded signals on CLC2OUT and CLC3OUT
-        sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
-        OLED_DrawString(0, 0, teststring, font5x7, 0);
+//        sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
+//        OLED_DrawString(0, 0, teststring, font5x7, 0);
     }
 }
 
 static void TEST_OLED(void)
 {
     OLED_Initialize();
-    OLED_ClearDisplay();
-    
-    OLED_DrawBitmap();
-    __delay_ms(1000);
-    OLED_ClearDisplay();
+//    OLED_ClearDisplay();
+//    
+//    OLED_DrawBitmap();
+//    __delay_ms(1000);
+//    OLED_ClearDisplay();
 //    OLED_DrawString(0, 20, "Hello world!", font5x7, false);
 //    OLED_DrawString(9, 0, "The quick brown fox", font5x7, true);
     
@@ -437,12 +437,12 @@ static void TEST_OLED(void)
                 case 2:
                 {
                     // About
-                    OLED_ClearDisplay();
-                    OLED_DrawString(0, 46, "About", font5x7, 0);
-                    OLED_DrawString(8, 0, "A personal project", font5x7, 0);
-                    OLED_DrawString(16, 0, "by MJ Neri", font5x7, 0);
-                    OLED_DrawString(24, 0, "github.com/mjneri/", font5x7, 0);
-                    OLED_DrawString(32, 3, "ws2812-controller", font5x7, 0);
+//                    OLED_ClearDisplay();
+//                    OLED_DrawString(0, 46, "About", font5x7, 0);
+//                    OLED_DrawString(8, 0, "A personal project", font5x7, 0);
+//                    OLED_DrawString(16, 0, "by MJ Neri", font5x7, 0);
+//                    OLED_DrawString(24, 0, "github.com/mjneri/", font5x7, 0);
+//                    OLED_DrawString(32, 3, "ws2812-controller", font5x7, 0);
                     break;
                 }
                 default:
@@ -474,10 +474,10 @@ static void TEST_PIXELS(void)
 // Other local test functions
 void displayMenu(uint8_t selectedOption)
 {
-    OLED_DrawString(0, 0, "Main Menu", font5x7, 0);
-    OLED_DrawString(8, 5, "Select LED Profile", font5x7, (selectedOption == 0));
-    OLED_DrawString(16, 5, "Adjust LED Count", font5x7, (selectedOption == 1));
-    OLED_DrawString(24, 5, "About", font5x7, (selectedOption == 2));
+//    OLED_DrawString(0, 0, "Main Menu", font5x7, 0);
+//    OLED_DrawString(8, 5, "Select LED Profile", font5x7, (selectedOption == 0));
+//    OLED_DrawString(16, 5, "Adjust LED Count", font5x7, (selectedOption == 1));
+//    OLED_DrawString(24, 5, "About", font5x7, (selectedOption == 2));
 }
 
 static void profitestCometsTail(uint8_t tailLen)

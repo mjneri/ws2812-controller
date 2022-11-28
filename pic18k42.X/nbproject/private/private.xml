@@ -4,18 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/examples/i2c1_master_example.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/buttons.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/modules/millis.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/canvas/fonts.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/i2c1_master.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/gui/buttons.h</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/canvas/fonts.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test_2.c</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/i2c1_master.h</file>
-            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/leds/spi_led.h</file>
             <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/mcc_generated_files/i2c1_master.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.c</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/graphics/drivers/sh1106.h</file>
+            <file>file:/C:/Users/MJ/Documents/Github/ws2812-controller/pic18k42.X/test/test_2.c</file>
         </group>
     </open-files>
 </project-private>

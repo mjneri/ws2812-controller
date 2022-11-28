@@ -51,6 +51,8 @@
 #define SH1106_ONECOMMAND   0x80            // D/nC bit is cleared; Co bit is 1; for sending single commands
 #define SH1106_ONEDATA      0xC0            // D/nC bit is set; Co bit is 1; for sending single data
 
+#define RINGBUF_MAXSIZE     32
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Macros
@@ -109,6 +111,50 @@ typedef enum
             
 } SH1106_CMD;
 
+/**
+ * @brief       OLED state machine states
+ * 
+ * @description This enumeration defines the valid states for the state machine
+ * 
+ */
+
+typedef enum
+{
+    OLED_INIT,
+    OLED_WAIT_FOR_OP,
+    OLED_START_OP,
+    OLED_CHECK_OP_STAT,
+    OLED_WRAP_UP_OP
+} OLED_STATE;
+
+/**
+ * @brief       OLED Operation Queue
+ * 
+ * @description This struct defines the elements that need to be stored in a ring buffer
+ *              such as the data buffer address, its size, and what type of operation it is.
+ */
+typedef struct
+{
+    uint8_t *dBuf;      // Pointer to buffer; for writes, data is taken from here; for reads, data is stored here
+    uint16_t bufSize;   // Defined as 16-bit so max. buffer size is not limited to 255
+    bool readOp;        // If true, the operation is a read. Otherwise, it's a write.
+} oled_op_queue_t;
+
+/**
+ * @brief       OLED Ring buffer
+ * 
+ * @description This struct defines the ring buffer itself and the necessary attributes for
+ *              performing operations with it.
+ */
+typedef struct
+{
+    volatile oled_op_queue_t buffer[RINGBUF_MAXSIZE];
+    uint8_t rdIndex;            // Index pointing to data to be read
+    uint8_t wrIndex;            // Index pointing to data to be written
+    bool isEmpty;               // Flag; set when the ring buffer is empty
+    bool isFull;                // Flag; set when the ring buffer is full
+    uint8_t dataAmt;            // Determines how many ring buffer elements are stored
+} oled_ring_buf_t;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -117,15 +163,12 @@ typedef enum
 // *****************************************************************************
 
 void OLED_Initialize(void);
-void OLED_Send(uint8_t *buffer, size_t bufSize);
-void OLED_Recv(uint8_t *buffer, size_t bufSize);
+int OLED_Send(uint8_t *buffer, size_t bufSize);
+int OLED_Recv(uint8_t *buffer, size_t bufSize);
 
-void OLED_ClearDisplay(void);
-void OLED_SetCursor(uint8_t row, uint8_t col);
-void OLED_DrawBitmap(void);
-void OLED_DrawFont(uint8_t row, uint8_t col, char c, uint8_t *font, bool invertBG);
-void OLED_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, bool invertBG);
-void OLED_SetPixel(uint8_t row, uint8_t col, uint8_t pixStatus);
+int OLED_SetCursor(uint8_t row, uint8_t col);
+
+void OLED_Tasks(void);
 
 #endif /*_SH1106_H_*/
 

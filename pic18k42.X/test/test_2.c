@@ -39,7 +39,7 @@ void TEST_2_Function(void)
 static void OLED_TEST(void)
 {
     OLED_Initialize();
-    OLED_ClearDisplay();
+    //OLED_ClearDisplay();
     
     Gfx_clear();
     
