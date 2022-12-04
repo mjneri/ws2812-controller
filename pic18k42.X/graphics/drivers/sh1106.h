@@ -51,7 +51,8 @@
 #define SH1106_ONECOMMAND   0x80            // D/nC bit is cleared; Co bit is 1; for sending single commands
 #define SH1106_ONEDATA      0xC0            // D/nC bit is set; Co bit is 1; for sending single data
 
-#define RINGBUF_MAXSIZE     32
+#define RINGBUF_MAXSIZE     16
+#define ARRAY_MAXSIZE       132
 
 // *****************************************************************************
 // *****************************************************************************
@@ -135,7 +136,7 @@ typedef enum
  */
 typedef struct
 {
-    uint8_t *dBuf;      // Pointer to buffer; for writes, data is taken from here; for reads, data is stored here
+    uint8_t dBuf[ARRAY_MAXSIZE];// Array; for writes, data is taken from here; for reads, data is stored here
     uint16_t bufSize;   // Defined as 16-bit so max. buffer size is not limited to 255
     bool readOp;        // If true, the operation is a read. Otherwise, it's a write.
 } oled_op_queue_t;
@@ -162,13 +163,71 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
+/**
+ * Initializes the SH1106 OLED Driver
+ */
 void OLED_Initialize(void);
-int OLED_Send(uint8_t *buffer, size_t bufSize);
-int OLED_Recv(uint8_t *buffer, size_t bufSize);
 
+/**
+ * Enters data into the ring buffer to be processed by
+ * the state machine.
+ */
+int OLED_Send(uint8_t *buffer, size_t bufSize);
+
+/**
+ * Enters a set cursor command into the ring buffer, to be
+ * processed by the state machine
+ */
 int OLED_SetCursor(uint8_t row, uint8_t col);
 
+/**
+ * Indicates if the OLED state machine is busy with an I2C transfer
+ * @return false - if the state machine is in OLED_WAIT_FOR_OP or OLED_INIT
+ * @return true otherwise
+ */
+bool OLED_IsBusy(void);
+
+/**
+ * OLED state machine maintainer.
+ */
 void OLED_Tasks(void);
+
+/*
+ * NOTE: OLED_Recv is not usable right now. The application will not use this function
+ * anyway.
+ * In the future, I might implement callback functions within sh1106.c so modules are
+ * alerted that the read operation has completed.
+ * Example pseudocode:
+ * int OLED_Callback(void *op, void *data)
+ * {
+ *      switch(*op)
+ *      {
+ *          OLED_READ:  // do something
+ *          OLED_WRITE: // do something
+ *      }
+ *      return;
+ * }
+ * 
+ * void OLED_Initialize(void)
+ * {
+ *      OLED_RegisterCallback(OLED_Callback);
+ *      // ...
+ * }
+ * 
+ * void OLED_Tasks(void)
+ * {
+ *      // ...
+ *      OLED_WRAP_UP_OP:
+ *      {
+ *          if(cb != NULL)
+ *          {
+ *              callback(op, data);
+ *          }
+ *      }
+ *      // ...
+ * }
+ */
+int OLED_Recv(uint8_t *buffer, size_t bufSize);
 
 #endif /*_SH1106_H_*/
 

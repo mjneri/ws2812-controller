@@ -21,5 +21,8 @@
 #include <stdint.h>
 
 extern const uint8_t Owl[];
+extern const uint8_t nailandgear[];
+extern const uint8_t pochita[];
+extern const uint8_t hollowknight[];
 
 #endif /*_BITMAP_H_*/

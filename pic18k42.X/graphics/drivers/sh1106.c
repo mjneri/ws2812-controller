@@ -66,8 +66,10 @@ static const SH1106_CMD OLED_InitCommands[] =
     (SETSTARTLINE | 0x00)
 };
 
-// Private "global" variable to store buffer size accessible from callback functions
-static size_t gBufSize = 0;
+// Private global variables to store ring buffer entries; implemented as a workaround to error 712
+// (a.k.a. can't generate code for this expression)
+static oled_op_queue_t gWriteBuf = {0};
+static oled_op_queue_t gReadBuf = {0};
 
 // Determines if an operation has completed
 static volatile bool isOpComplete = false;
@@ -114,10 +116,8 @@ static inline void resetRingBuf(void)
     oledData.dataAmt = 0;
 }
 
-static oled_op_queue_t readRingBuf(void)
-{
-    oled_op_queue_t returnData = {0};
-    
+static void readRingBuf(void)
+{   
     if(oledData.isEmpty)
     {
         // Ring buffer is empty, do nothing
@@ -125,7 +125,7 @@ static oled_op_queue_t readRingBuf(void)
     else
     {
         // Ring buffer contains some data.
-        returnData = oledData.buffer[oledData.rdIndex];
+        gReadBuf = oledData.buffer[oledData.rdIndex];
         oledData.rdIndex = (oledData.rdIndex + 1) % RINGBUF_MAXSIZE;
         
         // Since 1 byte has been read, the buffer is no longer full
@@ -139,10 +139,10 @@ static oled_op_queue_t readRingBuf(void)
         }
     }
     
-    return returnData;
+    return;
 }
 
-static int writeRingBuf(oled_op_queue_t data)
+static int writeRingBuf(void)
 {
     if(oledData.isFull)
     {
@@ -152,7 +152,7 @@ static int writeRingBuf(oled_op_queue_t data)
     else
     {
         // Write to the ring buffer
-        oledData.buffer[oledData.wrIndex] = data;
+        oledData.buffer[oledData.wrIndex] = gWriteBuf;
         oledData.wrIndex = (oledData.wrIndex + 1) % RINGBUF_MAXSIZE;
         
         // Since 1 byte has been written, the buffer is no longer empty
@@ -201,94 +201,107 @@ void OLED_Initialize(void)
 int OLED_Send(uint8_t *buffer, size_t bufSize)
 {   
     // Insert data into the ring buffer
-    oled_op_queue_t temp = {0};
-    temp.bufSize = bufSize;
-    temp.dBuf = buffer;
-    temp.readOp = false;
+    gWriteBuf.bufSize = bufSize;
+    memcpy(gWriteBuf.dBuf, buffer, bufSize);
+    gWriteBuf.readOp = false;
     
-    return writeRingBuf(temp);
+    return writeRingBuf();
+    
 }
 
-// NOTE: refactor the next two functions to make use of the ring buffer.
+// NOTE: see sh1106.h for comments about OLED_Recv
 int OLED_Recv(uint8_t *buffer, size_t bufSize)
 {
-    // Open the I2C Bus
-    I2C1_Open(SH1106_I2C_ADDR);
+    // Insert data into the ring buffer
+    gReadBuf.bufSize = bufSize;
+    memcpy(gReadBuf.dBuf, buffer, bufSize);
+    gReadBuf.readOp = true;
     
-    // Pass buffer address to I2C PLIB
-    I2C1_SetBuffer(buffer, bufSize);
-    
-    I2C1_SetDataCompleteCallback(OpCompleteHandler, NULL);
-    
-    I2C1_MasterRead();                      // Initiate I2C Read
-    //while(I2C1_BUSY == I2C1_Close());       // Wait until the I2C bus can be closed.
-    return;                                 // Data can be accessed through the buffer.
+    return writeRingBuf();
 }
 
 int OLED_SetCursor(uint8_t row, uint8_t col)
-{
-    // Open the I2C Bus
-//    I2C1_Open(SH1106_I2C_ADDR);
-//    
-//    // Set cursor position
-//    I2C1_SetBuffer((uint8_t[])
-//        {SH1106_COMMANDBYTE, \
-//         (PAGEADDR | (row >> 3)), \
-//         (SETCOLUMNADDRLOW | ((col + SH1106_SEGOFFSET) & 0x0F)), \
-//         (SETCOLUMNADDRHIGH | (col + SH1106_SEGOFFSET) >> 4)}, 4);
-//        
-//    I2C1_SetDataCompleteCallback(OpCompleteHandler, NULL);
-//    I2C1_MasterWrite();                     // Initialize the I2C Write.
-    //while(I2C1_BUSY == I2C1_Close());       // Wait until the I2C bus can be closed
-    
+{   
     // Insert data into the ring buffer
-    oled_op_queue_t temp = {0};
-    temp.bufSize = 4;
-    temp.dBuf = (uint8_t[])
-        {SH1106_COMMANDBYTE, \
-         (PAGEADDR | (row >> 3)), \
-         (SETCOLUMNADDRLOW | ((col + SH1106_SEGOFFSET) & 0x0F)), \
-         (SETCOLUMNADDRHIGH | (col + SH1106_SEGOFFSET) >> 4)};
-    temp.readOp = false;
+    uint8_t command[] = {SH1106_COMMANDBYTE, \
+                        (PAGEADDR | (row >> 3)),               \
+                        (SETCOLUMNADDRLOW | ((col + SH1106_SEGOFFSET) & 0x0F)), \
+                        (SETCOLUMNADDRHIGH | (col + SH1106_SEGOFFSET) >> 4)};
     
-    return writeRingBuf(temp);
+    gWriteBuf.bufSize = 4;
+    memcpy(gWriteBuf.dBuf, command, sizeof(command));
+    gWriteBuf.readOp = false;
+    
+    return writeRingBuf();
 }
 
-static int OLED_Stop(void)
+bool OLED_IsBusy(void)
 {
-    if(I2C1_BUSY == I2C1_Close())
+    if((oledState == OLED_WAIT_FOR_OP) || (oledState == OLED_INIT))
     {
-        return -1;
+        return false;
     }
-    
-    return 0;
+    else
+    {
+        return true;
+    }
 }
 
 void OLED_Tasks(void)
 {
+    oled_op_queue_t smData = {0};
+    
     switch(oledState)
     {
-        OLED_INIT:
+        case OLED_INIT:
         {
-            // NOTE: Send initialization commands here?
-            
             oledState = OLED_WAIT_FOR_OP;
             break;
         }
         
-        OLED_WAIT_FOR_OP:
+        case OLED_WAIT_FOR_OP:
         {
+            if(!oledData.isEmpty)
+            {
+                oledState = OLED_START_OP;
+            }
+            else
+            {
+                oledState = OLED_WAIT_FOR_OP;
+            }
             break;
         }
         
-        OLED_START_OP:
-        {
-            // REgister callback here too.
-            // Read from the ring buf, then check for the operation type
+        case OLED_START_OP:
+        {     
+            // Read from the ring buffer
+            readRingBuf();
+            smData = gReadBuf;
+            
+            // Open the I2C bus
+            I2C1_Open(SH1106_I2C_ADDR);
+            
+            // Pass buffer address to I2C PLIB
+            I2C1_SetBuffer(smData.dBuf, smData.bufSize);
+            
+            // Register callback
+            I2C1_SetDataCompleteCallback(OpCompleteHandler, NULL);
+            
+            // Initiate the operation
+            if(smData.readOp)
+            {
+                I2C1_MasterRead();      // See OLED_Recv note in sh1106.h; I added this here for completeness
+            }
+            else
+            {
+                I2C1_MasterWrite();
+            }
+            
+            oledState = OLED_CHECK_OP_STAT;
             break;
         }
         
-        OLED_CHECK_OP_STAT:
+        case OLED_CHECK_OP_STAT:
         {
             if(isOpComplete)
             {
@@ -296,19 +309,25 @@ void OLED_Tasks(void)
                 isOpComplete = false;
                 oledState = OLED_WRAP_UP_OP;
             }
+            else
+            {
+                oledState = OLED_CHECK_OP_STAT;
+            }
             break;
         }
         
-        OLED_WRAP_UP_OP:
+        case OLED_WRAP_UP_OP:
         {
-            // Close the I2C bus? or define a function like OLED_Stop to close the transaction?
-            // Note: OLED_Stop has been defined.
-            // Check here for OLED Stop return value
             // Dont move to next state if the bus is still busy for some reason
-            if(OLED_Stop() >= 0)
+            if(I2C1_BUSY == I2C1_Close())
+            {
+                oledState = OLED_WRAP_UP_OP;
+            }
+            else
             {
                 oledState = OLED_WAIT_FOR_OP;
             }
+            
             break;
         }
         

@@ -187,7 +187,7 @@ void I2C1_Initialize()
     //ACKCNT Acknowledge; ACKDT Acknowledge; ACKSTAT ACK received; ACKT 0; RXO 0; TXU 0; CSD Clock Stretching enabled; 
     I2C1CON1 = 0x80;
     //ACNT disabled; GCEN disabled; FME enabled; ABD enabled; SDAHT 300 ns hold time; BFRET 8 I2C Clock pulses; 
-    I2C1CON2 = 0x20;
+    I2C1CON2 = 0x38;
     //CLK MFINTOSC; 
     I2C1CLK = 0x03;
     //CNTIF 0; ACKTIF 0; WRIF 0; ADRIF 0; PCIF 0; RSCIF 0; SCIF 0; 

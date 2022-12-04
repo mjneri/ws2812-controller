@@ -5,7 +5,7 @@
 static void OLED_TEST(void);
 
 // Function prototypes of what will eventually be added in gfx.c
-static void Gfx_render(void);       // Send software framebuffer to OLED
+static bool Gfx_render(void);       // Send software framebuffer to OLED
 static void Gfx_pixel(uint8_t row, uint8_t col, bool state);    // Turn on a pixel in the framebuffer
 static void Gfx_text(uint8_t row, uint8_t col, char *str, uint8_t *font, bool invertBG);
 static void Gfx_draw(uint8_t *image);
@@ -30,6 +30,9 @@ void TEST_2_Function(void)
     // Register the heartbeat callback function
     TMR1_SetInterruptHandler(HeartbeatCallback);
     
+    millis_Initialize();
+    OLED_Initialize();
+    
     // OLED Test
     OLED_TEST();
     
@@ -38,12 +41,7 @@ void TEST_2_Function(void)
 
 static void OLED_TEST(void)
 {
-    OLED_Initialize();
-    //OLED_ClearDisplay();
-    
     Gfx_clear();
-    
-    __delay_ms(100);
     
     // NOTE: Add this to the GFX Initialization code later.
     // NOTE 2: Or, just call Gfx_clear in the init code like what I did above.
@@ -62,32 +60,54 @@ static void OLED_TEST(void)
 //        }
 //    }
 
-    // Test text function
-    int i = 0;
-    while(1)
-    {
-        Gfx_text(i, i >> 2, "Hello world", &font5x7, false);
-        Gfx_render();
-        __delay_ms(1);
-        Gfx_clear();
-        i = (i + 1) % 64;
-    }
+    Gfx_text(5,15, "Hello world", &font5x7, false);
+    Gfx_render();
     
+    uint64_t t0 = millis();
+    uint8_t bitmapSel = 0;
     while(1)
     {
-        // test bitmap function
-//        Gfx_draw(Owl);
-//        Gfx_render();
-//        __delay_ms(1000);
-//        Gfx_clear();
-//        Gfx_render();
-//        __delay_ms(1000);
+        // Cycle through bitmaps
+        if(millis() - t0 >= 2000)
+        {
+            t0 = millis();      // Update t0 again
+            Gfx_clear();
+            
+            switch(bitmapSel)
+            {
+                case 0:
+                    Gfx_draw(Owl);
+                    break;
+                case 1:
+                    Gfx_draw(pochita);
+                    break;
+                case 2:
+                    Gfx_draw(nailandgear);
+                    break;
+                case 3:
+                    Gfx_draw(hollowknight);
+                    break;
+                default:
+                    break;
+            }
+            
+            bitmapSel = (bitmapSel+1) % 4;
+            Gfx_render();
+        }
+        
+        DEBUG_GPIO_OUT_Toggle();
+        OLED_Tasks();
     }
 }
 
 // FUNCTION TESTS
-static void Gfx_render(void)
+static bool Gfx_render(void)
 {
+    if(OLED_IsBusy())
+    {
+        return false;
+    }
+    
     uint8_t tempbuf[129];
     
     // Render the framebuffer on the OLED per page.
@@ -101,13 +121,6 @@ static void Gfx_render(void)
         
         // Copy over frame buffer contents to tempbuf, prepended by SH1106_DATABYTE
         tempbuf[0] = SH1106_DATABYTE;
-        
-        // a for loop or memcpy should be fine in copying the contents of Gfx_framebuffer
-        // to tempbuf.
-        /*for(uint8_t j = 1; j < SH1106_SEGMENTS+1; j++)
-        {
-            tempbuf[j] = Gfx_framebuffer[(j-1) + (128*i)];
-        }//*/
         memcpy(&tempbuf[1], &Gfx_framebuffer[128*i], 128);
         
         // Set page and column addresses
@@ -123,6 +136,8 @@ static void Gfx_render(void)
     
     // Reset modified page
     modifiedPage = 0x00;
+    
+    return true;
 }
 
 static void Gfx_pixel(uint8_t row, uint8_t col, bool state)
