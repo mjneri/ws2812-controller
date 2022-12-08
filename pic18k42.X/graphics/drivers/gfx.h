@@ -71,9 +71,11 @@ typedef struct
 // *****************************************************************************
 // *****************************************************************************
 
-void GFX_Initialize(void);
-void GFX_DrawString(uint8_t row, uint8_t col, char *str, uint8_t *font, bool invertBG);
-void GFX_DrawBitmap(uint8_t *bitmap);
+bool GFX_Render(void);       // Send software framebuffer to OLED
+void GFX_Pixel(uint8_t row, uint8_t col, bool state);    // Turn on a pixel in the framebuffer
+void GFX_Text(uint8_t row, uint8_t col, char *str, uint8_t *font, bool invertBG);
+void GFX_Draw(uint8_t *image);
+void GFX_Clear(void);
 
 
 #endif /*_GFX_H_*/

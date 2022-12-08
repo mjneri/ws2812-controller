@@ -101,7 +101,7 @@ typedef enum
 } BUTTON_STATE;
 
 #define DEBOUNCECOUNT 1
-//#define DEBOUNCE_DEBUG
+#define DEBOUNCE_DEBUG
 
 static void Test_ButtonTasks(void);             // button state machine maintainer
 static bool get_button_pressed(void);           // interface func
@@ -150,28 +150,52 @@ void TEST_Function(void)
 // TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
 static void TEST_BUTTON_SM(void)
 {
+    // Initialize millis and some variables
     millis_Initialize();
     buttonState = BTN_INIT;
-    
-    __delay_ms(100);
-    OLED_Initialize();
-//    OLED_ClearDisplay();
-    
-//    OLED_DrawBitmap();
-//    __delay_ms(1000);
-//    OLED_ClearDisplay();
-    
+    uint64_t t0 = 0;
     char teststring[64];
     
+    // Make sure to clear the software framebuffer after initializing the OLED
+    __delay_ms(100);
+    OLED_Initialize();
+    GFX_Clear();
+    
+    // To render the bitmap, call OLED_Tasks() until all pages have been updated.
+    // Here, we assume that this process is finished after 1sec.
+    // We should expect that the ring buffer is empty once all pages have been updated.
+    GFX_Draw(nailandgear);
+    GFX_Render();
+    t0 = millis();
+    
+    // Keep calling OLED_Tasks until 1s has passed.
+    while(millis() - t0 < 1000)
+    {
+        OLED_Tasks();
+    }
+    
+    // Clear fbuf again so text has a blank canvas to work with.
+    GFX_Clear();
+    
+    // Re-anchor t0
+    t0 = millis();
     while(1)
     {
         Test_ButtonTasks();
+        OLED_Tasks();
         
-//        sprintf(teststring, "%lu", get_button_presscount());
-//        OLED_DrawString(0, 0, teststring, font5x7, 0);
-//        
-//        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
-//        OLED_DrawString(8, 0, teststring, font5x7, 0);
+        sprintf(teststring, "%lu", get_button_presscount());
+        GFX_Text(0, 0, teststring, &font5x7, 0);
+        
+        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
+        GFX_Text(8, 0, teststring, &font5x7, 0);
+        
+        // Update the screen whenever possible (i.e. fastest refresh rate)
+        if(!OLED_IsBusy())
+        {
+            t0 = millis();
+            GFX_Render();
+        }
     }
 }
 

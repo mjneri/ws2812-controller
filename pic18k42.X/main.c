@@ -69,8 +69,8 @@ void main(void)
     //INTERRUPT_GlobalInterruptLowDisable();
     
     // Test code
-    //TEST_Function();
-    TEST_2_Function();
+    TEST_Function();
+    //TEST_2_Function();
 
     while (1)
     {

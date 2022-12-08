@@ -325,7 +325,14 @@ void OLED_Tasks(void)
             }
             else
             {
-                oledState = OLED_WAIT_FOR_OP;
+                if(oledData.isEmpty)
+                {
+                    oledState = OLED_WAIT_FOR_OP;
+                }
+                else
+                {
+                    oledState = OLED_START_OP;
+                }
             }
             
             break;

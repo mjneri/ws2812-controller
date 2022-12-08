@@ -8,6 +8,7 @@
 #include "../leds/spi_led.h"
 #include "../mcc_generated_files/mcc.h"
 #include "../modules/millis.h"
+#include "../graphics/drivers/gfx.h"
 
 // Function prototype - test.c
 void CLC2_Callback(void);
