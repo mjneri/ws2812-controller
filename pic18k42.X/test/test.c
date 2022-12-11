@@ -76,47 +76,17 @@ void RotDTDebounce(void)
     }
 }
 
-// TEST CODE FOR MILLIS() ********************************************
-static void TEST_MILLIS(void);
-
 // ************************************************************
 
 // Local function prototypes
-static void TEST_OLED(void);
 static void TEST_PIXELS(void);
-static void TEST_ROTARYENCODER(void);
 
 // Other local function prototypes
 void displayMenu(uint8_t selectedOption);
 static void profitestCometsTail(uint8_t tailLen);
 
-// TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
-typedef enum
-{
-    BTN_INIT,
-    BTN_WAIT_PRESS,
-    BTN_DEBOUNCE,
-    BTN_PRESSED,
-    BTN_HELD
-} BUTTON_STATE;
-
-#define DEBOUNCECOUNT 1
-#define DEBOUNCE_DEBUG
-
-static void Test_ButtonTasks(void);             // button state machine maintainer
-static bool get_button_pressed(void);           // interface func
-static bool get_button_held(void);              // interface func
-static uint32_t get_button_presscount(void);
-static void reset_button_presscount(void);
-
-static bool is_button_pressed = false;
-static bool is_button_held = false;
-static uint32_t button_press_count = 0;         // how many button presses?
-static uint8_t pressDebCount = 0;               // used for debouncing button presses
-static uint8_t unpressDebCount = 0;             // for debouncing button unpresses
-static BUTTON_STATE buttonState = BTN_INIT;
-
-static void TEST_BUTTON_SM(void);
+// TEST CODE FOR USER INPUTS ********************************************
+static void TEST_USERINPUTS(void);
 
 // ************************************************************
 
@@ -129,30 +99,26 @@ void TEST_Function(void)
     // Register TMR4 Callback
     //TMR4_SetInterruptHandler(DebounceCallback);
     
-    // Test the OLED functions
-    //TEST_OLED();
-    
     // Test SPI LED functions
     //TEST_PIXELS();
     
-    // Test the rotary encoder
-    //TEST_ROTARYENCODER();
-    
-    // Register callbacks for millis() & run test code
-    //TEST_MILLIS();
-    
     // Test the button debouncing state machine code
-    TEST_BUTTON_SM();
+    TEST_USERINPUTS();
     
     return;
 }
 
 // TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
-static void TEST_BUTTON_SM(void)
+static void TEST_USERINPUTS(void)
 {
+    // Register callbacks for rotary encoder debouncing
+    // Note: TMR4 and TMR6 period is 1ms
+    TMR4_SetInterruptHandler(RotClkDebounce);
+    TMR6_SetInterruptHandler(RotDTDebounce);
+    
     // Initialize millis and some variables
     millis_Initialize();
-    buttonState = BTN_INIT;
+    Button_Initialize();
     uint64_t t0 = 0;
     char teststring[64];
     
@@ -181,303 +147,35 @@ static void TEST_BUTTON_SM(void)
     t0 = millis();
     while(1)
     {
-        Test_ButtonTasks();
+        Button_Tasks();
         OLED_Tasks();
-        
-        sprintf(teststring, "%lu", get_button_presscount());
-        GFX_Text(0, 0, teststring, &font5x7, 0);
-        
-        sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
-        GFX_Text(8, 0, teststring, &font5x7, 0);
         
         // Update the screen whenever possible (i.e. fastest refresh rate)
         if(!OLED_IsBusy())
         {
-            t0 = millis();
+            sprintf(teststring, "%lu", get_button_presscount());
+            GFX_Text(0, 0, teststring, &font5x7, 0);
+
+            sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
+            GFX_Text(8, 0, teststring, &font5x7, 0);
+            
+            sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
+            GFX_Text(16, 0, teststring, &font5x7, 0);
+            
+            sprintf(teststring, "%llu", millis());
+            GFX_Text(24, 0, teststring, &font5x7, 0);
+            
             GFX_Render();
+            
+            t0 = millis();
         }
     }
 }
 
-static bool get_button_pressed(void)
-{
-    return is_button_pressed;
-}
 
-static bool get_button_held(void)
-{
-    return is_button_held;
-}
-
-static uint32_t get_button_presscount(void)
-{
-    return button_press_count;
-}
-
-static void reset_button_presscount(void)
-{
-    button_press_count = 0;
-}
-
-static void Test_ButtonTasks(void)
-{
-    // local variables with limited scope
-    uint64_t t0 = millis();
-    
-#ifdef DEBOUNCE_DEBUG
-    DEBUG_GPIO_OUT_Toggle();
-#endif
-    
-    switch(buttonState)
-    {
-        case BTN_INIT:
-        {
-            is_button_held = false;
-            is_button_pressed = false;
-            button_press_count = 0;
-            pressDebCount = 0;
-            unpressDebCount = 0;
-            
-            buttonState = BTN_WAIT_PRESS;
-            break;
-        }
-        
-        case BTN_WAIT_PRESS:
-        {
-            is_button_pressed = false;
-            is_button_held = false;
-            
-#ifdef DEBOUNCE_DEBUG
-            //DEBUG_GPIO_OUT_SetHigh();
-#endif
-            
-            if(!SW0_GetValue())
-            {
-                buttonState = BTN_DEBOUNCE;
-            }
-            else
-            {
-                buttonState = BTN_WAIT_PRESS;
-            }
-            break;
-        }
-        
-        case BTN_DEBOUNCE:
-        {
-            if(!SW0_GetValue())
-            {
-                unpressDebCount = 0;    // Reset this since button is pressed
-                if(pressDebCount > DEBOUNCECOUNT)
-                {
-                    pressDebCount = 0;  // Reset
-                    buttonState = BTN_PRESSED;
-                }
-                else
-                {
-                    pressDebCount++;
-                    buttonState = BTN_DEBOUNCE;
-                }
-            }
-            else
-            {
-                pressDebCount = 0;      // Reset this since button is not pressed
-                if(unpressDebCount > DEBOUNCECOUNT)
-                {
-                    unpressDebCount = 0;
-                    buttonState = BTN_WAIT_PRESS;
-                }
-                else
-                {
-                    unpressDebCount++;
-                    buttonState = BTN_DEBOUNCE;
-                }
-            }
-            break;
-        }
-        
-        case BTN_PRESSED:
-        {
-            is_button_pressed = true;
-            button_press_count++;
-            
-#ifdef DEBOUNCE_DEBUG
-            //DEBUG_GPIO_OUT_SetLow();
-#endif
-            
-            if(!SW0_GetValue())
-            {
-                buttonState = BTN_HELD;
-            }
-            else
-            {
-                buttonState = BTN_DEBOUNCE;
-            }
-            break;
-        }
-        
-        case BTN_HELD:
-        {
-            is_button_held = true;
-            is_button_pressed = true;
-            
-            if(!SW0_GetValue())
-            {
-                buttonState = BTN_HELD;
-            }
-            else
-            {
-                buttonState = BTN_DEBOUNCE;
-            }
-            break;
-        }
-        
-        default:
-        {
-            break;
-        }
-    }
-}
 
 // ************************************************************
-
-static void TEST_MILLIS(void)
-{
-    millis_Initialize();
-    
-    OLED_Initialize();
-//    OLED_ClearDisplay();
-//    
-//    OLED_DrawBitmap();
-//    __delay_ms(1000);
-//    OLED_ClearDisplay();
-    
-    char teststring[64];
-    
-    uint64_t init_millis = millis();
-    
-    uint32_t seconds_counter = 0;
-    
-    while(1)
-    {
-//        sprintf(teststring, "%llu", millis() - init_millis);
-//        OLED_DrawString(0, 0, teststring, font5x7, 0);
-    }
-}
-
 // Local function definitions
-static void TEST_ROTARYENCODER(void)
-{
-    // Register callbacks for rotary encoder debouncing
-    // Note: TMR4 and TMR6 period is 1ms
-    TMR4_SetInterruptHandler(RotClkDebounce);
-    TMR6_SetInterruptHandler(RotDTDebounce);
-    
-//    OLED_Initialize();
-//    OLED_ClearDisplay();
-//    
-//    OLED_DrawBitmap();
-//    __delay_ms(1000);
-//    OLED_ClearDisplay();
-    
-    // Quick software thing
-    uint32_t i = 0;
-    char teststring[64];
-    while(1)
-    {
-        // Insert code interpreting the decoded signals on CLC2OUT and CLC3OUT
-//        sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
-//        OLED_DrawString(0, 0, teststring, font5x7, 0);
-    }
-}
-
-static void TEST_OLED(void)
-{
-    OLED_Initialize();
-//    OLED_ClearDisplay();
-//    
-//    OLED_DrawBitmap();
-//    __delay_ms(1000);
-//    OLED_ClearDisplay();
-//    OLED_DrawString(0, 20, "Hello world!", font5x7, false);
-//    OLED_DrawString(9, 0, "The quick brown fox", font5x7, true);
-    
-    // For dummy read
-    //displayMenu(0);
-    
-    // Quick software thing - count how long switch is pressed
-    uint32_t i = 0;
-    
-    while(1)
-    {
-        // 2022-02-26 Test code
-        if(isSwitchPressed && !isSwitchHeld)
-        {
-            isSwitchHeld = true;
-            i = 0;
-        }
-        else if(!isSwitchPressed && isSwitchHeld)
-        {
-            // Should not be executed if key press is long.
-            i = 0;
-            if(!switchSelected)
-            {
-                isSwitchHeld = false;
-                selected = (selected+1) % 3;
-                displayMenu(selected);
-            }
-            else
-            {
-                switchSelected = false;
-                isSwitchHeld = false;
-            }
-        }
-        else if(isSwitchPressed && isSwitchHeld)
-        {
-            i++;
-            if(i == 0x80000)
-            {
-                // Some event selecting the menu option.
-                i = 0;
-                LED0_Toggle();
-                switchSelected = true;
-            }
-        }
-        
-        // Do something if the user chooses an option from the menu
-        if(switchSelected)
-        {
-            switch(selected)
-            {
-                case 0:
-                {
-                    // Select LED Profile
-                    break;
-                }
-                case 1:
-                {
-                    // Adjust LED Count
-                    break;
-                }
-                case 2:
-                {
-                    // About
-//                    OLED_ClearDisplay();
-//                    OLED_DrawString(0, 46, "About", font5x7, 0);
-//                    OLED_DrawString(8, 0, "A personal project", font5x7, 0);
-//                    OLED_DrawString(16, 0, "by MJ Neri", font5x7, 0);
-//                    OLED_DrawString(24, 0, "github.com/mjneri/", font5x7, 0);
-//                    OLED_DrawString(32, 3, "ws2812-controller", font5x7, 0);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-        }
-    }
-}
-
 static void TEST_PIXELS(void)
 {   
     // Open SPI port

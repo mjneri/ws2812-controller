@@ -9,6 +9,7 @@
 #include "../mcc_generated_files/mcc.h"
 #include "../modules/millis.h"
 #include "../graphics/drivers/gfx.h"
+#include "../userinput/buttons.h"
 
 // Function prototype - test.c
 void CLC2_Callback(void);
