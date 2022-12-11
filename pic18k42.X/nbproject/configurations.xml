@@ -14,7 +14,6 @@
           <itemPath>graphics/drivers/sh1106.h</itemPath>
         </logicalFolder>
         <logicalFolder name="gui" displayName="gui" projectFiles="true">
-          <itemPath>graphics/gui/buttons.h</itemPath>
           <itemPath>graphics/gui/menu.h</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -52,6 +51,10 @@
       <logicalFolder name="test" displayName="test" projectFiles="true">
         <itemPath>test/test.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="userinput" displayName="userinput" projectFiles="true">
+        <itemPath>userinput/buttons.h</itemPath>
+        <itemPath>userinput/rotaryencoder.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="wifi" displayName="wifi" projectFiles="true">
       </logicalFolder>
     </logicalFolder>
@@ -72,7 +75,6 @@
           <itemPath>graphics/drivers/sh1106.c</itemPath>
         </logicalFolder>
         <logicalFolder name="gui" displayName="gui" projectFiles="true">
-          <itemPath>graphics/gui/buttons.c</itemPath>
           <itemPath>graphics/gui/menu.c</itemPath>
         </logicalFolder>
       </logicalFolder>
@@ -110,6 +112,10 @@
         <itemPath>test/test.c</itemPath>
         <itemPath>test/test_2.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="userinput" displayName="userinput" projectFiles="true">
+        <itemPath>userinput/buttons.c</itemPath>
+        <itemPath>userinput/rotaryencoder.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="wifi" displayName="wifi" projectFiles="true">
         <itemPath>wifi/esp01.c</itemPath>
       </logicalFolder>
@@ -129,6 +135,7 @@
     <Elem>test</Elem>
     <Elem>wifi</Elem>
     <Elem>modules</Elem>
+    <Elem>userinput</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

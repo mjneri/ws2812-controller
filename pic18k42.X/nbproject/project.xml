@@ -19,6 +19,7 @@
                 <sourceRootElem>test</sourceRootElem>
                 <sourceRootElem>wifi</sourceRootElem>
                 <sourceRootElem>modules</sourceRootElem>
+                <sourceRootElem>userinput</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
