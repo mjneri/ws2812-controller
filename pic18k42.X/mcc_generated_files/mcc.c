@@ -60,8 +60,8 @@ void SYSTEM_Initialize(void)
     TMR6_Initialize();
     CLC1_Initialize();
     CLC3_Initialize();
-    PWM5_Initialize();
     TMR5_Initialize();
+    PWM5_Initialize();
     TMR1_Initialize();
     SPI1_Initialize();
 }

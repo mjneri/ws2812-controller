@@ -13,9 +13,6 @@ volatile bool switchSelected = false;
 volatile bool isSwitchPressed = false;
 volatile bool isSwitchHeld = false;
 
-volatile uint16_t rotCntCCW = 0;
-volatile uint16_t rotCntCW = 0;
-
 // Callback for heartbeat LED
 void HeartbeatCallback(void)
 {
@@ -33,46 +30,6 @@ void DebounceCallback(void)
     else
     {
         isSwitchPressed = false;
-    }
-}
-
-void CLC2_Callback(void)
-{
-    if(CLC2_OutputStatusGet())
-    {
-        rotCntCCW++;
-    }
-}
-
-void CLC3_Callback(void)
-{
-    if(CLC3_OutputStatusGet())
-    {
-        rotCntCW++;
-    }
-}
-
-void RotClkDebounce(void)
-{
-    if(!RC6_GetValue())
-    {
-        DEB_ROT_A_SetLow();
-    }
-    else
-    {
-        DEB_ROT_A_SetHigh();
-    }
-}
-
-void RotDTDebounce(void)
-{
-    if(!RD0_GetValue())
-    {
-        DEB_ROT_B_SetLow();
-    }
-    else
-    {
-        DEB_ROT_B_SetHigh();
     }
 }
 
@@ -111,16 +68,18 @@ void TEST_Function(void)
 // TEST CODE FOR BUTTON DEBOUNCING SM ********************************************
 static void TEST_USERINPUTS(void)
 {
-    // Register callbacks for rotary encoder debouncing
-    // Note: TMR4 and TMR6 period is 1ms
-    TMR4_SetInterruptHandler(RotClkDebounce);
-    TMR6_SetInterruptHandler(RotDTDebounce);
-    
     // Initialize millis and some variables
     millis_Initialize();
     Button_Initialize();
+    ROTENC_Initialize();
+    
+    // Variables
     uint64_t t0 = 0;
     char teststring[64];
+    uint16_t cw_count, ccw_count;
+    ROT_DIR rotDirection;
+    const char *dir_ascii[] = {"CCW", "CW"};
+    uint16_t rotEnc_InputCounter = 0;       // Counts buffered inputs
     
     // Make sure to clear the software framebuffer after initializing the OLED
     __delay_ms(100);
@@ -153,17 +112,36 @@ static void TEST_USERINPUTS(void)
         // Update the screen whenever possible (i.e. fastest refresh rate)
         if(!OLED_IsBusy())
         {
-            sprintf(teststring, "%lu", get_button_presscount());
+            sprintf(teststring, "SW Press: %lu", get_button_presscount());
             GFX_Text(0, 0, teststring, &font5x7, 0);
 
-            sprintf(teststring, "P: %d H: %d", get_button_pressed(), get_button_held());
+            sprintf(teststring, "Status P: %d H: %d", get_button_pressed(), get_button_held());
             GFX_Text(8, 0, teststring, &font5x7, 0);
             
-            sprintf(teststring, "%d %d", rotCntCCW, rotCntCW);
+            ROTENC_GetRotationCount(&cw_count, &ccw_count);
+            sprintf(teststring, "CCW: %d CW: %d", ccw_count, cw_count);
             GFX_Text(16, 0, teststring, &font5x7, 0);
             
-            sprintf(teststring, "%llu", millis());
-            GFX_Text(24, 0, teststring, &font5x7, 0);
+            rotDirection = ROTENC_ReadRingBuf();
+            if(rotDirection != ROTENC_ERR)
+            {
+                sprintf(teststring, "Rotation: %s   ", dir_ascii[rotDirection]);
+                GFX_Text(24, 0, teststring, &font5x7, 0);
+                
+                // Increment the buffered input counter.
+                rotEnc_InputCounter++;
+            }
+            else
+            {
+                sprintf(teststring, "Rotation: ---------");
+                GFX_Text(24, 0, teststring, &font5x7, 0);
+            }
+            
+            sprintf(teststring, "Buffered: %u", rotEnc_InputCounter);
+            GFX_Text(32, 0, teststring, &font5x7, 0);
+            
+            sprintf(teststring, "millis = %llu", millis());
+            GFX_Text(40, 0, teststring, &font5x7, 0);
             
             GFX_Render();
             

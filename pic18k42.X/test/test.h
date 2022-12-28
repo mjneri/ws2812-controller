@@ -10,10 +10,9 @@
 #include "../modules/millis.h"
 #include "../graphics/drivers/gfx.h"
 #include "../userinput/buttons.h"
+#include "../userinput/rotaryencoder.h"
 
 // Function prototype - test.c
-void CLC2_Callback(void);
-void CLC3_Callback(void);
 void TEST_Function(void);
 
 // Function prototype - test_2.c
