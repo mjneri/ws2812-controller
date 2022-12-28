@@ -89,6 +89,26 @@
 #define RA2_SetAnalogMode()         do { ANSELAbits.ANSELA2 = 1; } while(0)
 #define RA2_SetDigitalMode()        do { ANSELAbits.ANSELA2 = 0; } while(0)
 
+// get/set ROT_SW aliases
+#define ROT_SW_TRIS                 TRISAbits.TRISA3
+#define ROT_SW_LAT                  LATAbits.LATA3
+#define ROT_SW_PORT                 PORTAbits.RA3
+#define ROT_SW_WPU                  WPUAbits.WPUA3
+#define ROT_SW_OD                   ODCONAbits.ODCA3
+#define ROT_SW_ANS                  ANSELAbits.ANSELA3
+#define ROT_SW_SetHigh()            do { LATAbits.LATA3 = 1; } while(0)
+#define ROT_SW_SetLow()             do { LATAbits.LATA3 = 0; } while(0)
+#define ROT_SW_Toggle()             do { LATAbits.LATA3 = ~LATAbits.LATA3; } while(0)
+#define ROT_SW_GetValue()           PORTAbits.RA3
+#define ROT_SW_SetDigitalInput()    do { TRISAbits.TRISA3 = 1; } while(0)
+#define ROT_SW_SetDigitalOutput()   do { TRISAbits.TRISA3 = 0; } while(0)
+#define ROT_SW_SetPullup()          do { WPUAbits.WPUA3 = 1; } while(0)
+#define ROT_SW_ResetPullup()        do { WPUAbits.WPUA3 = 0; } while(0)
+#define ROT_SW_SetPushPull()        do { ODCONAbits.ODCA3 = 0; } while(0)
+#define ROT_SW_SetOpenDrain()       do { ODCONAbits.ODCA3 = 1; } while(0)
+#define ROT_SW_SetAnalogMode()      do { ANSELAbits.ANSELA3 = 1; } while(0)
+#define ROT_SW_SetDigitalMode()     do { ANSELAbits.ANSELA3 = 0; } while(0)
+
 // get/set RA7 procedures
 #define RA7_SetHigh()            do { LATAbits.LATA7 = 1; } while(0)
 #define RA7_SetLow()             do { LATAbits.LATA7 = 0; } while(0)
