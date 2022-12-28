@@ -102,7 +102,7 @@ void Button_Tasks(void)
             DEBUG_GPIO_OUT_SetHigh();
 #endif
             
-            if(!SW0_GetValue())
+            if(!BUTTON_GetValue())
             {
                 buttonState = BTN_DEBOUNCE;
             }
@@ -115,7 +115,7 @@ void Button_Tasks(void)
         
         case BTN_DEBOUNCE:
         {
-            if(!SW0_GetValue())
+            if(!BUTTON_GetValue())
             {
                 unpressDebCount = 0;    // Reset this since button is pressed
                 if(pressDebCount > DEBOUNCECOUNT)
@@ -155,7 +155,7 @@ void Button_Tasks(void)
             DEBUG_GPIO_OUT_SetLow();
 #endif
             
-            if(!SW0_GetValue())
+            if(!BUTTON_GetValue())
             {
                 buttonState = BTN_HELD;
             }
@@ -171,7 +171,7 @@ void Button_Tasks(void)
             is_button_held = true;
             is_button_pressed = true;
             
-            if(!SW0_GetValue())
+            if(!BUTTON_GetValue())
             {
                 buttonState = BTN_HELD;
             }

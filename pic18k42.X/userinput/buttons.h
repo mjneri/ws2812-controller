@@ -32,7 +32,11 @@
 // *****************************************************************************
 // *****************************************************************************
 
-#define DEBOUNCECOUNT 1
+#define DEBOUNCECOUNT 64
+
+#ifndef BUTTON_GetValue()
+#define BUTTON_GetValue()   ROT_SW_GetValue()
+#endif
 
 // For debugging purposes only. Only one macro should be used.
 //#define DEBOUNCE_DEBUG
