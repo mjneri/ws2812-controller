@@ -111,51 +111,62 @@ static void TEST_USERINPUTS(void)
         Button_Tasks();
         OLED_Tasks();
         
+        // Read buffered inputs
+        rotDirection = ROTENC_ReadRingBuf();
+        if(rotDirection != ROTENC_ERR)
+        {
+            // Increment the buffered input counter.
+            rotEnc_InputCounter++;
+
+            if(rotDirection == ROTENC_CW)
+            {
+                buf_cw_count++;
+            }
+            else
+            {
+                buf_ccw_count++;
+            }
+        }
+        
         // Update the screen whenever possible (i.e. fastest refresh rate)
         if(!OLED_IsBusy())
         {
+            // Count button presses
             sprintf(teststring, "SW Press: %lu", get_button_presscount());
             GFX_Text(0, 0, teststring, &font5x7, 0);
-
+            
+            // Show whether button is press and held
             sprintf(teststring, "Status P: %d H: %d", get_button_pressed(), get_button_held());
             GFX_Text(8, 0, teststring, &font5x7, 0);
             
+            // Display **ACTUAL** rotation count
             ROTENC_GetRotationCount(&cw_count, &ccw_count);
-            sprintf(teststring, "CCW: %d CW: %d", ccw_count, cw_count);
+            sprintf(teststring, "CCW: %d CW: %d = %d", ccw_count, cw_count, ccw_count+cw_count);
             GFX_Text(16, 0, teststring, &font5x7, 0);
             
-            rotDirection = ROTENC_ReadRingBuf();
+            // Display buffered rotation direction.
             if(rotDirection != ROTENC_ERR)
             {
                 sprintf(teststring, "Rotation: %s   ", dir_ascii[rotDirection]);
-                GFX_Text(24, 0, teststring, &font5x7, 0);
-                
-                // Increment the buffered input counter.
-                rotEnc_InputCounter++;
-                
-                if(rotDirection == ROTENC_CW)
-                {
-                    buf_cw_count++;
-                }
-                else
-                {
-                    buf_ccw_count++;
-                }
+                GFX_Text(32, 0, teststring, &font5x7, 0);
             }
             else
             {
                 sprintf(teststring, "Rotation: ---------");
-                GFX_Text(24, 0, teststring, &font5x7, 0);
+                GFX_Text(32, 0, teststring, &font5x7, 0);
             }
             
+            // Display total buffered inputs
             sprintf(teststring, "Buffered: %u", rotEnc_InputCounter);
-            GFX_Text(32, 0, teststring, &font5x7, 0);
-            
-            sprintf(teststring, "BUFCW: %u BUFCCW: %u", buf_cw_count, buf_ccw_count);
             GFX_Text(40, 0, teststring, &font5x7, 0);
             
-            sprintf(teststring, "millis = %llu", millis());
+            // Display buffered CW and CCW inputs
+            sprintf(teststring, "BUF CCW: %u CW: %u", buf_ccw_count, buf_cw_count);
             GFX_Text(48, 0, teststring, &font5x7, 0);
+            
+            // Display millis() in realtime
+            sprintf(teststring, "millis = %llu", millis());
+            GFX_Text(56, 0, teststring, &font5x7, 0);
             
             GFX_Render();
             
