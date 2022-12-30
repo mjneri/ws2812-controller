@@ -79,7 +79,9 @@ static void TEST_USERINPUTS(void)
     uint16_t cw_count, ccw_count;
     ROT_DIR rotDirection;
     const char *dir_ascii[] = {"CCW", "CW"};
+    
     uint16_t rotEnc_InputCounter = 0;       // Counts buffered inputs
+    uint16_t buf_cw_count = 0, buf_ccw_count = 0;   // Increments based on buffered inputs
     
     // Make sure to clear the software framebuffer after initializing the OLED
     __delay_ms(100);
@@ -130,6 +132,15 @@ static void TEST_USERINPUTS(void)
                 
                 // Increment the buffered input counter.
                 rotEnc_InputCounter++;
+                
+                if(rotDirection == ROTENC_CW)
+                {
+                    buf_cw_count++;
+                }
+                else
+                {
+                    buf_ccw_count++;
+                }
             }
             else
             {
@@ -140,8 +151,11 @@ static void TEST_USERINPUTS(void)
             sprintf(teststring, "Buffered: %u", rotEnc_InputCounter);
             GFX_Text(32, 0, teststring, &font5x7, 0);
             
-            sprintf(teststring, "millis = %llu", millis());
+            sprintf(teststring, "BUFCW: %u BUFCCW: %u", buf_cw_count, buf_ccw_count);
             GFX_Text(40, 0, teststring, &font5x7, 0);
+            
+            sprintf(teststring, "millis = %llu", millis());
+            GFX_Text(48, 0, teststring, &font5x7, 0);
             
             GFX_Render();
             
