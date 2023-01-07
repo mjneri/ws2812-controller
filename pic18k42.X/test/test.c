@@ -45,6 +45,9 @@ static void profitestCometsTail(uint8_t tailLen);
 // TEST CODE FOR USER INPUTS ********************************************
 static void TEST_USERINPUTS(void);
 
+// Velocity testing
+static void TEST_VELOCITY(void);
+
 // ************************************************************
 
 // Main Test function definition
@@ -60,7 +63,10 @@ void TEST_Function(void)
     //TEST_PIXELS();
     
     // Test the button debouncing state machine code
-    TEST_USERINPUTS();
+    //TEST_USERINPUTS();
+    
+    // Test velocity
+    TEST_VELOCITY();
     
     return;
 }
@@ -175,7 +181,102 @@ static void TEST_USERINPUTS(void)
     }
 }
 
+static void TEST_VELOCITY(void)
+{
+    // Initialize millis and some variables
+    millis_Initialize();
+    Button_Initialize();
+    ROTENC_Initialize();
+    
+    // Variables
+    uint64_t t0 = 0;
+    char teststring[64];
+    uint16_t cw_count, ccw_count;
+    ROT_DIR rotDirection;
+    const char *dir_ascii[] = {"CCW", "CW"};
+    
+    uint16_t rotEnc_InputCounter = 0;       // Counts buffered inputs
+    uint16_t buf_cw_count = 0, buf_ccw_count = 0;   // Increments based on buffered inputs
+    
+    // Make sure to clear the software framebuffer after initializing the OLED
+    __delay_ms(100);
+    OLED_Initialize();
+    GFX_Clear();
+    
+    // To render the bitmap, call OLED_Tasks() until all pages have been updated.
+    // Here, we assume that this process is finished after 1sec.
+    // We should expect that the ring buffer is empty once all pages have been updated.
+    GFX_Draw(nailandgear);
+    GFX_Render();
+    t0 = millis();
+    
+    // Keep calling OLED_Tasks until 1s has passed.
+    while(millis() - t0 < 1000)
+    {
+        OLED_Tasks();
+    }
+    
+    // Clear fbuf again so text has a blank canvas to work with.
+    GFX_Clear();
+    
+    // Re-anchor t0
+    t0 = millis();
+    
+    while(1)
+    {
+        Button_Tasks();
+        OLED_Tasks();
+        
+        // Read buffered inputs
+        rotDirection = ROTENC_ReadRingBuf();
+        if(rotDirection != ROTENC_ERR)
+        {
+            // Increment the buffered input counter.
+            rotEnc_InputCounter++;
 
+            if(rotDirection == ROTENC_CW)
+            {
+                buf_cw_count++;
+            }
+            else
+            {
+                buf_ccw_count++;
+            }
+        }
+        
+        // Update the screen whenever possible (i.e. fastest refresh rate)
+        if(!OLED_IsBusy())
+        {
+            // Count button presses
+            sprintf(teststring, "SW Press: %lu", get_button_presscount());
+            GFX_Text(0, 0, teststring, &font5x7, 0);
+            
+            // Show whether button is press and held
+            sprintf(teststring, "Status P: %d H: %d", get_button_pressed(), get_button_held());
+            GFX_Text(8, 0, teststring, &font5x7, 0);
+            
+            // Print velocity value
+            sprintf(teststring, "Vel: %u t/s", ROTENC_Velocity());
+            GFX_Text(16, 0, teststring, &font5x7, 0);
+            
+            // Display total buffered inputs
+            sprintf(teststring, "Buffered: %u", rotEnc_InputCounter);
+            GFX_Text(40, 0, teststring, &font5x7, 0);
+            
+            // Display buffered CW and CCW inputs
+            sprintf(teststring, "BUF CCW: %u CW: %u", buf_ccw_count, buf_cw_count);
+            GFX_Text(48, 0, teststring, &font5x7, 0);
+            
+            // Display millis() in realtime
+            sprintf(teststring, "millis = %llu", millis());
+            GFX_Text(56, 0, teststring, &font5x7, 0);
+            
+            GFX_Render();
+            
+            t0 = millis();
+        }
+    }
+}
 
 // ************************************************************
 // Local function definitions

@@ -34,6 +34,11 @@ rot_ring_buf_t rotData;
 static volatile uint16_t rotCntCCW = 0;
 static volatile uint16_t rotCntCW = 0;
 
+// Variables used for measuring velocity
+static volatile uint16_t prevCntCCW = 0;
+static volatile uint16_t prevCntCW = 0;
+static volatile uint64_t vel_t0 = 0;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Local Function Defines
@@ -147,6 +152,8 @@ void ROTENC_Initialize(void)
     TMR4_SetInterruptHandler(RotClkDebounce);
     TMR6_SetInterruptHandler(RotDTDebounce);
     
+    vel_t0 = millis();
+    
     return;
 }
 
@@ -200,6 +207,33 @@ void ROTENC_GetRotationCount(uint16_t *cw_count, uint16_t *ccw_count)
     *cw_count = rotCntCW;
     *ccw_count = rotCntCCW;
     return;
+}
+
+uint16_t ROTENC_Velocity(void)
+{
+    // Compute velocity using total rotation counts only.
+    // (Technically we're measuring speed, but the function name is good enough)
+    uint16_t rotTotal = rotCntCW + rotCntCCW;
+    uint16_t prevRotTotal = prevCntCW + prevCntCCW;
+    
+    
+    // Left shift deltaTime 10 bits to approximately convert ms to s
+    // NOTE: We don't need an accurate velocity reading here, we just need a
+    // number that represents velocity well enough.
+    // NOTE: Add 1 after left shift to make sure we don't div by 0.
+    uint16_t deltaTime = ((millis() - vel_t0) >> 10) + 1;
+    uint16_t deltaRot = rotTotal - prevRotTotal;
+    
+    // We don't need a floating value.
+    // Approx. unit is turns per s
+    uint16_t rotVelocity = deltaRot / deltaTime;
+    
+    // Before returning, update various variables
+    prevCntCW = rotCntCW;
+    prevCntCCW = rotCntCCW;
+    vel_t0 = millis();
+    
+    return rotVelocity;
 }
 
 /*******************************************************************************

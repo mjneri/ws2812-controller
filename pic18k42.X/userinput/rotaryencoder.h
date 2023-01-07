@@ -80,11 +80,14 @@ typedef struct
 void CLC2_Callback(void);
 void CLC3_Callback(void);
 
+// Note: millis_Initialize() must be called before this function
 void ROTENC_Initialize(void);
 
 ROT_DIR ROTENC_ReadRingBuf(void);
 
 void ROTENC_GetRotationCount(uint16_t *cw_count, uint16_t *ccw_count);
+
+uint16_t ROTENC_Velocity(void);
 
 #endif /*_ROTARYENCODER_H_*/
 
