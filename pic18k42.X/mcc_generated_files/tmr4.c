@@ -75,8 +75,8 @@ void TMR4_Initialize(void)
     // T4RSEL T4CKIPPS pin; 
     T4RST = 0x00;
 
-    // PR4 3; 
-    T4PR = 0x03;
+    // PR4 7; 
+    T4PR = 0x07;
 
     // TMR4 0; 
     T4TMR = 0x00;
