@@ -35,6 +35,7 @@ bool is_button_held;
 uint32_t button_press_count;         // how many button presses?
 uint8_t pressDebCount;               // used for debouncing button presses
 uint8_t unpressDebCount;             // for debouncing button unpresses
+uint16_t longPressCount;              // for detecting long presses
 
 // *****************************************************************************
 // *****************************************************************************
@@ -71,6 +72,7 @@ void Button_Initialize(void)
     button_press_count = 0;
     pressDebCount = 0;
     unpressDebCount = 0;
+    longPressCount = 0;
 }
 
 void Button_Tasks(void)
@@ -121,6 +123,7 @@ void Button_Tasks(void)
                 if(pressDebCount > DEBOUNCECOUNT)
                 {
                     pressDebCount = 0;  // Reset
+                    button_press_count++;       // Increment button press count here
                     buttonState = BTN_PRESSED;
                 }
                 else
@@ -149,7 +152,6 @@ void Button_Tasks(void)
         case BTN_PRESSED:
         {
             is_button_pressed = true;
-            button_press_count++;
             
 #ifdef DEBOUNCE_DEBUG
             DEBUG_GPIO_OUT_SetLow();
@@ -157,10 +159,21 @@ void Button_Tasks(void)
             
             if(!BUTTON_GetValue())
             {
-                buttonState = BTN_HELD;
+                // Check for long press
+                if(longPressCount >= LONGPRESSCOUNT)
+                {
+                    longPressCount = 0;
+                    buttonState = BTN_HELD;
+                }
+                else
+                {
+                    longPressCount++;
+                    buttonState = BTN_PRESSED;
+                }
             }
             else
             {
+                longPressCount = 0;
                 buttonState = BTN_DEBOUNCE;
             }
             break;

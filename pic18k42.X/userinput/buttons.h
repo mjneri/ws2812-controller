@@ -33,6 +33,7 @@
 // *****************************************************************************
 
 #define DEBOUNCECOUNT 64
+#define LONGPRESSCOUNT 32768
 
 #ifndef BUTTON_GetValue()
 #define BUTTON_GetValue()   ROT_SW_GetValue()
