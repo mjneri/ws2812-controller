@@ -34,6 +34,7 @@
 
 #define ROTENC_RINGBUF_MAXSIZE     8
 #define ROTENC_RINGBUF_DATA_MAX    (ROTENC_RINGBUF_MAXSIZE*8)
+#define ROTENC_VLCTY_CALLRATEMS    100
 
 // *****************************************************************************
 // *****************************************************************************
@@ -87,6 +88,35 @@ ROT_DIR ROTENC_ReadRingBuf(void);
 
 void ROTENC_GetRotationCount(uint16_t *cw_count, uint16_t *ccw_count);
 
+/**
+ * Example usage:
+ *      // Read buffered inputs
+ *      rotVelocity = ROTENC_Velocity();
+ *      if(rotVelocity > 0)
+ *      {
+ *          // Read inputs only when encoder was turned
+ *          // Because velocity updates every x ms, there should be enough time
+ *          // to read all the buffered inputs.
+ *          rotDirection = ROTENC_ReadRingBuf();
+ *          if(rotDirection != ROTENC_ERR)
+ *          {
+ *              // Increment the buffered input counter.
+ *              rotEnc_InputCounter++;
+
+ *              if(rotDirection == ROTENC_CW)
+ *              {
+ *                  buf_cw_count++;
+ *                  testcounter = testcounter + rotVelocity;
+ *              }
+ *              else
+ *              {
+ *                  buf_ccw_count++;
+ *                  testcounter = testcounter - rotVelocity;
+ *              }
+ *          }
+ *      }
+ *  
+ */
 uint16_t ROTENC_Velocity(void);
 
 #endif /*_ROTARYENCODER_H_*/

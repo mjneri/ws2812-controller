@@ -211,27 +211,47 @@ void ROTENC_GetRotationCount(uint16_t *cw_count, uint16_t *ccw_count)
 
 uint16_t ROTENC_Velocity(void)
 {
-    // Compute velocity using total rotation counts only.
-    // (Technically we're measuring speed, but the function name is good enough)
-    uint16_t rotTotal = rotCntCW + rotCntCCW;
-    uint16_t prevRotTotal = prevCntCW + prevCntCCW;
+    // Declare static. We want the function to return the previous velocity
+    // value until the if statement updates it.
+    static uint16_t rotVelocity;
     
-    
-    // Left shift deltaTime 10 bits to approximately convert ms to s
-    // NOTE: We don't need an accurate velocity reading here, we just need a
-    // number that represents velocity well enough.
-    // NOTE: Add 1 after left shift to make sure we don't div by 0.
-    uint16_t deltaTime = ((millis() - vel_t0) >> 10) + 1;
-    uint16_t deltaRot = rotTotal - prevRotTotal;
-    
-    // We don't need a floating value.
-    // Approx. unit is turns per s
-    uint16_t rotVelocity = deltaRot / deltaTime;
-    
-    // Before returning, update various variables
-    prevCntCW = rotCntCW;
-    prevCntCCW = rotCntCCW;
-    vel_t0 = millis();
+    if(millis() - vel_t0 >= ROTENC_VLCTY_CALLRATEMS)
+    {
+        // Compute velocity using total rotation counts only.
+        // (Technically we're measuring speed, but the function name is good enough)
+        uint16_t rotTotal = rotCntCW + rotCntCCW;
+        uint16_t prevRotTotal = prevCntCW + prevCntCCW;
+
+        /*
+         * NOTE: Disregard the snippet below for now. If ROTENC_VLCTY_CALLRATEMS is
+         * less than 1024ms long, deltaTime will always be '1' anyway. Might as well
+         * take deltaRot as-is.
+         */
+        // NOTE: Disregard the comments below for now. If ROTENC_VLCTY_CALLRATEMS is
+        // Left shift deltaTime 10 bits to approximately convert ms to s
+        // NOTE: We don't need an accurate velocity reading here, we just need a
+        // number that represents velocity well enough.
+        // NOTE: Add 1 after right shift to make sure we don't div by 0.
+        //uint16_t deltaTime = ((millis() - vel_t0) >> 10) + 1;
+        
+        /* IGNORE UP TO THIS POINT ONLY */
+        
+        uint16_t deltaRot = rotTotal - prevRotTotal;
+
+        /* IGNORE */
+        // We don't need a floating value.
+        // Approx. unit is turns per s
+        //rotVelocity = deltaRot / deltaTime;
+        /* IGNORE*/
+        
+        // We take deltaRot only; see comment on Line 224 above.
+        rotVelocity = deltaRot;
+
+        // Before returning, update various variables
+        prevCntCW = rotCntCW;
+        prevCntCCW = rotCntCCW;
+        vel_t0 = millis();
+    }
     
     return rotVelocity;
 }

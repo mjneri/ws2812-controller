@@ -94,24 +94,28 @@ static void TEST_Display(void)
         OLED_Tasks();
         
         // Read buffered inputs
-        rotDirection = ROTENC_ReadRingBuf();
-        if(rotDirection != ROTENC_ERR)
+        rotVelocity = ROTENC_Velocity();
+        if(rotVelocity > 0)
         {
-            // Increment the buffered input counter.
-            rotEnc_InputCounter++;
+            rotDirection = ROTENC_ReadRingBuf();
+            if(rotDirection != ROTENC_ERR)
+            {
+                // Increment the buffered input counter.
+                rotEnc_InputCounter++;
 
-            if(rotDirection == ROTENC_CW)
-            {
-                buf_cw_count++;
-                testcounter = testcounter + rotVelocity;
-            }
-            else
-            {
-                buf_ccw_count++;
-                testcounter = testcounter - rotVelocity;
+                if(rotDirection == ROTENC_CW)
+                {
+                    buf_cw_count++;
+                    testcounter = testcounter + rotVelocity;
+                }
+                else
+                {
+                    buf_ccw_count++;
+                    testcounter = testcounter - rotVelocity;
+                }
             }
         }
-        
+            
         // Update the screen whenever possible (i.e. fastest refresh rate)
         if(!OLED_IsBusy())
         {
@@ -178,12 +182,11 @@ static void TEST_VELOCITY(void)
     GFX_Text(8, 0, teststring, &font5x7, 0);
 
     // Print velocity value
-    rotVelocity = ROTENC_Velocity();
-    sprintf(teststring, "Vel: %u t/s", rotVelocity);
+    sprintf(teststring, "Vel: %u t/s   ", rotVelocity);
     GFX_Text(16, 0, teststring, &font5x7, 0);
     
     // print testcounter value
-    sprintf(teststring, "%lld", testcounter);
+    sprintf(teststring, "%lld   ", testcounter);
     GFX_Text(24, 0, teststring, &font5x7, 0);
 
     // Display total buffered inputs
