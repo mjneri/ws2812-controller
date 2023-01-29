@@ -46,6 +46,22 @@
 
 #include "spi1.h"
 #include <xc.h>
+#include <string.h>
+
+// User-added code
+
+// Ring buffer "pointer" variables declared as uint16_t
+// so max. buffer size is 65535 instead of a measly 255 bytes
+static volatile uint16_t spi1TxHead = 0;
+static volatile uint16_t spi1TxTail = 0;
+volatile uint16_t spi1TxBufferRemaining;
+
+static volatile uint8_t spi1TxBuffer[SPI1_TX_BUFFER_SIZE];
+// End of user-added code
+
+void SPI1_DefaultHandler(void);
+void SPI1_DefaultRxHandler(void);
+void SPI1_DefaultTxHandler(void);
 
 typedef struct { 
     uint8_t con0; 
@@ -58,7 +74,8 @@ typedef struct {
 
 //con0 == SPIxCON0, con1 == SPIxCON1, con2 == SPIxCON2, baud == SPIxBAUD, operation == Master/Slave
 static const spi1_configuration_t spi1_configuration[] = {   
-    { 0x3, 0x40, 0x2, 0x0, 0 }
+    { 0x2, 0x40, 0x0, 0x0, 0 },
+    { 0x3, 0x40, 0x2, 0x0, 0 }      // Half Duplex transmit only.
 };
 
 void SPI1_Initialize(void)
@@ -74,6 +91,16 @@ void SPI1_Initialize(void)
     //BAUD 0; 
     SPI1BAUD = 0x00;
     TRISCbits.TRISC0 = 0;
+    
+    SPI1_SetInterruptHandler(SPI1_DefaultHandler);
+    SPI1_SetRxInterruptHandler(SPI1_DefaultRxHandler);
+    SPI1_SetTxInterruptHandler(SPI1_DefaultTxHandler);
+    
+    // User-added - initialize buffer
+    spi1TxHead = 0;
+    spi1TxTail = 0;
+    memset((void *)spi1TxBuffer, 0, sizeof(spi1TxBuffer));
+    spi1TxBufferRemaining = sizeof(spi1TxBuffer);
 }
 
 bool SPI1_Open(spi1_modes_t spi1UniqueConfiguration)
@@ -82,8 +109,7 @@ bool SPI1_Open(spi1_modes_t spi1UniqueConfiguration)
     {
         SPI1CON0 = spi1_configuration[spi1UniqueConfiguration].con0;
         SPI1CON1 = spi1_configuration[spi1UniqueConfiguration].con1;
-        SPI1CON2 = spi1_configuration[spi1UniqueConfiguration].con2 | (_SPI1CON2_SPI1TXR_MASK);
-        SPI1CLK  = 0x05;
+        SPI1CON2 = spi1_configuration[spi1UniqueConfiguration].con2;
         SPI1BAUD = spi1_configuration[spi1UniqueConfiguration].baud;        
         TRISCbits.TRISC0 = spi1_configuration[spi1UniqueConfiguration].operation;
         SPI1CON0bits.EN = 1;
@@ -96,6 +122,61 @@ void SPI1_Close(void)
 {
     SPI1CON0bits.EN = 0;
 }
+
+// User-added begins here
+bool SPI1_IsTXReady(void)
+{
+    // Return true only when Tx buffer is empty
+    return ((spi1TxBufferRemaining == sizeof(spi1TxBuffer)) ? true : false);
+}
+
+uint16_t SPI1_GetBufferSize(void)
+{
+    return spi1TxBufferRemaining;
+}
+
+int SPI1_Write(uint8_t txData)
+{
+    if(0 == spi1TxBufferRemaining)
+    {
+        return -1;
+    }
+
+    if(0 == PIE2bits.SPI1TXIE)
+    {
+        SPI1TXB = txData;
+    }
+    else
+    {
+        PIE2bits.SPI1TXIE = 0;
+        spi1TxBuffer[spi1TxHead++] = txData;
+        if(sizeof(spi1TxBuffer) <= spi1TxHead)
+        {
+            spi1TxHead = 0;
+        }
+        spi1TxBufferRemaining--;
+    }
+    PIE2bits.SPI1TXIE = 1;
+}
+
+void SPI1_TX_ISR(void)
+{
+    if(sizeof(spi1TxBuffer) > spi1TxBufferRemaining)
+    {
+       SPI1TXB = spi1TxBuffer[spi1TxTail++];
+       if(sizeof(spi1TxBuffer) <= spi1TxTail)
+        {
+            spi1TxTail = 0;
+        }
+        spi1TxBufferRemaining++;
+    }
+    else
+    {
+        PIE2bits.SPI1TXIE = 0;
+    }
+}
+
+// User-added ends here
 
 uint8_t SPI1_ExchangeByte(uint8_t data)
 {
@@ -145,4 +226,59 @@ void SPI1_WriteByte(uint8_t byte)
 uint8_t SPI1_ReadByte(void)
 {
     return SPI1RXB;
+}
+
+void SPI1_DefaultHandler(void)
+{
+    // add your SPI1 interrupt custom code
+}
+
+void SPI1_SetInterruptHandler(spi1InterruptHandler_t handler)
+{
+    SPI1_InterruptHandler = handler;
+}
+
+void __interrupt(irq(SPI1),base(8)) SPI1_Isr(void)
+{
+    if(SPI1_InterruptHandler)
+    {
+        SPI1_InterruptHandler();
+    }
+}
+
+void SPI1_DefaultRxHandler(void)
+{
+    // add your SPI1RX interrupt custom code
+}
+
+void SPI1_SetRxInterruptHandler(spi1InterruptHandler_t handler)
+{
+    SPI1_RxInterruptHandler = handler;
+}
+
+void __interrupt(irq(SPI1RX),base(8)) SPI1_RxIsr(void)
+{
+    if(SPI1_RxInterruptHandler)
+    {
+        SPI1_RxInterruptHandler();
+    }
+}
+
+void SPI1_DefaultTxHandler(void)
+{
+    // add your SPI1TX interrupt custom code
+    SPI1_TX_ISR();
+}
+
+void SPI1_SetTxInterruptHandler(spi1InterruptHandler_t handler)
+{
+    SPI1_TxInterruptHandler = handler;
+}
+
+void __interrupt(irq(SPI1TX),base(8)) SPI1_TxIsr(void)
+{
+    if(SPI1_TxInterruptHandler)
+    {
+        SPI1_TxInterruptHandler();
+    }
 }

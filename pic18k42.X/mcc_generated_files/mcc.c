@@ -54,14 +54,14 @@ void SYSTEM_Initialize(void)
     I2C1_Initialize();
     PIN_MANAGER_Initialize();
     OSCILLATOR_Initialize();
-    TMR4_Initialize();
     CLC2_Initialize();
+    TMR4_Initialize();
     TMR2_Initialize();
     TMR6_Initialize();
     CLC1_Initialize();
     CLC3_Initialize();
-    TMR5_Initialize();
     PWM5_Initialize();
+    TMR5_Initialize();
     TMR1_Initialize();
     SPI1_Initialize();
 }

@@ -34,6 +34,9 @@
 
 #define LEDSTRIPSIZE 120
 
+// Limit to 3 bytes - equivalent to data for one LED
+#define SPI1_TX_BUFFER_SIZE LEDSTRIPSIZE*3
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Macro Defines

@@ -15,7 +15,7 @@
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.8
         Device            :  PIC18F47K42
-        Driver Version    :  1.0.0
+        Driver Version    :  3.0.0
     The generated drivers are tested against the following:
         Compiler          :  XC8 2.36 and above or later
         MPLAB             :  MPLAB X 6.00
@@ -55,10 +55,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "../leds/spi_led.h"
+
 /* SPI interfaces */
 typedef enum { 
-    SPI1_DEFAULT
+    SPI1_DEFAULT,
+    SPI1_HDX_TXONLY
 } spi1_modes_t;
+
+typedef void (*spi1InterruptHandler_t)(void);
 
 void SPI1_Initialize(void);
 bool SPI1_Open(spi1_modes_t spi1UniqueConfiguration);
@@ -70,4 +75,15 @@ void SPI1_ReadBlock(void *block, size_t blockSize);
 void SPI1_WriteByte(uint8_t byte);
 uint8_t SPI1_ReadByte(void);
 
+// User-added function:
+bool SPI1_IsTXReady(void);
+uint16_t SPI1_GetBufferSize(void);
+int SPI1_Write(uint8_t txData);
+
+void (*SPI1_InterruptHandler)(void);
+void SPI1_SetInterruptHandler(spi1InterruptHandler_t handler);
+void (*SPI1_RxInterruptHandler)(void);
+void SPI1_SetRxInterruptHandler(spi1InterruptHandler_t handler);
+void (*SPI1_TxInterruptHandler)(void);
+void SPI1_SetTxInterruptHandler(spi1InterruptHandler_t handler);
 #endif //SPI1_H

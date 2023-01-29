@@ -29,7 +29,9 @@ void HeartbeatCallback(void)
 // ************************************************************
 
 // Local function prototypes
+static void TEST_PIXELSInit(void);
 static void TEST_PIXELS(void);
+static void TEST_DisplayInit(void);
 static void TEST_Display(void);
 
 // Other local function prototypes
@@ -59,15 +61,22 @@ void TEST_Function(void)
     OLED_Initialize();
     GFX_Clear();
     
-    // Test SPI LED functions
-    //TEST_PIXELS();
+    TEST_PIXELSInit();
     
-    // Test code for anything involving the OLED in some way
-    TEST_Display();
+    TEST_DisplayInit();
+    
+    while(true)
+    {
+        // Test code for anything involving the OLED in some way
+        TEST_Display();
+        
+        // Test SPI LED functions
+        TEST_PIXELS();
+    }
     return;
 }
 
-static void TEST_Display(void)
+static void TEST_DisplayInit(void)
 {
     // To render the bitmap, call OLED_Tasks() until all pages have been updated.
     // Here, we assume that this process is finished after 1sec.
@@ -87,44 +96,44 @@ static void TEST_Display(void)
     
     // Re-anchor t0
     t0 = millis();
-    
-    while(true)
-    {
-        Button_Tasks();
-        OLED_Tasks();
-        
-        // Read buffered inputs
-        rotVelocity = ROTENC_Velocity();
-        if(rotVelocity > 0)
-        {
-            rotDirection = ROTENC_ReadRingBuf();
-            if(rotDirection != ROTENC_ERR)
-            {
-                // Increment the buffered input counter.
-                rotEnc_InputCounter++;
+}
 
-                if(rotDirection == ROTENC_CW)
-                {
-                    buf_cw_count++;
-                    testcounter = testcounter + rotVelocity;
-                }
-                else
-                {
-                    buf_ccw_count++;
-                    testcounter = testcounter - rotVelocity;
-                }
+static void TEST_Display(void)
+{
+    Button_Tasks();
+    OLED_Tasks();
+
+    // Read buffered inputs
+    rotVelocity = ROTENC_Velocity();
+    if(rotVelocity > 0)
+    {
+        rotDirection = ROTENC_ReadRingBuf();
+        if(rotDirection != ROTENC_ERR)
+        {
+            // Increment the buffered input counter.
+            rotEnc_InputCounter++;
+
+            if(rotDirection == ROTENC_CW)
+            {
+                buf_cw_count++;
+                testcounter = testcounter + rotVelocity;
+            }
+            else
+            {
+                buf_ccw_count++;
+                testcounter = testcounter - rotVelocity;
             }
         }
-            
-        // Update the screen whenever possible (i.e. fastest refresh rate)
-        if(!OLED_IsBusy())
-        {
-            //TEST_USERINPUTS();
-            TEST_VELOCITY();
-            
-            GFX_Render();
-            t0 = millis();
-        }
+    }
+
+    // Update the screen whenever possible (i.e. fastest refresh rate)
+    if(!OLED_IsBusy())
+    {
+        //TEST_USERINPUTS();
+        TEST_VELOCITY();
+
+        GFX_Render();
+        t0 = millis();
     }
 }
 
@@ -205,22 +214,128 @@ static void TEST_VELOCITY(void)
 }
 
 // ************************************************************
-// Local function definitions
-static void TEST_PIXELS(void)
-{   
+// Functions for testing Non-blocking Pixels
+uint64_t rgb_t0 = 0;
+static uint16_t cp_framecount = LEDSTRIPSIZE;
+static uint16_t current_frame = 0;
+static uint16_t current_led = 0;
+static bool isframedone = false;
+
+static void TEST_PIXEL_Walk(void);  // simple animation only
+
+// Move function below to spi_led.c after testing
+static bool RGB_SPI_IsTxReady(void)
+{
+    // Return true only if there's at least 3 bytes of free space
+    return ((SPI1_GetBufferSize() >= 3)? true : false);
+}
+
+// Move function below to spi_led.c after testing
+// Maybe make this return int instead of void? So app can check return value
+static void RGB_SPI_Write(uint24_t val)
+{
+    if(!RGB_SPI_IsTxReady())
+    {
+        return;
+    }
+    
+    rgb_led_t rgbData = (rgb_led_t) val;
+    
+    SPI1_Write(rgbData.green);
+    SPI1_Write(rgbData.red);
+    SPI1_Write(rgbData.blue);
+    
+    return;
+}
+
+static int TEST_PIXEL_SelectProfile(void)
+{
+    // Do nothing for now
+    /* PSEUDOCODE:
+     if(profile is invalid)
+    {
+        return -1;
+    }
+    current_profile = profile;
+     cp_framecount = frames;
+    return 0;
+     */
+}
+
+static void TEST_RGB_Tasks(void)
+{
+    // Check this pin with a logic analyzer - frequency of this function being called.
+    DEBUG_GPIO_OUT_Toggle();
+    
+    if(!RGB_SPI_IsTxReady())
+    {
+        return;
+    }
+    
+    if(isframedone)
+    {
+        if(millis() - rgb_t0 < 25)
+        {
+            // Update only every 25ms
+            return;
+        }
+    }
+        
+    isframedone = false;
+    
+    // Replace this later - see pseudocode in OneNote
+    TEST_PIXEL_Walk();
+    rgb_t0 = millis();
+}
+
+static void TEST_PIXELSInit(void)
+{
     // Open SPI port
-    SPI1_Open(SPI1_DEFAULT);
+    SPI1_Open(SPI1_HDX_TXONLY);
     
     // 2022-03-20: Minimal memory footprint test code
-    RGB_Clear(LEDSTRIPSIZE);
+    //RGB_Clear(LEDSTRIPSIZE);
     
-    profitestCometsTail(6);
-    
-    while(1)
-    {
-        
-    }
+    rgb_t0 = millis();
+}
+
+static void TEST_PIXELS(void)
+{   
+    TEST_RGB_Tasks();
     return;
+}
+
+static void TEST_PIXEL_Walk(void)
+{
+    static uint16_t activeLed;  // determines which LED is turned on.
+    
+    while(RGB_SPI_IsTxReady())
+    {
+        if(current_frame < cp_framecount)
+        {
+            if(current_led == activeLed)
+            {
+                // Ideally, application will check SPI1_Write's return value.
+                // Here, for simplicity, we just assume it will always return 0;
+                RGB_SPI_Write(RGB_TO_VAL(0x10, 0, 0));
+
+                // Advance frame
+                current_frame = (current_frame+1) % cp_framecount;
+                isframedone = true;
+                current_led = 0;
+                activeLed = (activeLed+1) % LEDSTRIPSIZE;
+                break;
+            }
+            else
+            {
+                RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
+
+                // Advance current led
+                current_led++;
+            }
+        }
+    }
+        
 }
 
 static void profitestCometsTail(uint8_t tailLen)
