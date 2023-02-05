@@ -44,6 +44,8 @@
 #define SH1106_PAGES        8
 #define SH1106_SEGMENTS     128
 
+#define SH1106_PAGESZ       8               // Size of a single page in pixels
+
 #define SH1106_SEGOFFSET    2               // Segments [2, 130] are mapped to the OLED
 
 #define SH1106_COMMANDBYTE  0x00            // D/nC bit is cleared; Co bit is 0

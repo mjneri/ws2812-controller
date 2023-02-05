@@ -263,10 +263,7 @@ static int TEST_PIXEL_SelectProfile(void)
 }
 
 static void TEST_RGB_Tasks(void)
-{
-    // Check this pin with a logic analyzer - frequency of this function being called.
-    DEBUG_GPIO_OUT_Toggle();
-    
+{   
     if(!RGB_SPI_IsTxReady())
     {
         return;
@@ -301,6 +298,9 @@ static void TEST_PIXELSInit(void)
 
 static void TEST_PIXELS(void)
 {   
+    // Check this pin with a logic analyzer - frequency of this function being called.
+    DEBUG_GPIO_OUT_Toggle();
+    
     TEST_RGB_Tasks();
     return;
 }
