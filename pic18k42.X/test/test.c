@@ -34,9 +34,6 @@ static void TEST_PIXELS(void);
 static void TEST_DisplayInit(void);
 static void TEST_Display(void);
 
-// Other local function prototypes
-static void profitestCometsTail(uint8_t tailLen);
-
 // TEST CODE FOR USER INPUTS
 static void TEST_USERINPUTS(void);
 
@@ -218,10 +215,12 @@ static void TEST_VELOCITY(void)
 uint64_t rgb_t0 = 0;
 static uint16_t cp_framecount = LEDSTRIPSIZE;
 static uint16_t current_frame = 0;
-static uint16_t current_led = 0;
+static uint16_t current_led = 0;                // Indicates which LED is being updated
 static bool isframedone = false;
 
 static void TEST_PIXEL_Walk(void);  // simple animation only
+static void TEST_PIXEL_COMETSTAIL(uint8_t tailLen);
+static void TEST_PIXEL_THEATERCHASE(uint8_t szLight, uint8_t szSpace);
 
 // Move function below to spi_led.c after testing
 static bool RGB_SPI_IsTxReady(void)
@@ -281,7 +280,9 @@ static void TEST_RGB_Tasks(void)
     isframedone = false;
     
     // Replace this later - see pseudocode in OneNote
-    TEST_PIXEL_Walk();
+    //TEST_PIXEL_Walk();
+    //TEST_PIXEL_COMETSTAIL(6);
+    TEST_PIXEL_THEATERCHASE(3, 9);
     rgb_t0 = millis();
 }
 
@@ -307,7 +308,7 @@ static void TEST_PIXELS(void)
 
 static void TEST_PIXEL_Walk(void)
 {
-    static uint16_t activeLed;  // determines which LED is turned on.
+    static uint16_t activeLed = 0;  // determines which LED is turned on.
     
     while(RGB_SPI_IsTxReady())
     {
@@ -320,7 +321,7 @@ static void TEST_PIXEL_Walk(void)
                 RGB_SPI_Write(RGB_TO_VAL(0x10, 0, 0));
 
                 // Advance frame
-                current_frame = (current_frame+1) % cp_framecount;
+                current_frame++;
                 isframedone = true;
                 current_led = 0;
                 activeLed = (activeLed+1) % LEDSTRIPSIZE;
@@ -334,84 +335,171 @@ static void TEST_PIXEL_Walk(void)
                 current_led++;
             }
         }
+        else
+        {
+            current_frame = 0;
+        }
     }
         
 }
 
-static void profitestCometsTail(uint8_t tailLen)
+static void TEST_PIXEL_COMETSTAIL(uint8_t tailLen)
 {
-    int16_t i, q = 0;
-    int16_t ledN = 0;
-    
     // Determines where the comet's head and tail are located
-    int16_t cometHeadLoc = 0;
-    int16_t cometTailLoc = 0;
-    int16_t cometLength = tailLen + 1;
+    static int16_t cometHeadLoc = 0;
+    static int16_t cometTailLoc = 0;
+    static bool isForward = true;   // Determines comet flight direction
     
-    uint16_t frames = LEDSTRIPSIZE + tailLen;
+    //uint16_t frames = cp_framecount + tailLen;
+    // Update cp_framecount. NOTE: This shall evenetually be done by TEST_PIXEL_SelectProfile
+    cp_framecount = LEDSTRIPSIZE + tailLen;
     
-    while(1)
+    while(RGB_SPI_IsTxReady())
     {
         // Forward comet flight
-        for(i=0; i < frames; i++)
+        if(isForward)
         {
-            for(ledN = 0; ledN < cometTailLoc; ledN++)
+            if(current_frame < cp_framecount)
             {
-                RGB_SetColor(0);
+                if(current_led < cometTailLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
+                    current_led++;
+                }
+                else if(current_led < cometHeadLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0x7f>>(cometHeadLoc-current_led)));
+                    current_led++;
+                }
+                else if(current_led == cometHeadLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0,0,0x7f));
+                    
+                    // Advance comet head/tail locations
+                    cometHeadLoc = (cometHeadLoc < LEDSTRIPSIZE-1)? cometHeadLoc+1 : LEDSTRIPSIZE-1;
+                    cometTailLoc = (cometHeadLoc < tailLen)? 0 : \
+                        (cometHeadLoc == LEDSTRIPSIZE-1)? cometTailLoc+1 : cometHeadLoc - tailLen;
+                                        
+                    // Advance frame
+                    current_frame++;
+                    isframedone = true;
+                    current_led = 0;
+                    return;
+                }
+                else
+                {
+                    // Do nothing. This condition should not be reached.
+                    return;
+                }
             }
-            for(q = tailLen; ledN < cometHeadLoc; ledN++, q--)
+            else
             {
-                RGB_SetColor(RGB_TO_VAL(0x7f>>q, 0, 0));
+                // Frames for forward flight are done "rendering". Time to reverse the flight
+                current_frame = 0;
+                isForward = false;
             }
-            if(ledN == cometHeadLoc)
-            {
-                RGB_SetColor(RGB_TO_VAL(0x7f, 0, 0));
-            }
-            
-            // Advance head and tail
-            cometHeadLoc = (cometHeadLoc < LEDSTRIPSIZE-1)? cometHeadLoc+1 : LEDSTRIPSIZE-1;
-            cometTailLoc = (cometHeadLoc < tailLen)? 0 : \
-                (cometHeadLoc == LEDSTRIPSIZE-1)? cometTailLoc+1 : cometHeadLoc - tailLen;
-            
-            LEDLATCH();
-            __delay_ms(25);
         }
-        
-        __delay_ms(50);
-        cometHeadLoc = LEDSTRIPSIZE - 1;
-        cometTailLoc = LEDSTRIPSIZE - 1;
-        
-        // Reverse flight
-        for(i=0; i < frames; i++)
+        else
         {
-            for(ledN = 0; ledN < cometHeadLoc; ledN++)
+            // Reverse comet flight
+            if(current_frame < cp_framecount)
             {
-                RGB_SetColor(0);
+                if(current_led < cometHeadLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
+                    current_led++;
+                }
+                else if(current_led == cometHeadLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0x7f));
+                    current_led++;
+                }
+                else if(current_led <= cometTailLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0,0,0x7f>>(current_led-cometHeadLoc)));
+                    current_led++;
+                }
+                else if(current_led > cometTailLoc)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
+                    
+                    // Advance comet head/tail locations
+                    cometHeadLoc = (cometHeadLoc > 0)? cometHeadLoc-1 : 0;
+                    cometTailLoc = ((cometTailLoc-cometHeadLoc) <= tailLen && cometHeadLoc > 0)? \
+                                    LEDSTRIPSIZE-1 : (cometTailLoc > 0)? cometTailLoc - 1 : 0;
+                                        
+                    // Advance frame
+                    current_frame++;
+                    isframedone = true;
+                    current_led = 0;
+                    return;
+                }
+                else
+                {
+                    // Do nothing. This condition should not be reached.
+                    return;
+                }
             }
-            if(ledN++ == cometHeadLoc)
+            else
             {
-                RGB_SetColor(RGB_TO_VAL(0x7f, 0, 0));
+                // Frames for reverse flight are done "rendering"
+                current_frame = 0;
+                isForward = true;
             }
-            for(q = 1; ledN <= cometTailLoc; ledN++, q++)
-            {
-                RGB_SetColor(RGB_TO_VAL(0x7f>>q, 0, 0));
-            }
-            if(ledN > cometTailLoc)
-            {
-                RGB_SetColor(0);
-            }
-            
-            // Advance head and tail
-            cometHeadLoc = (cometHeadLoc > 0)? cometHeadLoc-1 : 0;
-            cometTailLoc = ((cometTailLoc-cometHeadLoc) <= tailLen && cometHeadLoc > 0)? \
-                            LEDSTRIPSIZE-1 : (cometTailLoc > 0)? cometTailLoc - 1 : 0;
-            
-            LEDLATCH();
-            __delay_ms(25);
         }
     }
+    
+    return;
 }
 
+static void TEST_PIXEL_THEATERCHASE(uint8_t szLight, uint8_t szSpace)
+{
+    uint16_t combinedSegLen = szLight + szSpace;
+    static uint16_t ledOffset = 0;
+    
+    // Update cp_framecount. NOTE: This shall evenetually be done by TEST_PIXEL_SelectProfile
+    cp_framecount = combinedSegLen;
+    
+    while(RGB_SPI_IsTxReady())
+    {
+        if(current_frame < cp_framecount)
+        {
+            if(current_led < LEDSTRIPSIZE)
+            {
+                if((current_led + ledOffset) % combinedSegLen < szLight)
+                {
+                    RGB_SPI_Write(RGB_TO_VAL(0x19,0,0));
+                }
+                else
+                {
+                    RGB_SPI_Write((RGB_TO_VAL(0,0,0)));
+                }
+                
+                current_led++;
+            }
+            else
+            {
+                // Uncomment the other to reverse direction
+                //ledOffset = (ledOffset+1) % combinedSegLen;
+                ledOffset = (ledOffset == 0)? combinedSegLen-1 : (ledOffset-1) % combinedSegLen;
+                
+                // current_led has reached ledpos, which is the last LED to update in the
+                // current_frame. Thus, it's time to advance to the next frame and
+                // reset current_led to the beginning of the LED array.
+                current_frame++;
+                current_led = 0;
+                isframedone = true;     // Indicate to the task routine that the frame is done
+                return;
+            }
+        }
+        else
+        {
+            current_frame = 0;
+        }
+    }
+    
+    return;
+}
 /**
  End of File
 */
