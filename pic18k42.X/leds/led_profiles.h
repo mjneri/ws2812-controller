@@ -38,11 +38,34 @@
 // *****************************************************************************
 // *****************************************************************************
 
+/* For use with PIXELS_SelectProfile */
+/* For examples that use function pointers, see:
+   https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino */
+#define PIXEL_PROFILE_COUNT 11       // How many profiles are available?
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Data type definitions
 // *****************************************************************************
 // *****************************************************************************
+
+typedef enum
+{
+    PIXEL_PROFILE_INDEX_WALK = 0,
+    PIXEL_PROFILE_INDEX_COMETSTAIL,
+    PIXEL_PROFILE_THEATERCHASE,
+    PIXEL_PROFILE_ONECOLORPULSE,
+    PIXEL_PROFILE_SOLIDCOLOR,
+    PIXEL_PROFILE_COLORWAVE,
+    PIXEL_PROFILE_SOUNDREACTIVE,
+    PIXEL_PROFILE_MULTICOLORPULSE,
+    PIXEL_PROFILE_SPARKLES,
+    PIXEL_PROFILE_RAINBOWCYCLE,
+    PIXEL_PROFILE_ALTERNATINGCOLORS,
+            
+    PIXEL_PROFILE_INVALID
+} pixel_profile_index_t;
 
 // Array of function pointers pointing to each profile.
 // Will not work if each profile takes different arguments
@@ -55,18 +78,23 @@
 // *****************************************************************************
 // *****************************************************************************
 
-// Hopefully the function names explain how the profiles look on an LED strip.
+void PIXELS_Initialize(void);
 
-void cometsTail(uint8_t tailLen);
-void theaterChase(uint8_t szLight, uint8_t szSpace);
-void oneColorPulse(void);
-void solidColor(uint24_t rgb);
-void colorWave(void);
-void soundReactive(void);
-void multiColorPulse(void);
-void sparkles(void);
-void rainbowCycle(unsigned char frames , unsigned int frameAdvance, unsigned int pixelAdvance);
-void alternatingColors(void);
+int PIXELS_SelectProfile(pixel_profile_index_t index);
+
+void PIXELS_Tasks(void);
+
+void PIXEL_Walk(void);
+void PIXEL_CometsTail(void);
+void PIXEL_TheaterChase(void);
+void PIXEL_OneColorPulse(void);
+void PIXEL_SolidColor(void);
+void PIXEL_ColorWave(void);
+void PIXEL_SoundReactive(void);
+void PIXEL_MultiColorPulse(void);
+void PIXEL_Sparkles(void);
+void PIXEL_RainbowCycle(void);
+void PIXEL_AlternatingColors(void);
 
 
 #endif /*_LED_PROFILES_H_*/

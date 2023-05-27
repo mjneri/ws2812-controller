@@ -5,8 +5,6 @@
 
 #include "test.h"
 
-#define LEDLATCH() __delay_ms(1)        // wait for LED to latch
-
 // Globals for testing
 uint64_t t0 = 0;
 char teststring[64];
@@ -54,11 +52,10 @@ void TEST_Function(void)
     ROTENC_Initialize();
     
     // Make sure to clear the software framebuffer after initializing the OLED
-    __delay_ms(100);
     OLED_Initialize();
     GFX_Clear();
     
-    TEST_PIXELSInit();
+    PIXELS_Initialize();
     
     TEST_DisplayInit();
     
@@ -212,166 +209,9 @@ static void TEST_VELOCITY(void)
 
 // ************************************************************
 // Functions for testing Non-blocking Pixels
-uint64_t rgb_t0 = 0;
-static uint16_t cp_framecount = LEDSTRIPSIZE;
-static uint16_t current_frame = 0;
-static uint16_t current_led = 0;                // Indicates which LED is being updated
-
-
-static bool isframedone = false;        // Checked by Tasks, updated by profile functions.
-
-static void TEST_PIXEL_Walk(void);  // simple animation only
-static void TEST_PIXEL_COMETSTAIL(void);
-static void TEST_PIXEL_THEATERCHASE(void);
-
-/* 2023-05-20: For use with TEST_PIXEL_SelectProfile */
-/* For examples that use function pointers, see:
-   https://github.com/FastLED/FastLED/blob/master/examples/DemoReel100/DemoReel100.ino */
-#define PIXEL_PROFILE_COUNT 3       // How many profiles are available?
-
-typedef enum
-{
-    PIXEL_PROFILE_INDEX_WALK = 0,
-    PIXEL_PROFILE_INDEX_COMETSTAIL,
-    PIXEL_PROFILE_THEATERCHASE,
-            
-    PIXEL_PROFILE_INVALID
-} pixel_profile_index_t;
-
-pixel_profile_index_t currentProfileIndex = 0;
-
-// Function pointer array. Functions added here should not take arguments.
-void (*pixelProfileList[PIXEL_PROFILE_COUNT])(void) = 
-{
-    TEST_PIXEL_Walk,
-    TEST_PIXEL_COMETSTAIL,
-    TEST_PIXEL_THEATERCHASE
-};
-
-/* End of stuff for TEST_PIXEL_SelectProfile */
-
-
-
-// Move function below to spi_led.c after testing
-static bool RGB_SPI_IsTxReady(void)
-{
-    // Return true only if there's at least 3 bytes of free space
-    return ((SPI1_GetBufferSize() >= 3)? true : false);
-}
-
-// Move function below to spi_led.c after testing
-// Maybe make this return int instead of void? So app can check return value
-static void RGB_SPI_Write(uint24_t val)
-{
-    if(!RGB_SPI_IsTxReady())
-    {
-        return;
-    }
-    
-    rgb_led_t rgbData = (rgb_led_t) val;
-    
-    SPI1_Write(rgbData.green);
-    SPI1_Write(rgbData.red);
-    SPI1_Write(rgbData.blue);
-    
-    return;
-}
-
-static int TEST_PIXEL_SelectProfile(pixel_profile_index_t index)
-{
-    // Do nothing for now
-    /* PSEUDOCODE:
-     if(profile is invalid)
-    {
-        return -1;
-    }
-    current_profile = profile;
-     cp_framecount = frames;
-    return 0;
-     */
-    
-    // Check if profile index is valid
-    if(index >= PIXEL_PROFILE_INVALID)
-    {
-        return -1;
-    }
-    
-    currentProfileIndex = index;
-    
-    // Reset state variables
-    current_frame = 0;
-    current_led = 0;
-    
-    // Code below is "hard-coded" for now. Eventually, it will be replaced with 
-    // a more generalized implementation using structs such that names of pixel profiles
-    // won't need to be specified.
-    switch(currentProfileIndex)
-    {
-        case PIXEL_PROFILE_INDEX_WALK:
-        {
-            cp_framecount = LEDSTRIPSIZE;
-            break;
-        }
-        
-        case PIXEL_PROFILE_INDEX_COMETSTAIL:
-        {
-            cp_framecount = LEDSTRIPSIZE + 7;   // 7 is tailLen
-            break;
-        }
-        
-        case PIXEL_PROFILE_THEATERCHASE:
-        {
-            cp_framecount = 9;  // 9 is combinedSegLen
-            break;
-        }
-        
-        default:
-            break;
-    }
-    return 0;
-}
-
-static void TEST_RGB_Tasks(void)
-{   
-    if(!RGB_SPI_IsTxReady())
-    {
-        return;
-    }
-    
-    if(isframedone)
-    {
-        if(millis() - rgb_t0 < 25)
-        {
-            // Update only every 25ms
-            
-            /* 2023-05-20: Instead of hardcoded 25ms, consider using a variable.
-             This way, each profile can run at different framerates. */
-            return;
-        }
-    }
-        
-    isframedone = false;
-    
-    // Replace this later - see pseudocode in OneNote
-    //TEST_PIXEL_Walk();
-    //TEST_PIXEL_COMETSTAIL();
-    //TEST_PIXEL_THEATERCHASE();
-    (*pixelProfileList[currentProfileIndex])();
-    rgb_t0 = millis();
-}
-
-static void TEST_PIXELSInit(void)
-{
-    // Open SPI port
-    SPI1_Open(SPI1_HDX_TXONLY);
-    
-    // 2022-03-20: Minimal memory footprint test code
-    //RGB_Clear(LEDSTRIPSIZE);
-    
-    rgb_t0 = millis();
-}
 
 bool changeCheck = false;
+pixel_profile_index_t currentProfile = 0;
 static void TEST_PIXELS(void)
 {   
     // Check this pin with a logic analyzer - frequency of this function being called.
@@ -380,7 +220,8 @@ static void TEST_PIXELS(void)
     // 2023-05-20: Test code added
     if(get_button_held() && !changeCheck)
     {
-        TEST_PIXEL_SelectProfile((currentProfileIndex + 1) % PIXEL_PROFILE_COUNT);
+        currentProfile = (currentProfile+1) % 3;        // Only cycle between the first 3 profiles
+        PIXELS_SelectProfile(currentProfile);
         changeCheck = true;
     }
     else if(!get_button_held())
@@ -388,208 +229,7 @@ static void TEST_PIXELS(void)
         changeCheck = false;
     }
     
-    TEST_RGB_Tasks();
-    return;
-}
-
-static void TEST_PIXEL_Walk(void)
-{
-    static uint16_t activeLed = 0;  // determines which LED is turned on.
-    
-    while(RGB_SPI_IsTxReady())
-    {
-        if(current_frame < cp_framecount)
-        {
-            if(current_led == activeLed)
-            {
-                // Ideally, application will check SPI1_Write's return value.
-                // Here, for simplicity, we just assume it will always return 0;
-                RGB_SPI_Write(RGB_TO_VAL(0x10, 0, 0));
-
-                // Advance frame
-                current_frame++;
-                isframedone = true;
-                current_led = 0;
-                activeLed = (activeLed+1) % LEDSTRIPSIZE;
-                break;
-            }
-            else
-            {
-                RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
-
-                // Advance current led
-                current_led++;
-            }
-        }
-        else
-        {
-            current_frame = 0;
-        }
-    }
-        
-}
-
-static void TEST_PIXEL_COMETSTAIL(void)
-{
-    uint8_t tailLen = 7;    // Hard-coded value.
-    
-    // Determines where the comet's head and tail are located
-    static int16_t cometHeadLoc = 0;
-    static int16_t cometTailLoc = 0;
-    static bool isForward = true;   // Determines comet flight direction
-    
-    //uint16_t frames = cp_framecount + tailLen;
-    // Update cp_framecount. NOTE: This shall evenetually be done by TEST_PIXEL_SelectProfile
-    //cp_framecount = LEDSTRIPSIZE + tailLen;
-    
-    while(RGB_SPI_IsTxReady())
-    {
-        // Forward comet flight
-        if(isForward)
-        {
-            if(current_frame < cp_framecount)
-            {
-                if(current_led < cometTailLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
-                    current_led++;
-                }
-                else if(current_led < cometHeadLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0x7f>>(cometHeadLoc-current_led)));
-                    current_led++;
-                }
-                else if(current_led == cometHeadLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0,0,0x7f));
-                    
-                    // Advance comet head/tail locations
-                    cometHeadLoc = (cometHeadLoc < LEDSTRIPSIZE-1)? cometHeadLoc+1 : LEDSTRIPSIZE-1;
-                    cometTailLoc = (cometHeadLoc < tailLen)? 0 : \
-                        (cometHeadLoc == LEDSTRIPSIZE-1)? cometTailLoc+1 : cometHeadLoc - tailLen;
-                                        
-                    // Advance frame
-                    current_frame++;
-                    isframedone = true;
-                    current_led = 0;
-                    return;
-                }
-                else
-                {
-                    // Do nothing. This condition should not be reached.
-                    return;
-                }
-            }
-            else
-            {
-                // Frames for forward flight are done "rendering". Time to reverse the flight
-                current_frame = 0;
-                isForward = false;
-            }
-        }
-        else
-        {
-            // Reverse comet flight
-            if(current_frame < cp_framecount)
-            {
-                if(current_led < cometHeadLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
-                    current_led++;
-                }
-                else if(current_led == cometHeadLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0x7f));
-                    current_led++;
-                }
-                else if(current_led <= cometTailLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0,0,0x7f>>(current_led-cometHeadLoc)));
-                    current_led++;
-                }
-                else if(current_led > cometTailLoc)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
-                    
-                    // Advance comet head/tail locations
-                    cometHeadLoc = (cometHeadLoc > 0)? cometHeadLoc-1 : 0;
-                    cometTailLoc = ((cometTailLoc-cometHeadLoc) <= tailLen && cometHeadLoc > 0)? \
-                                    LEDSTRIPSIZE-1 : (cometTailLoc > 0)? cometTailLoc - 1 : 0;
-                                        
-                    // Advance frame
-                    current_frame++;
-                    isframedone = true;
-                    current_led = 0;
-                    return;
-                }
-                else
-                {
-                    // Do nothing. This condition should not be reached.
-                    return;
-                }
-            }
-            else
-            {
-                // Frames for reverse flight are done "rendering"
-                current_frame = 0;
-                isForward = true;
-            }
-        }
-    }
-    
-    return;
-}
-
-static void TEST_PIXEL_THEATERCHASE(void)
-{
-    // Hard-coded values
-    uint8_t szLight = 3;
-    uint8_t szSpace = 6;
-    
-    uint16_t combinedSegLen = szLight + szSpace;
-    static uint16_t ledOffset = 0;
-    
-    // Update cp_framecount. NOTE: This shall evenetually be done by TEST_PIXEL_SelectProfile
-    cp_framecount = combinedSegLen;
-    
-    while(RGB_SPI_IsTxReady())
-    {
-        if(current_frame < cp_framecount)
-        {
-            if(current_led < LEDSTRIPSIZE)
-            {
-                if((current_led + ledOffset) % combinedSegLen < szLight)
-                {
-                    RGB_SPI_Write(RGB_TO_VAL(0x19,0,0));
-                }
-                else
-                {
-                    RGB_SPI_Write((RGB_TO_VAL(0,0,0)));
-                }
-                
-                current_led++;
-            }
-            else
-            {
-                // Uncomment the other to reverse direction
-                //ledOffset = (ledOffset+1) % combinedSegLen;
-                ledOffset = (ledOffset == 0)? combinedSegLen-1 : (ledOffset-1) % combinedSegLen;
-                
-                // current_led has reached ledpos, which is the last LED to update in the
-                // current_frame. Thus, it's time to advance to the next frame and
-                // reset current_led to the beginning of the LED array.
-                current_frame++;
-                current_led = 0;
-                isframedone = true;     // Indicate to the task routine that the frame is done
-                return;
-            }
-        }
-        else
-        {
-            current_frame = 0;
-        }
-    }
-    
+    PIXELS_Tasks();
     return;
 }
 /**

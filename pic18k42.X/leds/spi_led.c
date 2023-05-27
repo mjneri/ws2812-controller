@@ -28,50 +28,58 @@
 // *****************************************************************************
 // *****************************************************************************
 
-static void RGB_SendData(rgb_led_t rgbData);
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Function Definitions
 // *****************************************************************************
 // *****************************************************************************
 
-void RGB_Clear(uint16_t ledcount)
+void RGB_SPI_Initialize(void)
 {
-    rgb_led_t temp;
+    // Open SPI port
+    SPI1_Open(SPI1_HDX_TXONLY);
     
-    for(uint16_t i = 0; i < ledcount; i++)
-    {
-        temp.val = 0;
-        RGB_SendData(temp);
-    }
-    __delay_ms(1);
+    // Turn off all LEDs
+    RGB_SPI_Clear(LEDSTRIPSIZE);
+    
     return;
 }
 
-void RGB_SetColor(uint24_t val)
+void RGB_SPI_Clear(uint16_t ledcount)
 {
-    RGB_SendData((rgb_led_t) val);
-    return;
-}
-
-void RGB_ALLSetColor(uint16_t ledcount, uint24_t val)
-{
-    // Set the color values of all LEDs
-    uint16_t i = 0;
-    for(i = 0; i < ledcount; i++)
+    for(int i = 0; i < ledcount; i++)
     {
-        RGB_SendData((rgb_led_t) val);
+        RGB_SPI_Write(RGB_TO_VAL(0, 0, 0));
+        
+        if(!RGB_SPI_IsTxReady())
+        {
+            break;
+        }
     }
     
     return;
 }
 
-static void RGB_SendData(rgb_led_t rgbData)
+bool RGB_SPI_Write(uint24_t val)
 {
-    SPI1_WriteByte(rgbData.green);
-    SPI1_WriteByte(rgbData.red);
-    SPI1_WriteByte(rgbData.blue);
+    if(!RGB_SPI_IsTxReady())
+    {
+        return false;
+    }
+    
+    rgb_led_t rgbData = (rgb_led_t) val;
+    
+    SPI1_Write(rgbData.green);
+    SPI1_Write(rgbData.red);
+    SPI1_Write(rgbData.blue);
+    
+    return true;
+}
+
+bool RGB_SPI_IsTxReady(void)
+{
+    // Return true only if there's at least 3 bytes of free space
+    return ((SPI1_GetBufferSize() >= 3)? true : false);
 }
 
 /*******************************************************************************

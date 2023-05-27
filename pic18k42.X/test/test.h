@@ -11,6 +11,7 @@
 #include "../graphics/drivers/gfx.h"
 #include "../userinput/buttons.h"
 #include "../userinput/rotaryencoder.h"
+#include "../leds/led_profiles.h"
 
 // Function prototype - test.c
 void TEST_Function(void);
