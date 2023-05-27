@@ -29,27 +29,70 @@
 // *****************************************************************************
 
 uint64_t pixels_t0 = 0;                         // Used for determining when to update the frame  
-static uint16_t cp_framecount = LEDSTRIPSIZE;   // Current profile framecount; # of frames for the current profile
+static uint16_t cp_framecount = 0;              // Current profile framecount; # of frames for the current profile
 static uint16_t current_frame = 0;              // # of current frame
 static uint16_t current_led = 0;                // Indicates which LED is being updated              
 static bool didProfileChange = false;           // Set if profile was recently changed.
 static bool isframedone = false;                // Checked by Tasks, updated by profile functions.
-pixel_profile_index_t currentProfileIndex = PIXEL_PROFILE_INDEX_WALK;
+pixel_profile_index_t currentProfileIndex;      // Determines current profile index
 
-// Function pointer array. Functions added here should not take arguments.
-void (*pixelProfileList[PIXEL_PROFILE_COUNT])(void) = 
+const pixel_profile_t profileStruct[PIXEL_PROFILE_COUNT] =
 {
-    PIXEL_Walk,
-    PIXEL_CometsTail,
-    PIXEL_TheaterChase,
-    PIXEL_OneColorPulse,
-    PIXEL_SolidColor,
-    PIXEL_ColorWave,
-    PIXEL_SoundReactive,
-    PIXEL_MultiColorPulse,
-    PIXEL_Sparkles,
-    PIXEL_RainbowCycle,
-    PIXEL_AlternatingColors
+    {
+        .profileFunction = PIXEL_Walk,
+        .frameCount = LEDSTRIPSIZE + 1,
+        .frameRateMs = 16,
+    },
+    {
+        .profileFunction = PIXEL_CometsTail,
+        .frameCount = LEDSTRIPSIZE + 7,   // 7 is tailLen
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_TheaterChase,
+        .frameCount = 9,  // 9 is combinedSegLen
+        .frameRateMs = 40,
+    },
+    {
+        .profileFunction = PIXEL_OneColorPulse,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_SolidColor,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_ColorWave,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_SoundReactive,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_MultiColorPulse,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_Sparkles,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_RainbowCycle,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
+    {
+        .profileFunction = PIXEL_AlternatingColors,
+        .frameCount = LEDSTRIPSIZE,
+        .frameRateMs = 25,
+    },
 };
 
 // *****************************************************************************
@@ -68,7 +111,12 @@ void (*pixelProfileList[PIXEL_PROFILE_COUNT])(void) =
 void PIXELS_Initialize(void)
 {
     RGB_SPI_Initialize();
-        
+    
+    // Initialize the global variables
+    currentProfileIndex = PIXEL_PROFILE_INDEX_WALK;
+    cp_framecount = profileStruct[currentProfileIndex].frameCount;
+    
+    // Initialize pixels_t0
     pixels_t0 = millis();
 }
 
@@ -86,32 +134,8 @@ int PIXELS_SelectProfile(pixel_profile_index_t index)
     current_frame = 0;
     current_led = 0;
     
-    // Code below is "hard-coded" for now. Eventually, it will be replaced with 
-    // a more generalized implementation using structs such that names of pixel profiles
-    // won't need to be specified.
-    switch(currentProfileIndex)
-    {
-        case PIXEL_PROFILE_INDEX_WALK:
-        {
-            cp_framecount = LEDSTRIPSIZE;
-            break;
-        }
-        
-        case PIXEL_PROFILE_INDEX_COMETSTAIL:
-        {
-            cp_framecount = LEDSTRIPSIZE + 7;   // 7 is tailLen
-            break;
-        }
-        
-        case PIXEL_PROFILE_THEATERCHASE:
-        {
-            cp_framecount = 9;  // 9 is combinedSegLen
-            break;
-        }
-        
-        default:
-            break;
-    }
+    // Get framecount of current pixel profile    
+    cp_framecount = profileStruct[currentProfileIndex].frameCount;
     
     didProfileChange = true;
     return 0;
@@ -126,27 +150,19 @@ void PIXELS_Tasks(void)
     
     if(isframedone)
     {
-        if(millis() - pixels_t0 < 25)
+        if(millis() - pixels_t0 < profileStruct[currentProfileIndex].frameRateMs)
         {
-            // Update only every 25ms
             // Note: at 800kHz, it takes ~3-4ms to update 120 WS2812B LEDs.
             // 120LEDs * 3 bytes/LED * 8 bits/byte / 800kHz = 3.6ms
             // At > 833 LEDs, it will take more than 25ms to update all of them.
             // As long there are less than 833 LEDs, this framerate should be "fine" (subject to testing)
-            
-            /* 2023-05-20: Instead of hardcoded 25ms, consider using a variable.
-             This way, each profile can run at different framerates. */
             return;
         }
     }
         
     isframedone = false;
     
-    // Replace this later - see pseudocode in OneNote
-    //TEST_PIXEL_Walk();
-    //TEST_PIXEL_COMETSTAIL();
-    //TEST_PIXEL_THEATERCHASE();
-    (*pixelProfileList[currentProfileIndex])();
+    profileStruct[currentProfileIndex].profileFunction();
     pixels_t0 = millis();
 }
 
@@ -181,7 +197,7 @@ void PIXEL_Walk(void)
                 current_frame++;
                 isframedone = true;
                 current_led = 0;
-                activeLed = (activeLed+1) % LEDSTRIPSIZE;
+                activeLed = (activeLed+1) % (LEDSTRIPSIZE+1);
                 break;
             }
             else

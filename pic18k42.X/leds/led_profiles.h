@@ -67,10 +67,12 @@ typedef enum
     PIXEL_PROFILE_INVALID
 } pixel_profile_index_t;
 
-// Array of function pointers pointing to each profile.
-// Will not work if each profile takes different arguments
-// https://www.geeksforgeeks.org/function-pointer-in-c/
-//typedef void (* profileList ) (void);
+typedef struct
+{
+    void (*profileFunction)(void);
+    uint16_t frameCount;
+    uint16_t frameRateMs;
+} pixel_profile_t;
 
 // *****************************************************************************
 // *****************************************************************************
