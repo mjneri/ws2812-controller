@@ -178,56 +178,6 @@ void SPI1_TX_ISR(void)
 
 // User-added ends here
 
-uint8_t SPI1_ExchangeByte(uint8_t data)
-{
-    SPI1TCNTL = 1;
-    SPI1TXB = data;
-    while(!PIR2bits.SPI1RXIF);
-    return SPI1RXB;
-}
-
-void SPI1_ExchangeBlock(void *block, size_t blockSize)
-{
-    uint8_t *data = block;
-    while(blockSize--)
-    {
-        SPI1TCNTL = 1;
-        SPI1TXB = *data;
-        while(!PIR2bits.SPI1RXIF);
-        *data++ = SPI1RXB;
-    }
-}
-
-// Half Duplex SPI Functions
-void SPI1_WriteBlock(void *block, size_t blockSize)
-{
-    uint8_t *data = block;
-    while(blockSize--)
-    {
-        SPI1_ExchangeByte(*data++);
-    }
-}
-
-void SPI1_ReadBlock(void *block, size_t blockSize)
-{
-    uint8_t *data = block;
-    while(blockSize--)
-    {
-        *data++ = SPI1_ExchangeByte(0);
-    }
-}
-
-void SPI1_WriteByte(uint8_t byte)
-{
-    SPI1TXB = byte;
-    while(!SPI1STATUSbits.TXBE);
-}
-
-uint8_t SPI1_ReadByte(void)
-{
-    return SPI1RXB;
-}
-
 void SPI1_DefaultHandler(void)
 {
     // add your SPI1 interrupt custom code
