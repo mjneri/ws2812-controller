@@ -24,6 +24,9 @@
 // *****************************************************************************
 // *****************************************************************************
 
+#include "../../mcc_generated_files/mcc.h"
+#include "../drivers/gfx.h"
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Constant Defines
@@ -52,13 +55,29 @@ typedef struct
     uint8_t scrollPosition;
 } menu_object_t;
 
+// Menu states for state machine-based implementation
+typedef enum
+{
+    MENU_INIT=0,
+    MENU_WELCOME,
+    MENU_MAIN,
+    MENU_PROFILE_SELECT,
+    MENU_DISPLAY_SELECTED_PROFILE,
+    MENU_BRIGHTNESS_SELECT,
+    MENU_ABOUT,
+    MENU_SCREENSAVER,
+            
+} MENU_STATE;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Function Prototypes
 // *****************************************************************************
 // *****************************************************************************
 
+void MENU_Initialize(void);
 
+void MENU_Tasks(void);
 
 
 #endif /*_MENU_H_*/

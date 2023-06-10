@@ -5,7 +5,7 @@
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// Module Name: menu.c
+// Module Name: gfx.c
 // Description: Inspired by lcdgfx, this serves as the interface between user
 //              applications and the OLED driver, whatever it may be.
 //
