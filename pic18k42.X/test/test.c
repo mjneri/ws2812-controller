@@ -57,12 +57,17 @@ void TEST_Function(void)
     
     PIXELS_Initialize();
     
-    TEST_DisplayInit();
+    //TEST_DisplayInit();
+    MENU_Initialize();
     
     while(true)
     {
+        Button_Tasks();
+        OLED_Tasks();
+        
         // Test code for anything involving the OLED in some way
-        TEST_Display();
+        //TEST_Display();
+        MENU_Tasks();
         
         // Test SPI LED functions
         TEST_PIXELS();
@@ -94,9 +99,6 @@ static void TEST_DisplayInit(void)
 
 static void TEST_Display(void)
 {
-    Button_Tasks();
-    OLED_Tasks();
-
     // Read buffered inputs
     rotVelocity = ROTENC_Velocity();
     if(rotVelocity > 0)

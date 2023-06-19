@@ -12,6 +12,7 @@
 #include "../userinput/buttons.h"
 #include "../userinput/rotaryencoder.h"
 #include "../leds/led_profiles.h"
+#include "../graphics/gui/menu.h"
 
 // Function prototype - test.c
 void TEST_Function(void);
