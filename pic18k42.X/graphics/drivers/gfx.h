@@ -45,25 +45,6 @@
 // *****************************************************************************
 // *****************************************************************************
 
-typedef enum
-{
-    GFX_INIT,
-    GFX_WAIT_INPUT,
-    GFX_SERVICE_INPUT,
-    GFX_DISPLAY_OFF,
-    GFX_DISPLAY_WAKEUP,
-    GFX_MENU_UPDATE,
-    GFX_MENU_CHANGE_SELECT
-} GFX_STATES;
-
-typedef struct
-{
-    // Current menu option selected;
-    // isUsrInput;
-    // isSleep;
-    // Refer to lcdgfx for ideas
-} gfx_object_t;
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Function Prototypes
