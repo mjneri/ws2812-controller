@@ -33,6 +33,14 @@
 // *****************************************************************************
 // *****************************************************************************
 
+// The following constants define how many options are available per menu.
+#define NUMOPT_MAIN_MENU            3
+#define NUMOPT_PRFSEL_MENU          PIXEL_PROFILE_COUNT + 1 // +1 represents "Back" option
+#define NUMOPT_DISPLAY_PRFSEL_MENU  0
+#define NUMOPT_BRIGHTNESS_MENU      3
+#define NUMOPT_ABOUT                2       // Includes "back" and 'no option'
+#define NUMOPT_SCREENSAVER          0
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Macros
