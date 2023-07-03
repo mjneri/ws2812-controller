@@ -70,7 +70,8 @@ void TEST_Function(void)
         MENU_Tasks();
         
         // Test SPI LED functions
-        TEST_PIXELS();
+        //TEST_PIXELS();
+        PIXELS_Tasks();
     }
     return;
 }
@@ -231,7 +232,6 @@ static void TEST_PIXELS(void)
         changeCheck = false;
     }
     
-    PIXELS_Tasks();
     return;
 }
 /**

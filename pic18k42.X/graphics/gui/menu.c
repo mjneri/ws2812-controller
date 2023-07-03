@@ -71,100 +71,133 @@ static void MENU_GetUserInput(void)
 
 static void MENU_Display_MainMenu(void)
 {
-    sprintf(menuString, "WS2812B Controller");
-    GFX_Text(0, 8, menuString, &font5x7, 0);
+    if(millis() - menu_t0 >= 100)
+    {
+        isRenderCalled = false;
+        menu_t0 = millis();
+    }
 
-    sprintf(menuString, "1. Select LED Profile");
-    GFX_Text(16, 0, menuString, &font5x7, itemSelected==1);
+    if(!isRenderCalled)
+    {
+        isRenderCalled = true;
 
-    sprintf(menuString, "2. Adjust Brightness");
-    GFX_Text(32, 0, menuString, &font5x7, itemSelected==2);
+        sprintf(menuString, "WS2812B Controller");
+        GFX_Text(0, 8, menuString, &font5x7, 0);
 
-    sprintf(menuString, "3. About");
-    GFX_Text(48, 0, menuString, &font5x7, itemSelected==3);
+        sprintf(menuString, "1. Select LED Profile");
+        GFX_Text(16, 0, menuString, &font5x7, itemSelected==1);
 
-    GFX_Render();
+        sprintf(menuString, "2. Adjust Brightness");
+        GFX_Text(32, 0, menuString, &font5x7, itemSelected==2);
+
+        sprintf(menuString, "3. About");
+        GFX_Text(48, 0, menuString, &font5x7, itemSelected==3);
+
+        GFX_Render();       
+    }
     
     return;
 }
 
 static void MENU_Display_AboutMenu(void)
 {
-    sprintf(menuString, "About");
-    GFX_Text(0, 40, menuString, &font5x7, 0);
+    if(millis() - menu_t0 >= 100)
+    {
+        isRenderCalled = false;
+        menu_t0 = millis();
+    }
 
-    sprintf(menuString, "Project by MJ Neri");
-    GFX_Text(16, 0, menuString, &font5x7, 0);
+    if(!isRenderCalled)
+    {
+        isRenderCalled = true;
 
-    sprintf(menuString, "Source code @:");
-    GFX_Text(24, 0, menuString, &font5x7, 0);
+        sprintf(menuString, "About");
+        GFX_Text(0, 40, menuString, &font5x7, 0);
 
-    sprintf(menuString, "github.com/mjneri/");
-    GFX_Text(32, 0, menuString, &font5x7, 0);
+        sprintf(menuString, "Project by MJ Neri");
+        GFX_Text(16, 0, menuString, &font5x7, 0);
 
-    sprintf(menuString, "ws2812-controller");
-    GFX_Text(40, 5, menuString, &font5x7, 0);
+        sprintf(menuString, "Source code @:");
+        GFX_Text(24, 0, menuString, &font5x7, 0);
 
-    sprintf(menuString, "Back");
-    GFX_Text(56, 0, menuString, &font5x7, itemSelected==1);
+        sprintf(menuString, "github.com/mjneri/");
+        GFX_Text(32, 0, menuString, &font5x7, 0);
 
-    GFX_Render();
+        sprintf(menuString, "ws2812-controller");
+        GFX_Text(40, 5, menuString, &font5x7, 0);
+
+        sprintf(menuString, "Back");
+        GFX_Text(56, 0, menuString, &font5x7, itemSelected==1);
+
+        GFX_Render();
+    }
     
     return;
 }
 
 static void MENU_Display_LEDProfileSelectMenu(void)
 {
-    GFX_Clear();
-    
-    sprintf(menuString, "Select LED Profile");
-    GFX_Text(0, 8, menuString, &font5x7, 0);
-
-    if(itemSelected <= 5)
+    if(millis() - menu_t0 >= 100)
     {
-        sprintf(menuString, "1. Walking Pixel");
-        GFX_Text(8, 0, menuString, &font5x7, itemSelected==1);
-
-        sprintf(menuString, "2. Comet's Tail");
-        GFX_Text(16, 0, menuString, &font5x7, itemSelected==2);
-
-        sprintf(menuString, "3. Theater Chase");
-        GFX_Text(24, 0, menuString, &font5x7, itemSelected==3);
-        
-        sprintf(menuString, "4. 1 Color Pulse");
-        GFX_Text(32, 0, menuString, &font5x7, itemSelected==4);
-        
-        sprintf(menuString, "5. Solid Color");
-        GFX_Text(40, 0, menuString, &font5x7, itemSelected==5);
-        
-        sprintf(menuString, "+ more below---");
-        GFX_Text(48, 0, menuString, &font5x7, 0);
-    }
-    else
-    {
-        sprintf(menuString, "6. Color Wave");
-        GFX_Text(8, 0, menuString, &font5x7, itemSelected==6);
-
-        sprintf(menuString, "7. Sound Reactive");
-        GFX_Text(16, 0, menuString, &font5x7, itemSelected==7);
-
-        sprintf(menuString, "8. Multicolor Pulse");
-        GFX_Text(24, 0, menuString, &font5x7, itemSelected==8);
-        
-        sprintf(menuString, "9. Sparkles");
-        GFX_Text(32, 0, menuString, &font5x7, itemSelected==9);
-        
-        sprintf(menuString, "10. Rainbow Cycle");
-        GFX_Text(40, 0, menuString, &font5x7, itemSelected==10);
-        
-        sprintf(menuString, "11. Alternating Colors");
-        GFX_Text(48, 0, menuString, &font5x7, itemSelected==11);
+        isRenderCalled = false;
+        menu_t0 = millis();
     }
 
-    sprintf(menuString, "Back");
-    GFX_Text(56, 0, menuString, &font5x7, itemSelected==12);
+    if(!isRenderCalled)
+    {
+        isRenderCalled = true;
+
+        GFX_Clear();
     
-    GFX_Render();
+        sprintf(menuString, "Select LED Profile");
+        GFX_Text(0, 8, menuString, &font5x7, 0);
+
+        if(itemSelected <= 5)
+        {
+            sprintf(menuString, "1. Walking Pixel");
+            GFX_Text(8, 0, menuString, &font5x7, itemSelected==1);
+
+            sprintf(menuString, "2. Comet's Tail");
+            GFX_Text(16, 0, menuString, &font5x7, itemSelected==2);
+
+            sprintf(menuString, "3. Theater Chase");
+            GFX_Text(24, 0, menuString, &font5x7, itemSelected==3);
+
+            sprintf(menuString, "4. 1 Color Pulse");
+            GFX_Text(32, 0, menuString, &font5x7, itemSelected==4);
+
+            sprintf(menuString, "5. Solid Color");
+            GFX_Text(40, 0, menuString, &font5x7, itemSelected==5);
+
+            sprintf(menuString, "+ more below---");
+            GFX_Text(48, 0, menuString, &font5x7, 0);
+        }
+        else
+        {
+            sprintf(menuString, "6. Color Wave");
+            GFX_Text(8, 0, menuString, &font5x7, itemSelected==6);
+
+            sprintf(menuString, "7. Sound Reactive");
+            GFX_Text(16, 0, menuString, &font5x7, itemSelected==7);
+
+            sprintf(menuString, "8. Multicolor Pulse");
+            GFX_Text(24, 0, menuString, &font5x7, itemSelected==8);
+
+            sprintf(menuString, "9. Sparkles");
+            GFX_Text(32, 0, menuString, &font5x7, itemSelected==9);
+
+            sprintf(menuString, "10. Rainbow Cycle");
+            GFX_Text(40, 0, menuString, &font5x7, itemSelected==10);
+
+            sprintf(menuString, "11. Alternating Colors");
+            GFX_Text(48, 0, menuString, &font5x7, itemSelected==11);
+        }
+
+        sprintf(menuString, "Back");
+        GFX_Text(56, 0, menuString, &font5x7, itemSelected==12);
+
+        GFX_Render();
+    }
     
     return;
 }
@@ -224,18 +257,7 @@ void MENU_Tasks(void)
         case MENU_MAIN:
         {
             // Display the main menu, updated every 100ms.
-            if(millis() - menu_t0 >= 100)
-            {
-                isRenderCalled = false;
-                menu_t0 = millis();
-            }
-            
-            if(!isRenderCalled)
-            {
-                isRenderCalled = true;
-                
-                MENU_Display_MainMenu();                
-            }
+            MENU_Display_MainMenu();
             
             // Update itemSelected based on user input
             MENU_GetUserInput();
@@ -285,18 +307,7 @@ void MENU_Tasks(void)
         case MENU_PROFILE_SELECT:
         {
             // Display the menu, updated every 100ms.
-            if(millis() - menu_t0 >= 100)
-            {
-                isRenderCalled = false;
-                menu_t0 = millis();
-            }
-            
-            if(!isRenderCalled)
-            {
-                isRenderCalled = true;
-                
-                MENU_Display_LEDProfileSelectMenu();                
-            }
+            MENU_Display_LEDProfileSelectMenu();
             
             // Update itemSelected based on user input
             MENU_GetUserInput();
@@ -317,6 +328,16 @@ void MENU_Tasks(void)
                     numOfOptions = NUMOPT_MAIN_MENU;
                     menuState = MENU_MAIN;
                 }
+                else if(itemSelected == 1)
+                {
+                    // Walking Pixel
+                    PIXELS_SelectProfile(PIXEL_PROFILE_INDEX_WALK);
+                }
+                else if(itemSelected == 2)
+                {
+                    // Comet's Tail
+                    PIXELS_SelectProfile(PIXEL_PROFILE_INDEX_COMETSTAIL);
+                }
                 else
                 {
                     // Do nothing
@@ -328,18 +349,7 @@ void MENU_Tasks(void)
         case MENU_ABOUT:
         {
             // Display the main menu, updated every 100ms.
-            if(millis() - menu_t0 >= 100)
-            {
-                isRenderCalled = false;
-                menu_t0 = millis();
-            }
-            
-            if(!isRenderCalled)
-            {
-                isRenderCalled = true;
-                
-                MENU_Display_AboutMenu();
-            }
+            MENU_Display_AboutMenu();
             
             // Update itemSelected based on user input
             MENU_GetUserInput();
